@@ -28,7 +28,7 @@ public final class MapleDslConfiguration {
     @NotNull final MapleDslModule module;
     @NotNull final MapleDslTemplateRegistry templateRegistry;
     @NotNull final MapleDslHandlerRegistry handlerRegistry;
-    @NotNull final MapleDslMapperRegistry mapperRegistry;
+    @NotNull final MapleDslDefinitionRegistry mapperRegistry;
     @NotNull final RegionConfig regionConfig;
     @NotNull final NamingStrategy namingStrategy;
     @NotNull final KeyPolicyStrategy keyPolicyStrategy;
@@ -41,7 +41,7 @@ public final class MapleDslConfiguration {
         this.namingStrategy = namingStrategy;
         this.keyPolicyStrategy = keyPolicyStrategy;
 
-        this.mapperRegistry = new MapleDslMapperRegistry(this);
+        this.mapperRegistry = new MapleDslDefinitionRegistry(this);
         this.handlerRegistry = new MapleDslHandlerRegistry(this);
         this.templateRegistry = new MapleDslTemplateRegistry(this, templatePoolConfigMaxTotal, templatePoolConfigMaxIdle, templatePoolConfigMinIdle);
     }
