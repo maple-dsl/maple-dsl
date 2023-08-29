@@ -40,14 +40,4 @@ public interface Query<T extends Model<?>, Children extends Query<T, Children>> 
 
     Children limit(int limit);
     Children limit(int skip, int limit);
-
-    Query<T, Children> groupBy(String col1);
-    Query<T, Children> groupBy(String col1, String col2);
-    Query<T, Children> groupBy(String col1, String col2, String col3);
-    Query<T, Children> groupBy(String[] cols);
-
-    Query<T, Children> groupBy(SerializableFunction<T, ?> col);
-    Query<T, Children> groupBy(SerializableFunction<T, ?> col1, SerializableFunction<T, ?> col2);
-    Query<T, Children> groupBy(SerializableFunction<T, ?> col1, SerializableFunction<T, ?> col2, SerializableFunction<T, ?> col3);
-    Query<T, Children> groupBy(SerializableFunction<T, ?>[] columns);
 }
