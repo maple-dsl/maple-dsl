@@ -49,11 +49,11 @@ public interface Model<R extends Number & CharSequence> extends Serializable {
      */
     @SuppressWarnings("unused")
     @ApiStatus.NonExtendable
-    final class P implements Serializable {
+    final class Path implements Serializable {
         LinkedList<V> vertices;
         LinkedList<E> edges;
 
-        public P(LinkedList<V> vertices, LinkedList<E> edges) {
+        public Path(LinkedList<V> vertices, LinkedList<E> edges) {
             this.vertices = vertices;
             this.edges = edges;
         }
