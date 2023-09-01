@@ -20,7 +20,7 @@ public class MapleDslModule {
         return resultValueClazz::equals;
     }
 
-    public Predicate<Class<? extends MapleDslResultHandler>> resultHandlerPredicate() {
+    public Predicate<Class<? extends MapleDslResultHandler<?,?>>> resultHandlerPredicate() {
         return resultHandlerClazz::isAssignableFrom;
     }
 
