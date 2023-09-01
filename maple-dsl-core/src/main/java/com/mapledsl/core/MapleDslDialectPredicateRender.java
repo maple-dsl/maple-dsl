@@ -1,10 +1,8 @@
 package com.mapledsl.core;
 
 import com.mapledsl.core.MapleDslDialectPredicateRender.PredicateRendererModel;
-import com.mapledsl.core.MapleDslDialectSelectionRender.SelectionRendererModel;
 import com.mapledsl.core.condition.common.OP;
 import com.mapledsl.core.condition.common.P;
-import com.mapledsl.core.condition.common.T;
 import com.mapledsl.core.exception.MapleDslBindingException;
 import com.mapledsl.core.model.Model;
 import org.jetbrains.annotations.Nullable;
