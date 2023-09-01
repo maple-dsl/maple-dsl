@@ -1,5 +1,7 @@
 package com.mapledsl.core;
 
+import com.mapledsl.core.MapleDslDialectPredicateRender.PredicateRendererModel;
+import com.mapledsl.core.MapleDslDialectSelectionRender.SelectionRendererModel;
 import com.mapledsl.core.exception.MapleDslBindingException;
 import com.mapledsl.core.exception.MapleDslException;
 import com.mapledsl.core.exception.MapleDslExecutionException;
@@ -16,7 +18,9 @@ import org.stringtemplate.v4.compiler.CompiledST;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.ServiceLoader;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
@@ -26,8 +30,6 @@ import static java.util.Objects.requireNonNull;
  * @since 2023/08/21
  */
 final class MapleDslTemplateRegistry {
-    final String rootVariableName = "_ROOT";
-
     static final int DEFAULT_TEMPLATE_GROUP_POOL_MAX_TOTAL  = Runtime.getRuntime().availableProcessors() * 5;
     static final int DEFAULT_TEMPLATE_GROUP_POOL_MAX_IDLE   = Runtime.getRuntime().availableProcessors() * 2;
     static final int DEFAULT_TEMPLATE_GROUP_POOL_MIN_IDLE   = GenericObjectPoolConfig.DEFAULT_MIN_IDLE;
@@ -73,6 +75,15 @@ final class MapleDslTemplateRegistry {
             final STGroup templateGroup = new STGroup();
             templateGroup.registerModelAdaptor(Object.class, (interp, self, model, property, propertyName) -> null);
             templateGroup.registerRenderer(Class.class, (value, formatString, locale) -> null);
+            templateGroup.registerRenderer(SelectionRendererModel.class, Optional.of(ServiceLoader.load(MapleDslDialectSelectionRender.class).iterator())
+                    .map(it -> it.hasNext() ? it.next() : null)
+                    .map(it -> it.bind(configuration))
+                    .orElseThrow(() -> new MapleDslBindingException("selection initialize not found.")));
+            templateGroup.registerRenderer(PredicateRendererModel.class, Optional.of(ServiceLoader.load(MapleDslDialectPredicateRender.class).iterator())
+                    .map(it -> it.hasNext() ? it.next() : null)
+                    .map(it -> it.bind(configuration))
+                    .orElseThrow(() -> new MapleDslBindingException("predicate renderer not found."))
+            );
 
             for (String templateName : dialectTemplateProperties.stringPropertyNames()) {
                 templateName = inspect(templateName);
