@@ -14,7 +14,7 @@ import com.mapledsl.core.extension.func.ObjIntBiFunction;
 import com.mapledsl.core.extension.func.ObjLongBiFunction;
 import com.mapledsl.core.extension.func.ObjShortBiFunction;
 import com.mapledsl.core.extension.func.ObjShortConsumer;
-import com.mapledsl.core.spi.MapleDslResultHandler;
+import com.mapledsl.core.module.MapleDslResultHandler;
 
 import java.lang.invoke.LambdaConversionException;
 import java.lang.invoke.LambdaMetafactory;

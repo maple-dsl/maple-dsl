@@ -6,7 +6,7 @@ import com.mapledsl.core.exception.MapleDslReflectionException;
 import com.mapledsl.core.extension.func.ThrowingFunction;
 import com.mapledsl.core.extension.func.ThrowingSupplier;
 import com.mapledsl.core.model.Model;
-import com.mapledsl.core.spi.MapleDslParameterHandler;
+import com.mapledsl.core.module.MapleDslParameterHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;

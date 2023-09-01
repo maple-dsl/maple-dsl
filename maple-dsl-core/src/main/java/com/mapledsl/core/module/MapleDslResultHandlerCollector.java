@@ -1,4 +1,4 @@
-package com.mapledsl.core.spi;
+package com.mapledsl.core.module;
 
 import java.util.Map;
 import java.util.function.Supplier;

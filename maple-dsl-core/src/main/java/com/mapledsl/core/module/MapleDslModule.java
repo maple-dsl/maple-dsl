@@ -1,4 +1,4 @@
-package com.mapledsl.core.spi;
+package com.mapledsl.core.module;
 
 import org.jetbrains.annotations.NotNull;
 

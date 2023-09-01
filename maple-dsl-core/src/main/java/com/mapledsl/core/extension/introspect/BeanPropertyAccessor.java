@@ -9,7 +9,7 @@ import com.mapledsl.core.extension.func.ToBooleanFunction;
 import com.mapledsl.core.extension.func.ToCharFunction;
 import com.mapledsl.core.extension.func.ToFloatFunction;
 import com.mapledsl.core.extension.func.ToShortFunction;
-import com.mapledsl.core.spi.MapleDslParameterHandler;
+import com.mapledsl.core.module.MapleDslParameterHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.LambdaConversionException;
