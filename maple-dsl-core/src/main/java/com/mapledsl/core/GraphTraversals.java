@@ -56,6 +56,7 @@ public class GraphTraversals {
     }
 
     static class TW implements Traversal {
+        static final int LENGTH = 12;
         static final int STEP_M_INDEX = 0;
         static final int STEP_N_INDEX = 1;
         static final int FROM_INDEX = 2;
@@ -101,7 +102,7 @@ public class GraphTraversals {
         }
 
         Object[] init() {
-            return new Object[12];
+            return new Object[LENGTH];
         }
 
         void addAllPredicates(Collection<PredicateRendererModel<?>> container, PredicateRendererModel<?>[] predicates) {
