@@ -19,6 +19,7 @@ public class T<M extends Model<?>> {
     private Class<M> instantiated;
 
     private boolean all = false;
+    private boolean pinning = false;
     private boolean ascending = false;
     private boolean descending = false;
 
@@ -34,6 +35,18 @@ public class T<M extends Model<?>> {
 
     public boolean isNotPresent() {
         return columns == null;
+    }
+
+    public boolean isAscending() {
+        return ascending;
+    }
+
+    public boolean isDescending() {
+        return descending;
+    }
+
+    public boolean isPinning() {
+        return pinning;
     }
 
     public String[] columns() {
@@ -57,6 +70,11 @@ public class T<M extends Model<?>> {
     public T<M> descending() {
         ascending = false;
         descending = true;
+        return this;
+    }
+
+    public T<M> pin() {
+        pinning = true;
         return this;
     }
 
@@ -187,6 +205,23 @@ public class T<M extends Model<?>> {
         return t;
     }
 
+    public static <M extends Model<?>> T<M> pin(String label, String... columns) {
+        return T.<M>select(label, columns).pin();
+    }
+
+    public static <M extends Model<?>> T<M> pin(Class<M> instantiated, String... columns) {
+        return T.select(instantiated, columns).pin();
+    }
+
+    public static <M extends Model<?>> T<M> pin(String... columns) {
+        return T.<M>select(columns).pin();
+    }
+
+    @SafeVarargs
+    public static <M extends Model<?>> T<M> pin(SerializableFunction<M, ?>... func) {
+        return select(func).pin();
+    }
+
     public static <M extends Model<?>> T<M> ascending(String label, String... columns) {
         return T.<M>select(label, columns).ascending();
     }
@@ -212,10 +247,10 @@ public class T<M extends Model<?>> {
         return T.select(instantiated, columns).descending();
     }
 
-
     public static <M extends Model<?>> T<M> descending(String... columns) {
         return T.<M>select(columns).descending();
     }
+
     @SafeVarargs
     public static <M extends Model<?>> T<M> descending(SerializableFunction<M, ?>... func) {
         return select(func).descending();
