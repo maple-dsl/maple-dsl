@@ -22,30 +22,19 @@ public interface Traversal extends Wrapper<Traversal> {
     Traversal inE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal inE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
 
-    Traversal inE(int stepM, int stepN, String[] types);
-    Traversal inE(int stepM, int stepN, String type);
-    Traversal inE(int stepM, int stepN, String first, String second);
-    Traversal inE(int stepM, int stepN, String first, String second, String third);
-
     Traversal inE(int step, Class<? extends Model.E>[] types);
     Traversal inE(int step, Class<? extends Model.E> type);
     Traversal inE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal inE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
-
-    Traversal inE(int step, String... types);
-    Traversal inE(int step, String type);
-    Traversal inE(int step, String first, String second);
-    Traversal inE(int step, String first, String second, String third);
 
     Traversal inE(Class<? extends Model.E>[] types);
     Traversal inE(Class<? extends Model.E> type);
     Traversal inE(Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal inE(Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
 
-    Traversal inE(String[] types);
-    Traversal inE(String type);
-    Traversal inE(String first, String second);
-    Traversal inE(String first, String second, String third);
+    Traversal inE(int stepM, int stepN, String... types);
+    Traversal inE(int step, String... types);
+    Traversal inE(String... types);
 
     /**
      * Specifies the conditions of stepM, stepN, edge_types to search for incoming edges.
@@ -59,30 +48,19 @@ public interface Traversal extends Wrapper<Traversal> {
     Traversal outE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal outE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
 
-    Traversal outE(int stepM, int stepN, String[] types);
-    Traversal outE(int stepM, int stepN, String type);
-    Traversal outE(int stepM, int stepN, String first, String second);
-    Traversal outE(int stepM, int stepN, String first, String second, String third);
-
     Traversal outE(int step, Class<? extends Model.E>[] types);
     Traversal outE(int step, Class<? extends Model.E> type);
     Traversal outE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal outE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
-
-    Traversal outE(int step, String... types);
-    Traversal outE(int step, String type);
-    Traversal outE(int step, String first, String second);
-    Traversal outE(int step, String first, String second, String third);
 
     Traversal outE(Class<? extends Model.E>[] types);
     Traversal outE(Class<? extends Model.E> type);
     Traversal outE(Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal outE(Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
 
-    Traversal outE(String[] types);
-    Traversal outE(String type);
-    Traversal outE(String first, String second);
-    Traversal outE(String first, String second, String third);
+    Traversal outE(int stepM, int stepN, String... types);
+    Traversal outE(int step, String... types);
+    Traversal outE(String... types);
 
     /**
      * Specifies the conditions of stepM, stepN, edge_types to search for edges of both directions.
@@ -96,30 +74,19 @@ public interface Traversal extends Wrapper<Traversal> {
     Traversal bothE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal bothE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
 
-    Traversal bothE(int stepM, int stepN, String[] types);
-    Traversal bothE(int stepM, int stepN, String type);
-    Traversal bothE(int stepM, int stepN, String first, String second);
-    Traversal bothE(int stepM, int stepN, String first, String second, String third);
-
     Traversal bothE(int step, Class<? extends Model.E>[] types);
     Traversal bothE(int step, Class<? extends Model.E> type);
     Traversal bothE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal bothE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
-
-    Traversal bothE(int step, String... types);
-    Traversal bothE(int step, String type);
-    Traversal bothE(int step, String first, String second);
-    Traversal bothE(int step, String first, String second, String third);
 
     Traversal bothE(Class<? extends Model.E>[] types);
     Traversal bothE(Class<? extends Model.E> type);
     Traversal bothE(Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal bothE(Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
 
-    Traversal bothE(String[] types);
-    Traversal bothE(String type);
-    Traversal bothE(String first, String second);
-    Traversal bothE(String first, String second, String third);
+    Traversal bothE(int stepM, int stepN, String... types);
+    Traversal bothE(int step, String... types);
+    Traversal bothE(String... types);
 
     /**
      * Specifies the traversal filters referenced by the source vertex.
