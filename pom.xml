@@ -17,7 +17,7 @@
         <codec.version>1.15</codec.version>
         <st4.version>4.3.3</st4.version>
         <object.pool.version>2.11.1</object.pool.version>
-        <slf4j.version>1.7.29</slf4j.version>
+        <slf4j.version>1.7.36</slf4j.version>
         <jetbrains-annotations.version>23.0.0</jetbrains-annotations.version>
         <guava.version>31.1-jre</guava.version>
         <junit-jupiter.version>5.9.0</junit-jupiter.version>
