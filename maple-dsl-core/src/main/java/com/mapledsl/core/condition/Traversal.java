@@ -1,8 +1,9 @@
 package com.mapledsl.core.condition;
 
-import com.mapledsl.core.condition.common.P;
-import com.mapledsl.core.condition.common.T;
 import com.mapledsl.core.model.Model;
+
+import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  * @author bofa1ex
@@ -17,17 +18,17 @@ public interface Traversal extends Wrapper<Traversal> {
      * @param types represents a list of edge types which the traversal can go through.
      * @return the current ref of Traversal.
      */
-    Traversal inE(int stepM, int stepN, Class<? extends Model.E>[] types);
+    Traversal inE(int stepM, int stepN, Collection<Class<? extends Model.E>> types);
     Traversal inE(int stepM, int stepN, Class<? extends Model.E> type);
     Traversal inE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal inE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
 
-    Traversal inE(int step, Class<? extends Model.E>[] types);
+    Traversal inE(int step, Collection<Class<? extends Model.E>> types);
     Traversal inE(int step, Class<? extends Model.E> type);
     Traversal inE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal inE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
 
-    Traversal inE(Class<? extends Model.E>[] types);
+    Traversal inE(Collection<Class<? extends Model.E>> types);
     Traversal inE(Class<? extends Model.E> type);
     Traversal inE(Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal inE(Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
@@ -43,17 +44,17 @@ public interface Traversal extends Wrapper<Traversal> {
      * @param types represents a list of edge types which the traversal can go through.
      * @return the current ref of Traversal.
      */
-    Traversal outE(int stepM, int stepN, Class<? extends Model.E>[] types);
+    Traversal outE(int stepM, int stepN, Collection<Class<? extends Model.E>> types);
     Traversal outE(int stepM, int stepN, Class<? extends Model.E> type);
     Traversal outE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal outE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
 
-    Traversal outE(int step, Class<? extends Model.E>[] types);
+    Traversal outE(int step, Collection<Class<? extends Model.E>> types);
     Traversal outE(int step, Class<? extends Model.E> type);
     Traversal outE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal outE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
 
-    Traversal outE(Class<? extends Model.E>[] types);
+    Traversal outE(Collection<Class<? extends Model.E>> types);
     Traversal outE(Class<? extends Model.E> type);
     Traversal outE(Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal outE(Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
@@ -69,17 +70,17 @@ public interface Traversal extends Wrapper<Traversal> {
      * @param types represents a list of edge types which the traversal can go through.
      * @return the current ref of Traversal.
      */
-    Traversal bothE(int stepM, int stepN, Class<? extends Model.E>[] types);
+    Traversal bothE(int stepM, int stepN, Collection<Class<? extends Model.E>> types);
     Traversal bothE(int stepM, int stepN, Class<? extends Model.E> type);
     Traversal bothE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal bothE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
 
-    Traversal bothE(int step, Class<? extends Model.E>[] types);
+    Traversal bothE(int step, Collection<Class<? extends Model.E>> types);
     Traversal bothE(int step, Class<? extends Model.E> type);
     Traversal bothE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal bothE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
 
-    Traversal bothE(Class<? extends Model.E>[] types);
+    Traversal bothE(Collection<Class<? extends Model.E>> types);
     Traversal bothE(Class<? extends Model.E> type);
     Traversal bothE(Class<? extends Model.E> first, Class<? extends Model.E> second);
     Traversal bothE(Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
@@ -87,76 +88,36 @@ public interface Traversal extends Wrapper<Traversal> {
     Traversal bothE(int stepM, int stepN, String... types);
     Traversal bothE(int step, String... types);
     Traversal bothE(String... types);
-
-    /**
-     * Specifies the traversal filters referenced by the source vertex.
-     * @param <V> specifies the vertex type of the model conditions(tokens/predicates).
-     * @param predicates specified traversal definitions or filters.
-     * @see P Predefined {@code Predicate} values that can be used with.
-     * @return the current ref of Traversal.
-     */
-    <V extends Model.V> Traversal inV(P<V>[] predicates);
-    <V extends Model.V> Traversal inV(P<V> predicate);
-    <V extends Model.V> Traversal inV(P<V> first, P<Model.V> second);
-    <V extends Model.V> Traversal inV(P<V> first, P<Model.V> second, P<Model.V> third);
-    /**
-     * Specifies the traversal definitions referenced by the source vertex.
-     * @param <V> specifies the vertex type of the model conditions(tokens/predicates).
-     * @param selections specified traversal definitions or filters.
-     * @see P Predefined {@code Predicate} values that can be used with.
-     * @see T A collection of (T)okens which allows for more concise Traversal definitions.
-     * @return the current ref of Traversal.
-     */
-    <V extends Model.V> Traversal inV(T<V>[] selections);
-    <V extends Model.V> Traversal inV(T<V> selection);
-    <V extends Model.V> Traversal inV(T<V> first, T<V> second);
-    <V extends Model.V> Traversal inV(T<V> first, T<V> second, T<V> third);
-    /**
-     * Specifies the traversal definitions/filters referenced by the destination vertex.
-     * @param <V> specifies the vertex type of the model conditions(tokens/predicates).
-     * @param predicates specified traversal definitions or filters.
-     * @see P Predefined {@code Predicate} values that can be used with.
-     * @see T A collection of (T)okens which allows for more concise Traversal definitions.
-     * @return the current ref of Traversal.
-     */
-    <V extends Model.V> Traversal outV(P<V>[] predicates);
-    <V extends Model.V> Traversal outV(P<V> predicate);
-    <V extends Model.V> Traversal outV(P<V> first, P<V> second);
-    <V extends Model.V> Traversal outV(P<V> first, P<V> second, P<V> third);
     /**
      * Specifies the traversal definitions referenced by the destination vertex.
      * @param <V> specifies the vertex type of the model conditions(tokens/predicates).
-     * @param selections specified traversal definitions or filters.
-     * @see P Predefined {@code Predicate} values that can be used with.
-     * @see T A collection of (T)okens which allows for more concise Traversal definitions.
+     * @param step specified traversal definitions or filters.
      * @return the current ref of Traversal.
      */
-    <V extends Model.V> Traversal outV(T<V>[] selections);
-    <V extends Model.V> Traversal outV(T<V> selection);
-    <V extends Model.V> Traversal outV(T<V> first, T<V> second);
-    <V extends Model.V> Traversal outV(T<V> first, T<V> second, T<V> third);
+    <V extends Model.V> Traversal outV(String alias, Consumer<Step<V>> step);
+    <V extends Model.V> Traversal outV(String alias, Class<V> label, Consumer<Step<V>> step);
+    <V extends Model.V> Traversal outV(String alias, String label, Consumer<Step<V>> fetch);
     /**
-     * Specifies the traversal filters referenced by the path of edge.
-     * @param <E> specifies the edge type of the model conditions(tokens/predicates).
-     * @param predicates specified traversal definitions or filters.
-     * @see P Predefined {@code Predicate} values that can be used with.
-     * @see T A collection of (T)okens which allows for more concise Traversal definitions.
+     * Specifies the traversal definitions referenced by the source vertex.
+     * @param <V> specifies the vertex type of the model conditions(tokens/predicates).
+     * @param step specified traversal definitions or filters.
      * @return the current ref of Traversal.
      */
-    <E extends Model.E> Traversal E(P<E>[] predicates);
-    <E extends Model.E> Traversal E(P<E> predicate);
-    <E extends Model.E> Traversal E(P<E> first, P<E> second);
-    <E extends Model.E> Traversal E(P<E> first, P<E> second, P<E> third);
+    <V extends Model.V> Traversal inV(String alias, Consumer<Step<V>> step);
+    <V extends Model.V> Traversal inV(String alias, Class<V> label, Consumer<Step<V>> step);
+    <V extends Model.V> Traversal inV(String alias, String label, Consumer<Step<V>> step);
     /**
      * Specifies the traversal definitions referenced by the path of edge.
      * @param <E> specifies the edge type of the model conditions(tokens/predicates).
-     * @param selections specified traversal definitions or filters.
-     * @see P Predefined {@code Predicate} values that can be used with.
-     * @see T A collection of (T)okens which allows for more concise Traversal definitions.
+     * @param step specified traversal definitions or filters.
      * @return the current ref of Traversal.
      */
-    <E extends Model.E>  Traversal E(T<E>[] selections);
-    <E extends Model.E>  Traversal E(T<E> selection);
-    <E extends Model.E>  Traversal E(T<E> first, T<E> second);
-    <E extends Model.E>  Traversal E(T<E> first, T<E> second, T<E> third);
+    <E extends Model.E> Traversal edge(String alias, Consumer<Step<E>> step);
+    <E extends Model.E> Traversal edge(String alias, Class<E> label, Consumer<Step<E>> step);
+    <E extends Model.E> Traversal edge(String alias, String label, Consumer<Step<E>> step);
+
+    interface Step<M extends Model<?>> extends Condition<M, Step<M>>, Query<M, Sort<M>> {
+        void noneSelect();
+        void allSelect();
+    }
 }

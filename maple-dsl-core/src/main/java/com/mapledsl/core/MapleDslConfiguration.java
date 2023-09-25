@@ -18,9 +18,16 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ServiceLoader;
+import java.util.TimeZone;
 import java.util.stream.StreamSupport;
 
 public final class MapleDslConfiguration {
@@ -66,7 +73,7 @@ public final class MapleDslConfiguration {
         return this;
     }
 
-    public <M extends Model<?>> String getLabel(Class<M> beanClazz) {
+    public @Nullable <M extends Model<?>> String getLabel(Class<M> beanClazz) {
         if (beanClazz.isPrimitive() || beanClazz.isArray()) return null;
         if (Number.class.isAssignableFrom(beanClazz)) return null;
         if (CharSequence.class.isAssignableFrom(beanClazz)) return null;

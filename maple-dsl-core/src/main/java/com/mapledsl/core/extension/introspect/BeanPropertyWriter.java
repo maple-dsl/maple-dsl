@@ -69,6 +69,7 @@ class BeanPropertyWriter {
         if (Object.class.isAssignableFrom(returnType)) {
             if (!parameterType.isPrimitive()) {
                 this.delegate = new BeanUnaryPropertyWriter(lookup, setterMethod);
+                return;
             }
             if (parameterType == Integer.TYPE) {
                 this.delegate = new BeanUnaryIntPropertyWriter(lookup, setterMethod);
@@ -92,6 +93,7 @@ class BeanPropertyWriter {
         if (void.class.isAssignableFrom(returnType)) {
             if (!parameterType.isPrimitive()) {
                 this.delegate = new BeanObjPropertyWriter(lookup, setterMethod);
+                return;
             }
 
             if (parameterType == Integer.TYPE) {
@@ -111,6 +113,8 @@ class BeanPropertyWriter {
             } else {
                 MapleDslException.throwEX("Unsupported type: " + parameterType);
             }
+
+            MapleDslException.throwEX("Unsupported type: " + returnType);
         }
     }
     

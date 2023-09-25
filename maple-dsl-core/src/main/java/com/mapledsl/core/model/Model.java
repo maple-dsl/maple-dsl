@@ -14,7 +14,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 
-@SuppressWarnings("unused")
 public interface Model<R extends Number & CharSequence> extends Serializable {
     String ID = "ID", TAG = "TAG";
 
@@ -23,7 +22,6 @@ public interface Model<R extends Number & CharSequence> extends Serializable {
 
     @NotNull Map<String, Object> props();
 
-    @SuppressWarnings("UnusedReturnValue")
     default Model<R> put(String key, Object value) {
         final Map<String, Object> props = props();
         props.put(key, value);
@@ -47,7 +45,6 @@ public interface Model<R extends Number & CharSequence> extends Serializable {
     /**
      * Base graph PATH model
      */
-    @SuppressWarnings("unused")
     @ApiStatus.NonExtendable
     final class Path implements Serializable {
         LinkedList<V> vertices;
@@ -78,7 +75,6 @@ public interface Model<R extends Number & CharSequence> extends Serializable {
     /**
      * Base graph VERTEX model.
      */
-    @SuppressWarnings("unused")
     class V implements Model<ID> {
         protected @Property(value = ID, defined = false)    ID id;
         protected @Property(value = TAG, defined = false)   String label;
@@ -152,7 +148,6 @@ public interface Model<R extends Number & CharSequence> extends Serializable {
     /**
      * Base graph EDGE model.
      */
-    @SuppressWarnings("unused")
     class E implements Model<ID> {
         protected @Property(value = ID, defined = false)    ID id;
         protected @Property(value = SRC, defined = false)   ID src;

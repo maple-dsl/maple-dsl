@@ -47,6 +47,7 @@ class BeanPropertyAccessor {
         final Class<?> returnType = getterMethod.getReturnType();
         if (!returnType.isPrimitive()) {
             this.delegate = new BeanObjPropertyAccessor(lookup, getterMethod);
+            return;
         }
 
         if (returnType == Integer.TYPE) {

@@ -4,9 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.stringtemplate.v4.ST;
 
 import java.util.function.BiFunction;
-import java.util.function.UnaryOperator;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * A collection represents a group of graph (basic(CURD) & traverse & path & subgraph) dialect renderers.
@@ -15,145 +12,82 @@ import static java.util.Objects.requireNonNull;
  * @since 2023/08/23
  */
 enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[], String> {
-    saveV {
-        @Override
-        public String apply(@NotNull MapleDslConfiguration context, Object... args) {
-            requireNonNull(args[0], "tag must not be null.");
-            requireNonNull(args[1], "vertex/vertices must not be null.");
-            return render(name(), context, fmt -> fmt.add("tag", args[0]).add("v", args[1]));
-        }
-    },
-    saveE {
-        @Override
-        public String apply(@NotNull MapleDslConfiguration context, Object... args) {
-            requireNonNull(args[0], "tag must not be null.");
-            requireNonNull(args[1], "edge/edges must not be null.");
-            return render(name(), context, fmt -> fmt.add("tag", args[0]).add("e", args[1]));
-        }
-    },
-    deleteV {
-        @Override
-        public String apply(@NotNull MapleDslConfiguration context, Object... args) {
-            requireNonNull(args[0], "tag must not be null");
-            return render(name(), context, fmt -> fmt.add("tag", args[0]).add("from", args[1]).add("withEdge", args[2]));
-        }
-    },
-    deleteE {
-        @Override
-        public String apply(@NotNull MapleDslConfiguration context, Object... args) {
-            requireNonNull(args[0], "tag must not be null");
-            return render(name(), context, fmt -> fmt.add("tag", args[0]).add("from", args[1]));
-        }
-    },
-    selectV {
-        @Override
-        public String apply(@NotNull MapleDslConfiguration context, Object... args) {
-            requireNonNull(args[0], "tag must not be null");
-            return render(name(), context, fmt -> fmt.add("tag", args[0]).add("from", args[1]));
-        }
-    },
-    selectE {
-        @Override
-        public String apply(@NotNull MapleDslConfiguration context, Object... args) {
-            requireNonNull(args[0], "tag must not be null");
-            return render(name(), context, fmt -> fmt.add("tag", args[0]).add("from", args[1]));
-        }
-    },
     fetchV {
         @Override
-        public String apply(MapleDslConfiguration context, Object... args) {
-            return render(name(), context, fmt -> fmt
-                    .add("tag", args[0])
-                    .add("from", args[1])
-                    .add("primary_selection", args[2])
-                    .add("secondary_selection", null)
-                    .add("group", args[3])
-                    .add("count", args[5]).add("count_alias", args[6])
-                    .add("sum", args[7]).add("sum_alias", args[8])
-                    .add("avg", args[6]).add("avg_alias", args[6])
-                    .add("max", args[7]).add("max_alias", args[7])
-                    .add("min", args[8]).add("min_alias", args[8])
-                    .add("order_asc", args[9])
-                    .add("order_desc", args[10])
-                    .add("skip", args[11])
-                    .add("limit", args[12])
-            );
+        ST fill(ST fmt, Object[] args) {
+            fmt.add("tag", args[0]);
+            fmt.add("from", args[1]);
+            fmt.add("selection", args[2]);
+            fmt.add("function", args[3]);
+            fmt.add("order_asc", args[4]);
+            fmt.add("order_desc", args[5]);
+            fmt.add("skip", args[6]);
+            fmt.add("limit", args[7]);
+            return fmt;
         }
     },
     fetchE {
         @Override
-        public String apply(@NotNull MapleDslConfiguration context, Object... args) {
-            return render(name(), context, fmt -> fmt
-                    .add("tag", args[0])
-                    .add("from", args[1])
-                    .add("yield", args[2])
-                    .add("groupBy", args[3])
-                    .add("count", args[4])
-                    .add("sum", args[5])
-                    .add("avg", args[6])
-                    .add("max", args[7])
-                    .add("min", args[8])
-                    .add("orderAsc", args[9])
-                    .add("orderDsc", args[10])
-                    .add("skip", args[11])
-                    .add("limit", args[12])
-            );
+        ST fill(ST fmt, Object[] args) {
+            return fetchV.fill(fmt, args);
         }
     },
     matchV {
         @Override
-        public String apply(@NotNull MapleDslConfiguration context, Object... args) {
-            return render(name(), context, UnaryOperator.identity());
+        ST fill(ST fmt, Object[] args) {
+            fmt.add("tag", args[0]);
+            fmt.add("selection", args[1]);
+            fmt.add("where", args[3]);
+            fmt.add("function", args[4]);
+            fmt.add("order_asc", args[5]);
+            fmt.add("order_desc", args[6]);
+            fmt.add("skip", args[7]);
+            fmt.add("limit", args[8]);
+            return fmt;
         }
     },
     matchE {
         @Override
-        public String apply(@NotNull MapleDslConfiguration context, Object... args) {
-            return render(name(), context, UnaryOperator.identity());
+        ST fill(ST fmt, Object[] args) {
+            return matchV.fill(fmt, args);
         }
     },
     traversal {
         @Override
-        public String apply(@NotNull MapleDslConfiguration context, Object... args) {
-            return render(name(), context, fmt -> fmt
-                    .add("stepM", args[0] == null ? 0 : args[0])
-                    .add("stepN", args[1] == null ? 1 : args[1])
-                    .add("from", args[2])
-                    .add("over", args[3])
-                    .add("direction", args[4])
-                    .add("where", args[5])
-                    .add("yield", args[6])
-                    .add("groupBy", args[7])
-                    .add("count", args[8])
-                    .add("sum", args[9])
-                    .add("avg", args[10])
-                    .add("max", args[11])
-                    .add("min", args[12])
-                    .add("orderAsc", args[13])
-                    .add("orderDsc", args[14])
-                    .add("skip", args[15])
-                    .add("limit", args[16])
-            );
-        }
-    },
-    path {
-        @Override
-        public String apply(@NotNull MapleDslConfiguration context, Object... args) {
-            return render(name(), context, fmt -> fmt
-                    .add("from", args[0])
-                    .add("to", args[1])
-                    .add("over", args[2])
-                    .add("where", args[3])
-                    .add("orderBy", args[4])
-                    .add("limit", args[5])
-            );
+        ST fill(ST fmt, Object[] args) {
+            fmt.add("step_m", args[0] == null ? 0 : args[0]);
+            fmt.add("step_n", args[1] == null ? 1 : args[1]);
+            fmt.add("from", args[2]);
+            fmt.add("over", args[3]);
+            fmt.add("direction_in", args[4]);
+            fmt.add("direction_out", args[5]);
+            fmt.add("direction_both", args[6]);
+            fmt.add("in", args[7]);
+            fmt.add("out", args[8]);
+            fmt.add("edge", args[9]);
+            fmt.add("where", args[10]);
+            fmt.add("selection", args[11]);
+            fmt.add("function", args[12]);
+            fmt.add("companion", args[13]);
+            fmt.add("order_asc", args[14]);
+            fmt.add("order_desc", args[15]);
+            fmt.add("skip", args[16]);
+            fmt.add("limit", args[17]);
+            fmt.add("has_prev", args[18]);
+            fmt.add("has_next", args[19]);
+            fmt.add("next", args[20]);
+            return fmt;
         }
     };
 
-    private static String render(String template, MapleDslConfiguration context, UnaryOperator<ST> fmtFunc) {
-        final @NotNull ST fmt = context.templateRegistry.borrowTemplate(template);
+    abstract ST fill(ST fmt, Object[] args);
+
+    @Override
+    public final String apply(MapleDslConfiguration context, Object[] args) {
+        final @NotNull String templateName = name();
+        final @NotNull ST fmt = context.templateRegistry.borrowTemplate(templateName);
         try {
-            return fmtFunc.apply(fmt).render();
+            return fill(fmt, args).render();
         } finally {
             context.templateRegistry.returnTemplate(fmt);
         }

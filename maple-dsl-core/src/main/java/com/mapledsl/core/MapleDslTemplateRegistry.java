@@ -1,7 +1,8 @@
 package com.mapledsl.core;
 
-import com.mapledsl.core.MapleDslDialectPredicateRender.PredicateRendererModel;
-import com.mapledsl.core.MapleDslDialectSelectionRender.SelectionRendererModel;
+import com.mapledsl.core.condition.wrapper.MapleDslDialectFunction;
+import com.mapledsl.core.condition.wrapper.MapleDslDialectPredicate;
+import com.mapledsl.core.condition.wrapper.MapleDslDialectSelection;
 import com.mapledsl.core.exception.MapleDslBindingException;
 import com.mapledsl.core.exception.MapleDslException;
 import com.mapledsl.core.exception.MapleDslExecutionException;
@@ -16,14 +17,11 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.compiler.CompiledST;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.ServiceLoader;
 
 import static java.lang.String.format;
-import static java.util.Objects.requireNonNull;
 
 /**
  * @author bofa1ex
@@ -34,21 +32,11 @@ final class MapleDslTemplateRegistry {
     static final int DEFAULT_TEMPLATE_GROUP_POOL_MAX_IDLE   = Runtime.getRuntime().availableProcessors() * 2;
     static final int DEFAULT_TEMPLATE_GROUP_POOL_MIN_IDLE   = GenericObjectPoolConfig.DEFAULT_MIN_IDLE;
 
-    final MapleDslConfiguration configuration;
+    final MapleDslConfiguration context;
     final GenericObjectPool<STGroup> templateGroup;
-    final Properties dialectTemplateProperties = new Properties() {
-        {
-            ClassLoader cl = MapleDslTemplateRegistry.class.getClassLoader();
-            cl = cl == null ? Thread.currentThread().getContextClassLoader() : cl;
-            try (InputStream is = cl.getResourceAsStream("META-INF/dialect-render.properties")) {
-                this.load(requireNonNull(is, "META-INF/dialect-render.properties input stream is null."));
-            } catch (IOException e) {
-                throw new MapleDslBindingException("Loading dialect render properties failed", e);
-            }
-        }
-    };
+    final Properties templateProperties;
 
-    MapleDslTemplateRegistry(MapleDslConfiguration configuration, Integer maxTotal, Integer maxIdle, Integer minIdle) {
+    MapleDslTemplateRegistry(MapleDslConfiguration context, Integer maxTotal, Integer maxIdle, Integer minIdle) {
         if (minIdle == null) minIdle = DEFAULT_TEMPLATE_GROUP_POOL_MIN_IDLE;
         if (minIdle < DEFAULT_TEMPLATE_GROUP_POOL_MIN_IDLE) throw new IllegalArgumentException("TemplatePoolConfig#minIdle must not be negative.");
 
@@ -65,30 +53,43 @@ final class MapleDslTemplateRegistry {
         genericObjectPoolConfig.setMaxIdle(maxIdle);
         genericObjectPoolConfig.setMinIdle(minIdle);
 
+        this.context = context;
+        this.templateProperties = context.module().dialectProperties();
         this.templateGroup = new GenericObjectPool<>(templateGroupPooledObjectFactory, genericObjectPoolConfig);
-        this.configuration = configuration;
+        try {
+            templateGroup.preparePool();
+        } catch (Exception e) {
+            throw new MapleDslExecutionException("templateGroup warmup error", e);
+        }
     }
 
     class STGroupPooledObjectFactory extends BasePooledObjectFactory<STGroup> {
         @Override
         public STGroup create() {
             final STGroup templateGroup = new STGroup();
-            templateGroup.registerModelAdaptor(Object.class, (interp, self, model, property, propertyName) -> null);
-            templateGroup.registerRenderer(Class.class, (value, formatString, locale) -> null);
-            templateGroup.registerRenderer(SelectionRendererModel.class, Optional.of(ServiceLoader.load(MapleDslDialectSelectionRender.class).iterator())
+            templateGroup.registerModelAdaptor(Object.class, new MapleDslModelAdaptor(context));
+            templateGroup.registerRenderer(Class.class, new MapleDslClazzRender().bind(context));
+            templateGroup.registerRenderer(MapleDslDialectSelection.class, Optional.of(ServiceLoader.load(MapleDslDialectSelectionRender.class).iterator())
                     .map(it -> it.hasNext() ? it.next() : null)
-                    .map(it -> it.bind(configuration))
+                    .filter(it -> context.module.dialectPredicate().test(it.dialect()))
+                    .map(it -> it.bind(context))
                     .orElseThrow(() -> new MapleDslBindingException("selection initialize not found.")));
-            templateGroup.registerRenderer(PredicateRendererModel.class, Optional.of(ServiceLoader.load(MapleDslDialectPredicateRender.class).iterator())
+            templateGroup.registerRenderer(MapleDslDialectFunction.class, Optional.of(ServiceLoader.load(MapleDslDialectFunctionRender.class).iterator())
                     .map(it -> it.hasNext() ? it.next() : null)
-                    .map(it -> it.bind(configuration))
+                    .filter(it -> context.module.dialectPredicate().test(it.dialect()))
+                    .map(it -> it.bind(context))
+                    .orElseThrow(() -> new MapleDslBindingException("function initialize not found.")));
+            templateGroup.registerRenderer(MapleDslDialectPredicate.class, Optional.of(ServiceLoader.load(MapleDslDialectPredicateRender.class).iterator())
+                    .map(it -> it.hasNext() ? it.next() : null)
+                    .filter(it -> context.module.dialectPredicate().test(it.dialect()))
+                    .map(it -> it.bind(context))
                     .orElseThrow(() -> new MapleDslBindingException("predicate renderer not found."))
             );
 
-            for (String templateName : dialectTemplateProperties.stringPropertyNames()) {
-                templateName = inspect(templateName);
-                final String template = dialectTemplateProperties.getProperty(templateName);
+            for (String templateName : templateProperties.stringPropertyNames()) {
+                final String template = templateProperties.getProperty(templateName);
                 final CompiledST compiledST = templateGroup.compile(null, null, null, template, null);
+                templateName = inspect(templateName);
                 compiledST.hasFormalArgs = false;
                 compiledST.name = templateName;
                 compiledST.defineImplicitlyDefinedTemplates(templateGroup);
@@ -107,14 +108,6 @@ final class MapleDslTemplateRegistry {
         public void destroyObject(PooledObject<STGroup> p) {
             STGroup stGroup = p.getObject();
             if (stGroup != null) stGroup.unload();
-        }
-    }
-
-    void warmupTemplateGroup() {
-        try {
-            templateGroup.preparePool();
-        } catch (Exception e) {
-            throw new MapleDslExecutionException("templateGroup warmup error", e);
         }
     }
 

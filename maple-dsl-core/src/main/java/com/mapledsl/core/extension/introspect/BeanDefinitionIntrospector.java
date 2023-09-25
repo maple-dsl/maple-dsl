@@ -55,7 +55,7 @@ public class BeanDefinitionIntrospector {
             final Method setter = findSetter(candidateFieldName, propertyName, candidateMethods);
 
             if (isPropertyDefined) beanDefinition.putBeanProperty(propertyName);
-            if (getter != null) SerializableFunction.attr(candidateFieldType, getter.getName(), propertyName);
+            if (getter != null) SerializableFunction.attr(beanClazz, getter.getName(), propertyName);
 
             beanDefinition.putBeanPropertyAccessor(propertyName, candidateFieldType, getter);
             beanDefinition.putBeanPropertyWriter(propertyName, candidateFieldType, setter);
@@ -65,7 +65,7 @@ public class BeanDefinitionIntrospector {
     }
 
     public @Nullable String findLabel(Class<?> clazz) {
-        if (!clazz.isAssignableFrom(Model.class)) return null;
+        if (!Model.class.isAssignableFrom(clazz)) return null;
         if (clazz.isAnnotationPresent(Label.class)) return clazz.getDeclaredAnnotation(Label.class).value();
 
         return context.namingStrategy().translate(clazz.getSimpleName(), context.globalLocale());

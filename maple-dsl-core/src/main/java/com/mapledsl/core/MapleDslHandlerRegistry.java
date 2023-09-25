@@ -1,18 +1,12 @@
 package com.mapledsl.core;
 
 import com.mapledsl.core.exception.MapleDslBindingException;
-import com.mapledsl.core.module.MapleDslModule;
-import com.mapledsl.core.module.MapleDslParameterHandler;
-import com.mapledsl.core.module.MapleDslParameterHandlerCollector;
-import com.mapledsl.core.module.MapleDslResultHandler;
-import com.mapledsl.core.module.MapleDslResultHandlerCollector;
-import com.mapledsl.core.spi.*;
+import com.mapledsl.core.module.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.ServiceLoader;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.StreamSupport;
 
@@ -46,30 +40,28 @@ final class MapleDslHandlerRegistry {
 
     MapleDslHandlerRegistry(@NotNull MapleDslConfiguration context) {
         this.context = context;
-        final @NotNull MapleDslModule module = context.module();
-        final Predicate<String> versionPredicate = module.versionPredicate();
 
         this.parameterHandlerMap = StreamSupport.stream(ServiceLoader.load(MapleDslParameterHandlerCollector.class).spliterator(), false)
                 .filter(Objects::nonNull)
-                .filter(it -> versionPredicate.test(it.version()))
+                .filter(it -> context.module.versionPredicate().test(it.version()))
                 .findFirst()
                 .map(Supplier::get)
-                .orElseThrow(() -> new MapleDslBindingException(String.format("The module version:[%s] of the parameter handler collector does not found.", module)));
+                .orElseGet(MapleDslParameterHandlerCollector::defaultParameterHandlers);
 
         this.resultHandlerMap = StreamSupport.stream(ServiceLoader.load(MapleDslResultHandlerCollector.class).spliterator(), false)
                 .filter(Objects::nonNull)
-                .filter(it -> versionPredicate.test(it.version()))
+                .filter(it -> context.module.versionPredicate().test(it.version()))
                 .findFirst()
                 .map(Supplier::get)
-                .orElseThrow(() -> new MapleDslBindingException(String.format("The module version:[%s] of the result handler collector does not found.", module)));
+                .orElseGet(MapleDslResultHandlerCollector::defaultResultHandlers);
 
         // parameter handler collector must contain the null parameter handler(void.class).
         if (!parameterHandlerMap.containsKey(void.class)) throw new MapleDslBindingException("Missing null parameter handler, Please check the related-dependency has been configured.");
-        this.nullParameterHandler = parameterHandlerMap.remove(void.class);
+        this.nullParameterHandler = parameterHandlerMap.get(void.class);
 
         // result handler collector must contain the default handler(Object.class).
         if (!resultHandlerMap.containsKey(Object.class)) throw new MapleDslBindingException("Missing the default handler, Please check the related-dependency has been configured.");
-        this.defaultResultHandler = resultHandlerMap.remove(Object.class);
+        this.defaultResultHandler = resultHandlerMap.get(Object.class);
     }
 
     void registerParameterHandler(Class<?> parameterType, MapleDslParameterHandler parameterHandler) {
@@ -81,8 +73,7 @@ final class MapleDslHandlerRegistry {
     <IN, OUT> void registerResultHandler(Class<OUT> resultType, MapleDslResultHandler<IN, OUT> resultHandler) {
         requireNonNull(resultType, "resultType must not be null");
         requireNonNull(resultHandler, "resultHandler must not be null");
-        final @NotNull MapleDslModule module = context.module();
-        if (!module.resultHandlerPredicate().test(resultHandler.getClass())) throw new MapleDslBindingException("ResultHandler predicate does not passed, please keep the related-module specification.");
+        if (!context.module.<IN, OUT>resultHandlerPredicate().test(resultHandler)) throw new MapleDslBindingException("ResultHandler predicate does not passed, please keep the related-module specification.");
 
         resultHandlerMap.put(resultType, resultHandler);
     }

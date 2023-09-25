@@ -10,6 +10,7 @@
 
     <modules>
         <module>maple-dsl-core</module>
+        <module>maple-nebula</module>
     </modules>
 
     <properties>
@@ -68,8 +69,6 @@
                 <groupId>org.jetbrains</groupId>
                 <artifactId>annotations</artifactId>
                 <version>${jetbrains-annotations.version}</version>
-                <scope>provided</scope>
-                <optional>true</optional>
             </dependency>
 
             <!-- test -->

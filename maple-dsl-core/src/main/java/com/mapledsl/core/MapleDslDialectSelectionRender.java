@@ -1,20 +1,17 @@
 package com.mapledsl.core;
 
-import com.mapledsl.core.MapleDslDialectSelectionRender.SelectionRendererModel;
-import com.mapledsl.core.condition.common.T;
+import com.mapledsl.core.condition.wrapper.MapleDslDialectSelection;
 import com.mapledsl.core.exception.MapleDslBindingException;
-import com.mapledsl.core.model.Model;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.stringtemplate.v4.AttributeRenderer;
 
 import java.util.Locale;
 
-public abstract class MapleDslDialectSelectionRender implements AttributeRenderer<SelectionRendererModel<?>> {
-    protected MapleDslConfiguration context;
-
-    protected abstract String vertexRef(@Nullable String label, @NotNull String alias);
-    protected abstract String edgeRef(@Nullable String label, @NotNull String alias);
+@SuppressWarnings("rawtypes")
+public abstract class MapleDslDialectSelectionRender extends MapleDslDialectBaseRender implements AttributeRenderer<MapleDslDialectSelection> {
+    protected abstract String vertexRef(@NotNull String alias);
+    protected abstract String edgeRef(@NotNull String alias);
     protected abstract String inVRef(@Nullable String label, @NotNull String alias);
     protected abstract String outVRef(@Nullable String label, @NotNull String alias);
 
@@ -24,54 +21,37 @@ public abstract class MapleDslDialectSelectionRender implements AttributeRendere
     protected abstract String outV(@Nullable String label, String[] columns, String[] alias);
 
     @Override
-    @SuppressWarnings("ClassEscapesDefinedScope")
-    public final String toString(SelectionRendererModel<?> value, String formatString, Locale locale) {
-        if (value.base == null)         return "";
-        if (value.base.isNotPresent())  return "";
-        if (value.base.isAllPresent())  {
-            if (value.v)    return vertexRef(value.base.label(context), value.base.alias());
-            if (value.e)    return edgeRef(value.base.label(context), value.base.alias());
-            if (value.in)   return inVRef(value.base.label(context), value.base.alias());
-            if (value.out)  return outVRef(value.base.label(context), value.base.alias());
+    public String toString(MapleDslDialectSelection value, String formatString, Locale locale) {
+        if (value == null)         return NULL;
+        if (value.isNotPresent())  return NULL;
 
-            throw new MapleDslBindingException("");
-        }
-
-        if (value.v)    return vertex(value.base.label(context), value.base.columns(), value.base.aliases());
-        if (value.e)    return edge(value.base.label(context), value.base.columns(), value.base.aliases());
-        if (value.in)   return inV(value.base.label(context), value.base.columns(), value.base.aliases());
-        if (value.out)  return outV(value.base.label(context), value.base.columns(), value.base.aliases());
-
-        throw new MapleDslBindingException("");
+        if (!value.hasNext()) return toSelection(value);
+        final String nextSelection = toString(value.next, formatString, locale);
+        if (nextSelection.trim().isEmpty()) return toSelection(value);
+        return toSelection(value) + COMMA + nextSelection;
     }
 
+    private String toSelection(MapleDslDialectSelection<?> value) {
+        if (value.isAllPresent())  {
+            if (value.v())    return vertexRef(value.alias());
+            if (value.e())    return edgeRef(value.alias());
+            if (value.in())   return inVRef(value.label(context), value.alias());
+            if (value.out())  return outVRef(value.label(context), value.alias());
+
+            throw new MapleDslBindingException(NULL);
+        }
+
+        if (value.v())    return vertex(value.label(context), value.columns(), value.aliases());
+        if (value.e())    return edge(value.label(context), value.columns(), value.aliases());
+        if (value.in())   return inV(value.label(context), value.columns(), value.aliases());
+        if (value.out())  return outV(value.label(context), value.columns(), value.aliases());
+
+        throw new MapleDslBindingException(NULL);
+    }
+
+    @Override
     public MapleDslDialectSelectionRender bind(MapleDslConfiguration context) {
-        this.context = context;
+        super.bind(context);
         return this;
-    }
-
-    static <V extends Model.V> SelectionRendererModel<V> v(T<V> base) {
-        return new SelectionRendererModel<V>(base) {{ v = true; }};
-    }
-
-    static <E extends Model.E> SelectionRendererModel<E> e(T<E> base) {
-        return new SelectionRendererModel<E>(base) {{ e = true; }};
-    }
-
-    static <V extends Model.V> SelectionRendererModel<V> in(T<V> base) {
-        return new SelectionRendererModel<V>(base) {{ in = true; }};
-    }
-
-    static <V extends Model.V> SelectionRendererModel<V> out(T<V> base) {
-        return new SelectionRendererModel<V>(base) {{ out = true; }};
-    }
-
-    static class SelectionRendererModel<M extends Model<?>> {
-        T<M> base;
-        boolean in = false, out = false, v = false, e = false;
-
-        SelectionRendererModel(T<M> base) {
-            this.base = base;
-        }
     }
 }

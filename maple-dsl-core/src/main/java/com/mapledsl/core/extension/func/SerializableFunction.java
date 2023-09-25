@@ -37,7 +37,7 @@ public interface SerializableFunction<T, R> extends Function<T, R>, Serializable
         @NotNull String implMethodName = meta.getImplMethodName();
         return ofNullable(INSTANTIATED_PROPERTY_CACHE.get(instantiatedClass))
                 .map(it -> it.get(implMethodName))
-                .orElse(implMethodName);
+                .orElse(implMethodName.startsWith("get") ? implMethodName.substring(implMethodName.indexOf("get") + 3).toLowerCase() : implMethodName);
     }
 
     @SuppressWarnings("unchecked")

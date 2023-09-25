@@ -46,10 +46,10 @@ public class BeanDefinition<BEAN> {
     /** item: property name, exclude the fields which annotated with @Property(defined=false) */
     private final Set<String> propertyKeys = new HashSet<>();
 
-    public BeanDefinition(MapleDslConfiguration context, Class<BEAN> beanClazz, String label) {
+    public BeanDefinition(MapleDslConfiguration context, Class<BEAN> beanClazz, @Nullable String label) {
         this.context = context;
-        this.beanClazz = beanClazz;
         this.label = label;
+        this.beanClazz = beanClazz;
         this.propertyCustomizer = beanClazz.isAssignableFrom(Model.class) ?
                 context.getModelPropertyCustomizer() : context.getBeanPropertyCustomizer(beanClazz);
         this.lookup = LookupSettings.privateLookupIn(beanClazz);
