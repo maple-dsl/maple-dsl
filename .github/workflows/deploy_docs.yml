@@ -25,6 +25,8 @@ jobs:
       - run: pip install mkdocs-exclude
       - run: pip install mdx_truly_sane_lists
       - run: pip install mike
+      - name: Git Config
+        run: git config user.name bofa1exx && git config user.email bofa1exx@gmail.com
       - name: Mike Deploy master
         run: |
           # mike delete master -p
