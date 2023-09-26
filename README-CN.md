@@ -6,7 +6,7 @@
 
 # MapleDSL
 
-## Introduction
+## 介绍
 
 了解更多 [MapleDSL](https://maple-dsl.github.io/maple-dsl/).
-## Quick start
+## 快速入门
