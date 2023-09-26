@@ -1,0 +1,84 @@
+# Project information
+site_name: MapleDSL Manual
+site_description: Documentation for MapleDSL
+site_author: MapleDSL
+site_url: https://docs.mapledsl.io/
+docs_dir: docs
+repo_name: 'maple-dsl/maple-dsl'
+repo_url: 'https://github.com/maple-dsl/maple-dsl.git'
+copyright: Copyright &copy; 2023 MapleDSL
+edit_uri: 'https://github.com/maple-dsl/maple-dsl/edit/master/docs/'
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  logo: icon/logo.svg
+  palette:
+    - scheme: mapledsl
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  features:
+    - navigation.top
+    - header.autohide
+    - content.tabs.link
+  language: 'en'
+
+extra_css:
+  - stylesheets/logo.css
+  - stylesheets/note.css
+  - stylesheets/extra.css
+  - css/version-select.css
+
+markdown_extensions:
+  - footnotes
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - toc:
+      permalink: true
+      separator: "_"
+  - mdx_truly_sane_lists
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      base_path: docs-2.0/reuse/
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.caret
+  - pymdownx.tilde
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+plugins:
+  - search
+  - git-revision-date-localized
+
+extra_javascript:
+  - js/jquery.js
+  - js/config.js
+  - js/version-select.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - About: index.md
+  - Getting started:
+      - Configure: 1.getting-started/configure.md
+      - Example: 1.getting-started/example.md
+  - DSL guide:
+      - Overview: 2.dsl-guide/1.overview/overview.md
+      - Traversal: 2.dsl-guide/2.traversal/traversal.md
+      - Match: 2.dsl-guide/2.traversal/traversal.md
+      - Fetch: 2.dsl-guide/2.traversal/traversal.md
+      - Mutation: 2.dsl-guide/2.traversal/traversal.md
+  - Integration: 2.dsl-guide/2.traversal/traversal.md
+  - FAQ: 4.appendix/FAQ.md
+  - Appendix:
+      - Release Note: 4.appendix/release-note.md
+      - How to contribute: 4.appendix/how-to-contribute.md
