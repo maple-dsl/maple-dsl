@@ -24,4 +24,11 @@ jobs:
       - run: pip install mkdocs-git-revision-date-localized-plugin
       - run: pip install mkdocs-exclude
       - run: pip install mdx_truly_sane_lists
-      - run: mkdocs gh-deploy --force
+      - run: pip install mike
+      - name: Mike Deploy master
+        run: |
+          # mike delete master -p
+          git fetch origin gh-pages --depth=1 # fix mike's CI update
+          mike list
+          mike deploy master -p --rebase
+          mike list
