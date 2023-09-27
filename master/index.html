@@ -269,6 +269,17 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="." class="md-nav__link md-nav__link--active">
         
   
@@ -278,6 +289,99 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#purpose" class="md-nav__link">
+    Purpose
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick_started" class="md-nav__link">
+    Quick Started
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prepare_dependencies" class="md-nav__link">
+    Prepare dependencies
+  </a>
+  
+    <nav class="md-nav" aria-label="Prepare dependencies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cypher_configuration" class="md-nav__link">
+    Cypher configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nebulagraph_configuration" class="md-nav__link">
+    NebulaGraph configuration
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#skipped_vertexedge_structure_defined" class="md-nav__link">
+    Skipped vertex&amp;edge structure defined
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#after_defined_vertexperson_vertexmovie_edgeacted_in" class="md-nav__link">
+    After Defined vertex:Person, vertex:Movie, edge:ACTED_IN
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -650,6 +754,88 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#purpose" class="md-nav__link">
+    Purpose
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick_started" class="md-nav__link">
+    Quick Started
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prepare_dependencies" class="md-nav__link">
+    Prepare dependencies
+  </a>
+  
+    <nav class="md-nav" aria-label="Prepare dependencies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cypher_configuration" class="md-nav__link">
+    Cypher configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nebulagraph_configuration" class="md-nav__link">
+    NebulaGraph configuration
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#skipped_vertexedge_structure_defined" class="md-nav__link">
+    Skipped vertex&amp;edge structure defined
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#after_defined_vertexperson_vertexmovie_edgeacted_in" class="md-nav__link">
+    After Defined vertex:Person, vertex:Movie, edge:ACTED_IN
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -667,6 +853,93 @@
 
 
 <h1 id="welcome_to_mapledsl_documentation">Welcome to MapleDSL Documentation<a class="headerlink" href="#welcome_to_mapledsl_documentation" title="Permanent link">&para;</a></h1>
+<h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>It inspired by <a href="https://github.com/neo4j-contrib/cypher-dsl">cypher-dsl</a> like below:</p>
+<p>But the difference is that maple-dsl focuses more on traversal-style and lambda-style on development.</p>
+</blockquote>
+<p>The Maple-DSL has been developed with the needs of most graph database client(e.g. neo4j, nebula-graph-java, redisgraph, etc).
+We wanted to avoid string concatenations in our query generation and decided do go with a builder approach, much like we find with jOOQ or in the relational module of Spring Data JDBC.</p>
+<h2 id="quick_started">Quick Started<a class="headerlink" href="#quick_started" title="Permanent link">&para;</a></h2>
+<h3 id="prepare_dependencies">Prepare dependencies<a class="headerlink" href="#prepare_dependencies" title="Permanent link">&para;</a></h3>
+<p>Please use a dependency management system. We recommend either Maven or Gradle.</p>
+<h4 id="cypher_configuration">Cypher configuration<a class="headerlink" href="#cypher_configuration" title="Permanent link">&para;</a></h4>
+<p>Inclusion of the Cypher-DSL in a Maven project
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>com.maple<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>maple-cypher-dsl<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;version&gt;</span>0.1.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></p>
+<h4 id="nebulagraph_configuration">NebulaGraph configuration<a class="headerlink" href="#nebulagraph_configuration" title="Permanent link">&para;</a></h4>
+<p>Inclusion of the Nebula-DSL in a Maven project
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>com.maple<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>maple-nebula<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;version&gt;</span>0.1.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></p>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>List all Tom Hanks movies</p>
+</blockquote>
+<h3 id="skipped_vertexedge_structure_defined">Skipped vertex&amp;edge structure defined<a class="headerlink" href="#skipped_vertexedge_structure_defined" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">G</span><span class="p">.</span><span class="na">traverse</span><span class="p">(</span><span class="n">G</span><span class="p">.</span><span class="na">vertex</span><span class="p">(</span><span class="s">&quot;Person&quot;</span><span class="p">).</span><span class="na">eq</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Tom Hanks&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">outE</span><span class="p">(</span><span class="s">&quot;ACTED_IN&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;tomHanksMovies&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Movie&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">it</span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_name&quot;</span><span class="p">));</span>
+
+<span class="c1">// Cypher: </span>
+<span class="c1">// MATCH (tom:`Person` {name: &#39;Tom Hanks&#39;})-[:`ACTED_IN`]-&gt;(tomHanksMovies)</span>
+<span class="c1">// RETURN tomHanksMovies.name as movie_name</span>
+
+<span class="c1">// If The vertex ID of Tom Hanks is: person_001, you could try like below:</span>
+<span class="n">G</span><span class="p">.</span><span class="na">traverse</span><span class="p">(</span><span class="s">&quot;person_001&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">outE</span><span class="p">(</span><span class="s">&quot;ACTED_IN&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;tomHanksMovies&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Movie&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">it</span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_name&quot;</span><span class="p">));</span>
+
+<span class="c1">// Cypher: </span>
+<span class="c1">// MATCH (tom:`Person`)-[:`ACTED_IN`]-&gt;(tomHanksMovies)</span>
+<span class="c1">// WHERE id(tom) == &#39;person_001&#39;</span>
+<span class="c1">// RETURN tomHanksMovies.name as movie_name</span>
+</code></pre></div>
+<h3 id="after_defined_vertexperson_vertexmovie_edgeacted_in">After Defined vertex:Person, vertex:Movie, edge:ACTED_IN<a class="headerlink" href="#after_defined_vertexperson_vertexmovie_edgeacted_in" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nd">@Label</span><span class="p">(</span><span class="s">&quot;Person&quot;</span><span class="p">)</span>
+<span class="kd">class</span> <span class="nc">Person</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Model</span><span class="p">.</span><span class="na">V</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nd">@Label</span><span class="p">(</span><span class="s">&quot;Movie&quot;</span><span class="p">)</span>
+<span class="kd">class</span> <span class="nc">Movie</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Model</span><span class="p">.</span><span class="na">V</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nd">@Label</span><span class="p">(</span><span class="s">&quot;ACTED_IN&quot;</span><span class="p">)</span>
+<span class="kd">class</span> <span class="nc">ActedIn</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Model</span><span class="p">.</span><span class="na">E</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">type</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">G</span><span class="p">.</span><span class="na">traverse</span><span class="p">(</span><span class="n">G</span><span class="p">.</span><span class="na">vertex</span><span class="p">(</span><span class="n">Person</span><span class="p">.</span><span class="na">class</span><span class="p">).</span><span class="na">eq</span><span class="p">(</span><span class="n">Person</span><span class="p">::</span><span class="n">getName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Tom Hanks&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">outE</span><span class="p">(</span><span class="n">ActedIn</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;tomHanksMovies&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Movie</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">it</span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_name&quot;</span><span class="p">));</span>
+
+<span class="c1">// If The vertex ID of Tom Hanks is: person_001, you could try like below:</span>
+<span class="n">G</span><span class="p">.</span><span class="na">traverse</span><span class="p">(</span><span class="s">&quot;person_001&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">outE</span><span class="p">(</span><span class="n">ActedIn</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;tomHanksMovies&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Movie</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">it</span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_name&quot;</span><span class="p">));</span>
+</code></pre></div>
+<blockquote>
+<p>List all Tom Hanks movies, then find out the other person which acted together.
+<div class="highlight"><pre><span></span><code><span class="n">G</span><span class="p">.</span><span class="na">traverse</span><span class="p">(</span><span class="s">&quot;person_001&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">outE</span><span class="p">(</span><span class="n">ActedIn</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;tomHanksMovies&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Movie</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">it</span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_name&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">inE</span><span class="p">(</span><span class="n">ActedIn</span><span class="p">.</span><span class="na">class</span><span class="p">)</span><span class="w">    </span>
+<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;others&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Person</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">it</span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="n">Person</span><span class="p">::</span><span class="n">getName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;actor_name&quot;</span><span class="p">))</span>
+
+<span class="c1">// Cypher: </span>
+<span class="c1">// MATCH (tom:`Person` {name: &#39;Tom Hanks&#39;})-[:`ACTED_IN`]-&gt;(tomHanksMovies)&lt;-[:`ACTED_IN`]-(others:`Person)</span>
+<span class="c1">// RETURN tomHanksMovies.name as movie_name, others.name as actor_name</span>
+</code></pre></div></p>
+</blockquote>
 
   <hr>
 <div class="md-source-file">
