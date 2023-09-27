@@ -2,7 +2,7 @@
 site_name: MapleDSL Manual
 site_description: Documentation for MapleDSL
 site_author: MapleDSL
-site_url: https://docs.mapledsl.io/
+site_url: https://maple-dsl.github.io/maple-dsl/
 docs_dir: docs
 repo_name: 'maple-dsl/maple-dsl'
 repo_url: 'https://github.com/maple-dsl/maple-dsl.git'
