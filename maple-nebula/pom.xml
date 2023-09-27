@@ -9,6 +9,7 @@
     </parent>
 
     <artifactId>maple-nebula</artifactId>
+    <version>0.1.0</version>
     <modelVersion>4.0.0</modelVersion>
 
     <dependencies>
