@@ -1,6 +1,7 @@
 package com.mapledsl.core;
 
 import com.mapledsl.core.exception.MapleDslBindingException;
+import com.mapledsl.core.exception.MapleDslException;
 import com.mapledsl.core.extension.KeyPolicyStrategies;
 import com.mapledsl.core.extension.KeyPolicyStrategy;
 import com.mapledsl.core.extension.NamingStrategies;
@@ -28,10 +29,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.StreamSupport;
 
 public final class MapleDslConfiguration {
     static final Logger LOG = LoggerFactory.getLogger(MapleDslConfiguration.class);
+    static final AtomicReference<MapleDslConfiguration> PRIMARY_CONFIGURATION = new AtomicReference<>();
+
     @NotNull final MapleDslModule module;
     @NotNull final MapleDslTemplateRegistry templateRegistry;
     @NotNull final MapleDslHandlerRegistry handlerRegistry;
@@ -152,6 +156,7 @@ public final class MapleDslConfiguration {
     }
 
     public static class Builder {
+        boolean primary;
         Integer templatePoolConfigMaxTotal, templatePoolConfigMaxIdle, templatePoolConfigMinIdle;
         Class<? extends MapleDslModule> moduleClazz;
         MapleDslModule module;
@@ -258,6 +263,11 @@ public final class MapleDslConfiguration {
             return this;
         }
 
+        public Builder asPrimary() {
+            this.primary = true;
+            return this;
+        }
+
         public MapleDslConfiguration build() {
             if (namingStrategy == null) namingStrategy = NamingStrategies.SNAKE_CASE;
             if (keyPolicyStrategy == null) keyPolicyStrategy = KeyPolicyStrategies.MANUAL;
@@ -268,11 +278,21 @@ public final class MapleDslConfiguration {
                     .findFirst()
                     .orElseThrow(() -> new MapleDslBindingException("Module not found."));
 
-            return new MapleDslConfiguration(
+            final MapleDslConfiguration configuration = new MapleDslConfiguration(
                     module, regionConfig, namingStrategy, keyPolicyStrategy,
                     templatePoolConfigMaxTotal, templatePoolConfigMaxIdle, templatePoolConfigMinIdle
             );
+
+            if (primary) PRIMARY_CONFIGURATION.set(configuration);
+            else PRIMARY_CONFIGURATION.compareAndSet(null, configuration);
+            return configuration;
         }
+    }
+
+    public static MapleDslConfiguration primaryConfiguration() throws MapleDslException {
+        final MapleDslConfiguration primaryConfiguration = PRIMARY_CONFIGURATION.get();
+        if (primaryConfiguration == null) throw new MapleDslException("configuration not initialized.");
+        return primaryConfiguration;
     }
 
     static void disableAccessWarnings() {

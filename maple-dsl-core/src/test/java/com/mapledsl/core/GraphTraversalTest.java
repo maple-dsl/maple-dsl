@@ -5,6 +5,7 @@ import com.mapledsl.core.exception.MapleDslExecutionException;
 import com.mapledsl.core.extension.KeyPolicyStrategies;
 import com.mapledsl.core.extension.NamingStrategies;
 import com.mapledsl.core.model.Model;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
@@ -16,27 +17,31 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GraphTraversalTest {
-    static final MapleDslConfiguration context = new MapleDslConfiguration.Builder()
-            .module(MapleDslMockModule.class)
-            .templatePoolConfig(200, Runtime.getRuntime().availableProcessors() * 2, 2)
-            .namingStrategy(NamingStrategies.SNAKE_CASE)
-            .keyPolicyStrategy(KeyPolicyStrategies.MANUAL)
-            .dateFormatter("yyyy-MM-dd")
-            .dateTimeFormatter("yyyy-MM-dd HH:mm:ss")
-            .timeFormatter("HH:mm:ss")
-            .locale(Locale.ENGLISH)
-            .zoneId(ZoneId.systemDefault())
-            .timeZone(TimeZone.getDefault())
-            .build();
+
+    @BeforeAll
+    public static void init() {
+        new MapleDslConfiguration.Builder()
+                .module(MapleDslMockModule.class)
+                .templatePoolConfig(200, Runtime.getRuntime().availableProcessors() * 2, 2)
+                .namingStrategy(NamingStrategies.SNAKE_CASE)
+                .keyPolicyStrategy(KeyPolicyStrategies.MANUAL)
+                .dateFormatter("yyyy-MM-dd")
+                .dateTimeFormatter("yyyy-MM-dd HH:mm:ss")
+                .timeFormatter("HH:mm:ss")
+                .locale(Locale.ENGLISH)
+                .zoneId(ZoneId.systemDefault())
+                .timeZone(TimeZone.getDefault())
+                .build();
+    }
 
     @Test
     public void should_fail_when_missing_direction_clause_value() {
-        assertThrows(MapleDslExecutionException.class, () -> traverse("{{ vid }}").render(context));
+        assertThrows(MapleDslExecutionException.class, () -> traverse("{{ vid }}").render());
     }
 
     @Test
     public void should_traverse_use_out_vertex_id_as_default_output() {
-        assertTrue(traverse("{{ vid }}").inE("follow").render(context).contains("SELECT id"));
+        assertTrue(traverse("{{ vid }}").inE("follow").render().contains("SELECT OUT.ID AS _dst"));
     }
 
     @Test
@@ -52,22 +57,22 @@ public class GraphTraversalTest {
 
     @Test
     public void should_traverse_all_edge_type() {
-        assertTrue(traverse("{{ vid }}").outE().render(context).contains("OVER *"));
+        assertTrue(traverse("{{ vid }}").outE().render().contains("OVER *"));
     }
 
     @Test
     public void should_traverse_detailed_relation_type() {
-        assertTrue(traverse("{{ vid }}").inE(Impact.class).render(context).contains("OVER impact"));
+        assertTrue(traverse("{{ vid }}").inE(Impact.class).render().contains("OVER impact"));
     }
 
     @Test
     public void should_traverse_detailed_multi_relation_type() {
-        assertTrue(traverse("{{ vid }}").inE(Impact.class, Follow.class).render(context).contains("OVER impact,follow"));
+        assertTrue(traverse("{{ vid }}").inE(Impact.class, Follow.class).render().contains("OVER impact,follow"));
     }
 
     @Test
     public void should_traverse_multi_step() {
-        String sql = G.traverse("{{ vid }}").inE(Impact.class).outE(Follow.class).render(context);
+        String sql = G.traverse("{{ vid }}").inE(Impact.class).outE(Follow.class).render();
         assertTrue(sql.contains("OVER impact"));
         assertTrue(sql.contains("OVER follow"));
     }
@@ -90,7 +95,7 @@ public class GraphTraversalTest {
                         .select("id", "name")
                         .selectAs("id", "dst_id")
                 )
-                .render(context);
+                .render();
         assertTrue(sql.contains(MapleDslDialectMockSelectionRender.render(
                 MapleDslDialectRenderConstants.OUT_VERTEX, "person",
                 new String[]{"id"},
@@ -102,7 +107,7 @@ public class GraphTraversalTest {
     public void should_traverse_then_output_in_vertex_id() {
         String sql = traverse("{{ vid }}").inE(Follow.class)
                 .inV("p", it -> it.selectAs("id", "dst_id"))
-                .render(context);
+                .render();
         assertTrue(sql.contains(MapleDslDialectMockSelectionRender.render(
                 MapleDslDialectRenderConstants.IN_VERTEX, null,
                 new String[]{"id"},
@@ -114,7 +119,7 @@ public class GraphTraversalTest {
     public void should_traverse_then_output_follow_type() {
         String sql = traverse("{{ vid }}").inE(Follow.class)
                 .edge("e", it -> it.selectAs("type", "follow_type"))
-                .render(context);
+                .render();
         assertTrue(sql.contains(MapleDslDialectMockSelectionRender.render(
                 MapleDslDialectRenderConstants.EDGE, null,
                 new String[]{"type"},
@@ -132,7 +137,7 @@ public class GraphTraversalTest {
                         .select(Person::id, Person::getName)
                         .selectAs(Person::getName, "dup_person_name")
                         .selectAs(Person::id, "dup_person_id"))
-                .render(context);
+                .render();
         assertTrue(sql.contains(MapleDslDialectMockSelectionRender.render(
                 MapleDslDialectRenderConstants.OUT_VERTEX, "person",
                 new String[]{"id"},

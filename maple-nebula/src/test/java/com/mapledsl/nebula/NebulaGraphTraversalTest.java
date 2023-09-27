@@ -8,6 +8,7 @@ import com.mapledsl.core.extension.NamingStrategies;
 import com.mapledsl.core.model.Model;
 import com.mapledsl.nebula.model.NebulaModel;
 import com.mapledsl.nebula.module.MapleNebulaDslModule;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -21,26 +22,29 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class NebulaGraphTraversalTest {
-    static final MapleDslConfiguration context = new MapleDslConfiguration.Builder()
-            .module(MapleNebulaDslModule.class)
-            .templatePoolConfig(200, Runtime.getRuntime().availableProcessors() * 2, 2)
-            .namingStrategy(NamingStrategies.SNAKE_CASE)
-            .keyPolicyStrategy(KeyPolicyStrategies.MANUAL)
-            .dateFormatter("yyyy-MM-dd")
-            .dateTimeFormatter("yyyy-MM-dd HH:mm:ss")
-            .timeFormatter("HH:mm:ss")
-            .locale(Locale.ENGLISH)
-            .zoneId(ZoneId.systemDefault())
-            .timeZone(TimeZone.getDefault())
-            .build();
-
     static String formatSql(String origin) {
         return origin.trim().replaceAll("\\s{2,}", " ");
     }
 
+    @BeforeAll
+    public static void init() {
+        new MapleDslConfiguration.Builder()
+                .module(MapleNebulaDslModule.class)
+                .templatePoolConfig(200, Runtime.getRuntime().availableProcessors() * 2, 2)
+                .namingStrategy(NamingStrategies.SNAKE_CASE)
+                .keyPolicyStrategy(KeyPolicyStrategies.MANUAL)
+                .dateFormatter("yyyy-MM-dd")
+                .dateTimeFormatter("yyyy-MM-dd HH:mm:ss")
+                .timeFormatter("HH:mm:ss")
+                .locale(Locale.ENGLISH)
+                .zoneId(ZoneId.systemDefault())
+                .timeZone(TimeZone.getDefault())
+                .build();
+    }
+
     @Test
     public void should_fail_when_missing_direction_clause_value() {
-        assertThrows(MapleDslExecutionException.class, () -> traverse("{{ vid }}").render(context));
+        assertThrows(MapleDslExecutionException.class, () -> traverse("{{ vid }}").render());
     }
 
     @ParameterizedTest
@@ -48,7 +52,7 @@ public class NebulaGraphTraversalTest {
     public void should_traverse_use_out_vertex_id_as_default_output(String expected) {
         assertEquals(
                 expected,
-                formatSql(traverse("{{ vid }}").inE("follow").render(context))
+                formatSql(traverse("{{ vid }}").inE("follow").render())
         );
     }
 
@@ -68,7 +72,7 @@ public class NebulaGraphTraversalTest {
     public void should_traverse_all_edge_type(String expected) {
         assertEquals(
                 expected,
-                formatSql(traverse("{{ vid }}").outE().render(context))
+                formatSql(traverse("{{ vid }}").outE().render())
         );
     }
 
@@ -77,7 +81,7 @@ public class NebulaGraphTraversalTest {
     public void should_traverse_detailed_relation_type(String expected) {
         assertEquals(
                 expected,
-                formatSql(traverse("{{ vid }}").inE(Impact.class).render(context))
+                formatSql(traverse("{{ vid }}").inE(Impact.class).render())
         );
     }
 
@@ -86,7 +90,7 @@ public class NebulaGraphTraversalTest {
     public void should_traverse_detailed_multi_relation_type(String expected) {
         assertEquals(
                 expected,
-                formatSql(traverse("{{ vid }}").inE(Impact.class, Follow.class).render(context))
+                formatSql(traverse("{{ vid }}").inE(Impact.class, Follow.class).render())
         );
     }
 
@@ -96,7 +100,7 @@ public class NebulaGraphTraversalTest {
     public void should_traverse_multi_step(String expected) {
         assertEquals(
                 expected,
-                formatSql(traverse("{{ vid }}").inE(Impact.class).outE(Follow.class).render(context))
+                formatSql(traverse("{{ vid }}").inE(Impact.class).outE(Follow.class).render())
         );
     }
 
@@ -123,7 +127,7 @@ public class NebulaGraphTraversalTest {
                                 .select("id", "name")
                                 .selectAs("id", "dst_id")
                         )
-                        .render(context))
+                        .render())
         );
     }
 
@@ -140,7 +144,7 @@ public class NebulaGraphTraversalTest {
                         .inV("p", it -> it.selectAs("id", "prop_id").selectAs(Model.ID, "real_vertex_id"))
                         .outV("p2", it -> it.selectAs(Model.ID, "next_traversal_id"))
                         .inE(Follow.class)
-                        .render(context))
+                        .render())
         );
     }
 
@@ -153,7 +157,7 @@ public class NebulaGraphTraversalTest {
                 formatSql(traverse("{{ vid }}")
                         .inE(Follow.class)
                         .edge("e", it -> it.selectAs("type", "follow_type"))
-                        .render(context))
+                        .render())
         );
     }
 
@@ -170,7 +174,7 @@ public class NebulaGraphTraversalTest {
                                 .select(Person::id, Person::getName)
                                 .selectAs(Person::getName, "dup_person_name")
                                 .selectAs(Person::id, "dup_person_id"))
-                        .render(context))
+                        .render())
         );
     }
 
