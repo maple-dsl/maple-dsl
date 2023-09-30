@@ -31,6 +31,7 @@ We wanted to avoid string concatenations in our query generation and decided do 
     </dependency>
     ```
 
+### Examples
 !!! example "List all Tom Hanks movies released in the 1990s"
     ```java title="constant"
     G.traverse(G.vertex("Person").eq("name", "Tom Hanks"))
