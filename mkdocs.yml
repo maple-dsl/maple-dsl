@@ -76,9 +76,9 @@ nav:
   - Guide:
       - Overview: 1.guide/1.overview/overview.md
       - Traversal: 1.guide/2.traversal/traversal.md
-      - Match: 1.guide/2.traversal/traversal.md
-      - Fetch: 1.guide/2.traversal/traversal.md
-      - Mutation: 1.guide/2.traversal/traversal.md
+      - Match: 1.guide/3.match/match.md
+      - Fetch: 1.guide/4.fetch/fetch.md
+      - Mutation: 1.guide/5.mutation/mutation.md
   - Integration: 2.integration/spring.md
   - FAQ: 3.appendix/FAQ.md
   - Appendix:
