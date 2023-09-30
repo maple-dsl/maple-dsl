@@ -6,27 +6,42 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maple-dsl.github.io/maple-dsl/master/1.getting-started/configure/</loc>
+         <loc>https://maple-dsl.github.io/maple-dsl/master/1.guide/1.overview/overview/</loc>
          <lastmod>2023-09-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maple-dsl.github.io/maple-dsl/master/1.getting-started/getting-started/</loc>
+         <loc>https://maple-dsl.github.io/maple-dsl/master/1.guide/2.traversal/traversal/</loc>
          <lastmod>2023-09-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maple-dsl.github.io/maple-dsl/master/4.appendix/FAQ/</loc>
+         <loc>https://maple-dsl.github.io/maple-dsl/master/1.guide/3.match/match/</loc>
          <lastmod>2023-09-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maple-dsl.github.io/maple-dsl/master/4.appendix/how-to-contribute/</loc>
+         <loc>https://maple-dsl.github.io/maple-dsl/master/1.guide/4.fetch/fetch/</loc>
          <lastmod>2023-09-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maple-dsl.github.io/maple-dsl/master/4.appendix/release-note/</loc>
+         <loc>https://maple-dsl.github.io/maple-dsl/master/1.guide/5.mutation/mutation/</loc>
+         <lastmod>2023-09-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://maple-dsl.github.io/maple-dsl/master/2.integration/spring/</loc>
+         <lastmod>2023-09-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://maple-dsl.github.io/maple-dsl/master/3.appendix/FAQ/</loc>
+         <lastmod>2023-09-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://maple-dsl.github.io/maple-dsl/master/3.appendix/release-note/</loc>
          <lastmod>2023-09-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
