@@ -110,7 +110,7 @@ We wanted to avoid string concatenations in our query generation and decided do 
     ```
     === "Cypher"
         ```sql
-        MATCH (tom:`Person`-[:`ACTED_IN`]->(tomHanksMovies)<-[:`ACTED_IN`]-(other:`Person)
+        MATCH (tom:`Person`-[:`ACTED_IN`]->(tomHanksMovies)<-[:`ACTED_IN`]-(other:`Person`)
         WHERE id(tom) == 'person_001' AND tomHanksMovies.released >= 1990 AND tomHanksMovies.released < 2000 AND id(other) != 'person_001'
         RETURN tomHanksMovies.name as movie_name, tomHanksMovies.released as movie_released, others.name as actor_name
         ```
