@@ -12,7 +12,7 @@
         <meta name="author" content="MapleDSL">
       
       
-        <link rel="canonical" href="https://maple-dsl.github.io/maple-dsl/master/">
+        <link rel="canonical" href="https://maple-dsl.github.io/master/">
       
       
       
@@ -313,63 +313,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick_started" class="md-nav__link">
-    Quick Started
+  <a href="#getting_started" class="md-nav__link">
+    Getting Started
   </a>
   
-    <nav class="md-nav" aria-label="Quick Started">
+    <nav class="md-nav" aria-label="Getting Started">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#prepare_dependencies" class="md-nav__link">
     Prepare dependencies
-  </a>
-  
-    <nav class="md-nav" aria-label="Prepare dependencies">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#cypher_configuration" class="md-nav__link">
-    Cypher configuration
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#nebulagraph_configuration" class="md-nav__link">
-    NebulaGraph configuration
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
-  </a>
-  
-    <nav class="md-nav" aria-label="Examples">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#skipped_vertexedge_structure_defined" class="md-nav__link">
-    Skipped vertex&amp;edge structure defined
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#after_defined_vertexperson_vertexmovie_edgeacted_in" class="md-nav__link">
-    After Defined vertex:Person, vertex:Movie, edge:ACTED_IN
   </a>
   
 </li>
@@ -768,63 +721,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick_started" class="md-nav__link">
-    Quick Started
+  <a href="#getting_started" class="md-nav__link">
+    Getting Started
   </a>
   
-    <nav class="md-nav" aria-label="Quick Started">
+    <nav class="md-nav" aria-label="Getting Started">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#prepare_dependencies" class="md-nav__link">
     Prepare dependencies
-  </a>
-  
-    <nav class="md-nav" aria-label="Prepare dependencies">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#cypher_configuration" class="md-nav__link">
-    Cypher configuration
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#nebulagraph_configuration" class="md-nav__link">
-    NebulaGraph configuration
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
-  </a>
-  
-    <nav class="md-nav" aria-label="Examples">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#skipped_vertexedge_structure_defined" class="md-nav__link">
-    Skipped vertex&amp;edge structure defined
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#after_defined_vertexperson_vertexmovie_edgeacted_in" class="md-nav__link">
-    After Defined vertex:Person, vertex:Movie, edge:ACTED_IN
   </a>
   
 </li>
@@ -854,16 +760,18 @@
 
 <h1 id="welcome_to_mapledsl_documentation">Welcome to MapleDSL Documentation<a class="headerlink" href="#welcome_to_mapledsl_documentation" title="Permanent link">&para;</a></h1>
 <h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
-<blockquote>
-<p>It inspired by <a href="https://github.com/neo4j-contrib/cypher-dsl">cypher-dsl</a> like below:</p>
-<p>But the difference is that maple-dsl focuses more on traversal-style and lambda-style on development.</p>
-</blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It inspired by <a href="https://github.com/neo4j-contrib/cypher-dsl">cypher-dsl</a>,
+But the difference is that maple-dsl focuses more on traversal-style and lambda-style on development.</p>
+</div>
 <p>The Maple-DSL has been developed with the needs of most graph database client(e.g. neo4j, nebula-graph-java, redisgraph, etc).
 We wanted to avoid string concatenations in our query generation and decided do go with a builder approach, much like we find with jOOQ or in the relational module of Spring Data JDBC.</p>
-<h2 id="quick_started">Quick Started<a class="headerlink" href="#quick_started" title="Permanent link">&para;</a></h2>
+<h2 id="getting_started">Getting Started<a class="headerlink" href="#getting_started" title="Permanent link">&para;</a></h2>
 <h3 id="prepare_dependencies">Prepare dependencies<a class="headerlink" href="#prepare_dependencies" title="Permanent link">&para;</a></h3>
-<p>Please use a dependency management system. We recommend either Maven or Gradle.</p>
-<h4 id="cypher_configuration">Cypher configuration<a class="headerlink" href="#cypher_configuration" title="Permanent link">&para;</a></h4>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Cypher</label><label for="__tabbed_1_2">NebulaGraph</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
 <p>Inclusion of the Cypher-DSL in a Maven project
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
 <span class="w">    </span><span class="nt">&lt;groupId&gt;</span>com.maple<span class="nt">&lt;/groupId&gt;</span>
@@ -871,7 +779,8 @@ We wanted to avoid string concatenations in our query generation and decided do 
 <span class="w">    </span><span class="nt">&lt;version&gt;</span>0.1.0<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div></p>
-<h4 id="nebulagraph_configuration">NebulaGraph configuration<a class="headerlink" href="#nebulagraph_configuration" title="Permanent link">&para;</a></h4>
+</div>
+<div class="tabbed-block">
 <p>Inclusion of the Nebula-DSL in a Maven project
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
 <span class="w">    </span><span class="nt">&lt;groupId&gt;</span>com.maple<span class="nt">&lt;/groupId&gt;</span>
@@ -879,74 +788,115 @@ We wanted to avoid string concatenations in our query generation and decided do 
 <span class="w">    </span><span class="nt">&lt;version&gt;</span>0.1.0<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div></p>
-<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<blockquote>
-<p>List all Tom Hanks movies</p>
-</blockquote>
-<h3 id="skipped_vertexedge_structure_defined">Skipped vertex&amp;edge structure defined<a class="headerlink" href="#skipped_vertexedge_structure_defined" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="n">G</span><span class="p">.</span><span class="na">traverse</span><span class="p">(</span><span class="n">G</span><span class="p">.</span><span class="na">vertex</span><span class="p">(</span><span class="s">&quot;Person&quot;</span><span class="p">).</span><span class="na">eq</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Tom Hanks&quot;</span><span class="p">))</span>
+</div>
+</div>
+</div>
+<div class="admonition example">
+<p class="admonition-title">List all Tom Hanks movies released in the 1990s</p>
+<div class="highlight"><span class="filename">constant</span><pre><span></span><code><span class="n">G</span><span class="p">.</span><span class="na">traverse</span><span class="p">(</span><span class="n">G</span><span class="p">.</span><span class="na">vertex</span><span class="p">(</span><span class="s">&quot;Person&quot;</span><span class="p">).</span><span class="na">eq</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Tom Hanks&quot;</span><span class="p">))</span>
 <span class="w">    </span><span class="p">.</span><span class="na">outE</span><span class="p">(</span><span class="s">&quot;ACTED_IN&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;tomHanksMovies&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Movie&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">it</span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_name&quot;</span><span class="p">));</span>
-
-<span class="c1">// Cypher: </span>
-<span class="c1">// MATCH (tom:`Person` {name: &#39;Tom Hanks&#39;})-[:`ACTED_IN`]-&gt;(tomHanksMovies)</span>
-<span class="c1">// RETURN tomHanksMovies.name as movie_name</span>
-
-<span class="c1">// If The vertex ID of Tom Hanks is: person_001, you could try like below:</span>
-<span class="n">G</span><span class="p">.</span><span class="na">traverse</span><span class="p">(</span><span class="s">&quot;person_001&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">outE</span><span class="p">(</span><span class="s">&quot;ACTED_IN&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;tomHanksMovies&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Movie&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">it</span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_name&quot;</span><span class="p">));</span>
-
-<span class="c1">// Cypher: </span>
-<span class="c1">// MATCH (tom:`Person`)-[:`ACTED_IN`]-&gt;(tomHanksMovies)</span>
-<span class="c1">// WHERE id(tom) == &#39;person_001&#39;</span>
-<span class="c1">// RETURN tomHanksMovies.name as movie_name</span>
+<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;tomHanksMovies&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Movie&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">it</span>
+<span class="w">        </span><span class="p">.</span><span class="na">gte</span><span class="p">(</span><span class="s">&quot;released&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1990</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">lt</span><span class="p">(</span><span class="s">&quot;released&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2000</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="s">&quot;released&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_released&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_name&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">render</span><span class="p">()</span><span class="w">   </span>
 </code></pre></div>
-<h3 id="after_defined_vertexperson_vertexmovie_edgeacted_in">After Defined vertex:Person, vertex:Movie, edge:ACTED_IN<a class="headerlink" href="#after_defined_vertexperson_vertexmovie_edgeacted_in" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="nd">@Label</span><span class="p">(</span><span class="s">&quot;Person&quot;</span><span class="p">)</span>
-<span class="kd">class</span> <span class="nc">Person</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Model</span><span class="p">.</span><span class="na">V</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
-<span class="p">}</span>
+<div class="highlight"><span class="filename">lambda function</span><pre><span></span><code><span class="nd">@Label</span><span class="p">(</span><span class="s">&quot;Person&quot;</span><span class="p">)</span><span class="w">    </span><span class="n">Person</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Model</span><span class="p">.</span><span class="na">V</span>
+<span class="nd">@Label</span><span class="p">(</span><span class="s">&quot;Movie&quot;</span><span class="p">)</span><span class="w">     </span><span class="n">Movie</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">released</span><span class="p">)</span><span class="w">  </span><span class="kd">extends</span><span class="w"> </span><span class="n">Model</span><span class="p">.</span><span class="na">V</span>
+<span class="nd">@Label</span><span class="p">(</span><span class="s">&quot;ACTED_IN&quot;</span><span class="p">)</span><span class="w">  </span><span class="n">ActedIn</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">type</span><span class="p">)</span><span class="w">   </span><span class="kd">extends</span><span class="w"> </span><span class="n">Model</span><span class="p">.</span><span class="na">E</span>
 
-<span class="nd">@Label</span><span class="p">(</span><span class="s">&quot;Movie&quot;</span><span class="p">)</span>
-<span class="kd">class</span> <span class="nc">Movie</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Model</span><span class="p">.</span><span class="na">V</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="nd">@Label</span><span class="p">(</span><span class="s">&quot;ACTED_IN&quot;</span><span class="p">)</span>
-<span class="kd">class</span> <span class="nc">ActedIn</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Model</span><span class="p">.</span><span class="na">E</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">type</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="n">G</span><span class="p">.</span><span class="na">traverse</span><span class="p">(</span><span class="n">G</span><span class="p">.</span><span class="na">vertex</span><span class="p">(</span><span class="n">Person</span><span class="p">.</span><span class="na">class</span><span class="p">).</span><span class="na">eq</span><span class="p">(</span><span class="n">Person</span><span class="p">::</span><span class="n">getName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Tom Hanks&quot;</span><span class="p">))</span>
+<span class="n">G</span><span class="p">.</span><span class="na">traverse</span><span class="p">(</span><span class="n">G</span><span class="p">.</span><span class="na">vertex</span><span class="p">(</span><span class="n">Person</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">eq</span><span class="p">(</span><span class="n">Person</span><span class="p">::</span><span class="n">getName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Tom Hanks&quot;</span><span class="p">))</span>
 <span class="w">    </span><span class="p">.</span><span class="na">outE</span><span class="p">(</span><span class="n">ActedIn</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;tomHanksMovies&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Movie</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">it</span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_name&quot;</span><span class="p">));</span>
-
-<span class="c1">// If The vertex ID of Tom Hanks is: person_001, you could try like below:</span>
-<span class="n">G</span><span class="p">.</span><span class="na">traverse</span><span class="p">(</span><span class="s">&quot;person_001&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">outE</span><span class="p">(</span><span class="n">ActedIn</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;tomHanksMovies&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Movie</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">it</span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_name&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;tomHanksMovies&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Movie</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="n">it</span>
+<span class="w">        </span><span class="p">.</span><span class="na">gte</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getReleased</span><span class="p">,</span><span class="w"> </span><span class="mi">1990</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">lt</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getReleased</span><span class="p">,</span><span class="w"> </span><span class="mi">2000</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_name&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getReleased</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_released&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">render</span><span class="p">()</span>
 </code></pre></div>
-<blockquote>
-<p>List all Tom Hanks movies, then find out the other person which acted together.
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Cypher</label><label for="__tabbed_2_2">NebulaGraph</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">tom</span><span class="p">:</span><span class="o">`</span><span class="n">Person</span><span class="o">`</span><span class="w"> </span><span class="err">{</span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;Tom Hanks&#39;</span><span class="err">}</span><span class="p">)</span><span class="o">-</span><span class="p">[:</span><span class="o">`</span><span class="n">ACTED_IN</span><span class="o">`</span><span class="p">]</span><span class="o">-&gt;</span><span class="p">(</span><span class="n">tomHanksMovies</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">tomHanksMovies</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">1990</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">tomHanksMovies</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2000</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">tomHanksMovies</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">movie_name</span><span class="p">,</span><span class="w"> </span><span class="n">tomHanksMovies</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">movie_released</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="n">LOOKUP</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="o">`</span><span class="n">Person</span><span class="o">`</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">Person</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;Tom Hanks&#39;</span><span class="w"> </span><span class="n">YIELD</span><span class="w"> </span><span class="n">id</span><span class="p">(</span><span class="n">vertex</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">_dst</span>
+<span class="o">|</span><span class="w"> </span><span class="k">GO</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="err">$</span><span class="o">-</span><span class="p">.</span><span class="n">_dst</span><span class="w"> </span><span class="n">OVER</span><span class="w"> </span><span class="n">ACTED_IN</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="err">$$</span><span class="p">.</span><span class="n">Movie</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">1990</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="err">$$</span><span class="p">.</span><span class="n">Movie</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2000</span>
+<span class="n">YIELD</span><span class="w"> </span><span class="err">$$</span><span class="p">.</span><span class="n">Movie</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">movie_name</span><span class="p">,</span><span class="w"> </span><span class="err">$$</span><span class="p">.</span><span class="n">Movie</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">movie_released</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<div class="highlight"><span class="filename">via vertex ID</span><pre><span></span><code><span class="n">G</span><span class="p">.</span><span class="na">traverse</span><span class="p">(</span><span class="s">&quot;person_001&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">outE</span><span class="p">(</span><span class="n">ActedIn</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;tomHanksMovies&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Movie</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">it</span>
+<span class="w">        </span><span class="p">.</span><span class="na">gte</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getReleased</span><span class="p">,</span><span class="w"> </span><span class="mi">1990</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">lt</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getReleased</span><span class="p">,</span><span class="w"> </span><span class="mi">2000</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_name&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getReleased</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_released&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">render</span><span class="p">()</span>
+</code></pre></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Cypher</label><label for="__tabbed_3_2">NebulaGraph</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">tom</span><span class="p">:</span><span class="o">`</span><span class="n">Person</span><span class="o">`</span><span class="p">)</span><span class="o">-</span><span class="p">[:</span><span class="o">`</span><span class="n">ACTED_IN</span><span class="o">`</span><span class="p">]</span><span class="o">-&gt;</span><span class="p">(</span><span class="n">tomHanksMovies</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="p">(</span><span class="n">tom</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;person_001&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">tomHanksMovies</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">1990</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">tomHanksMovies</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2000</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">tomHanksMovies</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">movie_name</span><span class="p">,</span><span class="w"> </span><span class="n">tomHanksMovies</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">movie_released</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="k">GO</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="ss">&quot;person_001&quot;</span><span class="w"> </span><span class="n">OVER</span><span class="w"> </span><span class="n">ACTED_IN</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="err">$$</span><span class="p">.</span><span class="n">Movie</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">1990</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="err">$$</span><span class="p">.</span><span class="n">Movie</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2000</span>
+<span class="n">YIELD</span><span class="w"> </span><span class="err">$$</span><span class="p">.</span><span class="n">Movie</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">movie_name</span><span class="p">,</span><span class="w"> </span><span class="err">$$</span><span class="p">.</span><span class="n">Movie</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">movie_released</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+</div>
+<details class="abstract">
+<summary>List all Tom Hanks movies released in the 1990s, then find out the other person which acted together</summary>
 <div class="highlight"><pre><span></span><code><span class="n">G</span><span class="p">.</span><span class="na">traverse</span><span class="p">(</span><span class="s">&quot;person_001&quot;</span><span class="p">)</span>
 <span class="w">    </span><span class="p">.</span><span class="na">outE</span><span class="p">(</span><span class="n">ActedIn</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;tomHanksMovies&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Movie</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">it</span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_name&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;tomHanksMovies&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Movie</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="n">it</span>
+<span class="w">        </span><span class="p">.</span><span class="na">gte</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getReleased</span><span class="p">,</span><span class="w"> </span><span class="mi">1990</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">lt</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getReleased</span><span class="p">,</span><span class="w"> </span><span class="mi">2000</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_name&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="n">Movie</span><span class="p">::</span><span class="n">getReleased</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;movie_released&quot;</span><span class="p">))</span>
 <span class="w">    </span><span class="p">.</span><span class="na">inE</span><span class="p">(</span><span class="n">ActedIn</span><span class="p">.</span><span class="na">class</span><span class="p">)</span><span class="w">    </span>
-<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;others&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Person</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">it</span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="n">Person</span><span class="p">::</span><span class="n">getName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;actor_name&quot;</span><span class="p">))</span>
-
-<span class="c1">// Cypher: </span>
-<span class="c1">// MATCH (tom:`Person` {name: &#39;Tom Hanks&#39;})-[:`ACTED_IN`]-&gt;(tomHanksMovies)&lt;-[:`ACTED_IN`]-(others:`Person)</span>
-<span class="c1">// RETURN tomHanksMovies.name as movie_name, others.name as actor_name</span>
-</code></pre></div></p>
-</blockquote>
+<span class="w">    </span><span class="p">.</span><span class="na">outV</span><span class="p">(</span><span class="s">&quot;other&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Person</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">it</span>
+<span class="w">        </span><span class="p">.</span><span class="na">ne</span><span class="p">(</span><span class="n">Person</span><span class="p">::</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;person_001&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">selectAs</span><span class="p">(</span><span class="n">Person</span><span class="p">::</span><span class="n">getName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;actor_name&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">render</span><span class="p">()</span>
+</code></pre></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Cypher</label><label for="__tabbed_4_2">NebulaGraph</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">tom</span><span class="p">:</span><span class="o">`</span><span class="n">Person</span><span class="o">`-</span><span class="p">[:</span><span class="o">`</span><span class="n">ACTED_IN</span><span class="o">`</span><span class="p">]</span><span class="o">-&gt;</span><span class="p">(</span><span class="n">tomHanksMovies</span><span class="p">)</span><span class="o">&lt;-</span><span class="p">[:</span><span class="o">`</span><span class="n">ACTED_IN</span><span class="o">`</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="n">other</span><span class="p">:</span><span class="o">`</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="p">(</span><span class="n">tom</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;person_001&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">tomHanksMovies</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">1990</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">tomHanksMovies</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2000</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">id</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s1">&#39;person_001&#39;</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">tomHanksMovies</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">movie_name</span><span class="p">,</span><span class="w"> </span><span class="n">tomHanksMovies</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">movie_released</span><span class="p">,</span><span class="w"> </span><span class="n">others</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">actor_name</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="k">GO</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="ss">&quot;person_001&quot;</span><span class="w"> </span><span class="n">OVER</span><span class="w"> </span><span class="n">ACTED_IN</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="err">$$</span><span class="p">.</span><span class="n">Movie</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">1990</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="err">$$</span><span class="p">.</span><span class="n">Movie</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2000</span>
+<span class="n">YIELD</span><span class="w"> </span><span class="n">id</span><span class="p">(</span><span class="err">$$</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">_dst</span><span class="p">,</span><span class="w"> </span><span class="err">$$</span><span class="p">.</span><span class="n">Movie</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">movie_name</span><span class="p">,</span><span class="w"> </span><span class="err">$$</span><span class="p">.</span><span class="n">Movie</span><span class="p">.</span><span class="n">released</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">movie_released</span>
+<span class="o">|</span><span class="w"> </span><span class="k">GO</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="err">$</span><span class="o">-</span><span class="p">.</span><span class="n">_dst</span><span class="w"> </span><span class="n">OVER</span><span class="w"> </span><span class="n">ACTED_IN</span><span class="w"> </span><span class="n">REVERSELY</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="p">(</span><span class="err">$$</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s1">&#39;person_001&#39;</span><span class="w"> </span>
+<span class="n">YIELD</span><span class="w"> </span><span class="err">$$</span><span class="p">.</span><span class="n">Person</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">actor_name</span><span class="p">,</span><span class="w"> </span><span class="err">$</span><span class="o">-</span><span class="p">.</span><span class="n">movie_name</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">movie_name</span><span class="p">,</span><span class="w"> </span><span class="err">$</span><span class="o">-</span><span class="p">.</span><span class="n">movie_release</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">movie_release</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+</details>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 27, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 30, 2023</span>
       
     
   </small>
@@ -1000,7 +950,7 @@ We wanted to avoid string concatenations in our query generation and decided do 
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.top", "header.autohide", "content.tabs.link"], "search": "assets/javascripts/workers/search.a264c092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.top", "header.autohide", "content.tabs.link", "content.code.copy"], "search": "assets/javascripts/workers/search.a264c092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="assets/javascripts/bundle.726fbb30.min.js"></script>
