@@ -44,4 +44,4 @@ var statement = G.traverse(G.vertex("Person").eq("name", "Tom Hanks"))
 
 var result = sessionTemplate.selectMaps(statement);
 ```
-More on [MapleDSL](https://maple-dsl.github.io/maple-dsl/).
+More on [Wiki](https://maple-dsl.github.io/maple-dsl/).
