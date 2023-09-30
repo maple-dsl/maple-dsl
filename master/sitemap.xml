@@ -41,6 +41,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://maple-dsl.github.io/maple-dsl/master/3.appendix/how-to-contribute/</loc>
+         <lastmod>2023-09-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://maple-dsl.github.io/maple-dsl/master/3.appendix/release-note/</loc>
          <lastmod>2023-09-30</lastmod>
          <changefreq>daily</changefreq>
