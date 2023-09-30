@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://maple-dsl.github.io/master/</loc>
+         <loc>https://maple-dsl.github.io/maple-dsl/master/</loc>
          <lastmod>2023-09-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maple-dsl.github.io/master/1.getting-started/configure/</loc>
+         <loc>https://maple-dsl.github.io/maple-dsl/master/1.getting-started/configure/</loc>
          <lastmod>2023-09-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maple-dsl.github.io/master/1.getting-started/getting-started/</loc>
+         <loc>https://maple-dsl.github.io/maple-dsl/master/1.getting-started/getting-started/</loc>
          <lastmod>2023-09-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maple-dsl.github.io/master/4.appendix/FAQ/</loc>
+         <loc>https://maple-dsl.github.io/maple-dsl/master/4.appendix/FAQ/</loc>
          <lastmod>2023-09-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maple-dsl.github.io/master/4.appendix/how-to-contribute/</loc>
+         <loc>https://maple-dsl.github.io/maple-dsl/master/4.appendix/how-to-contribute/</loc>
          <lastmod>2023-09-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maple-dsl.github.io/master/4.appendix/release-note/</loc>
+         <loc>https://maple-dsl.github.io/maple-dsl/master/4.appendix/release-note/</loc>
          <lastmod>2023-09-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
