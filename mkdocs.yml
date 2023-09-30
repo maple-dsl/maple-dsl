@@ -2,7 +2,7 @@
 site_name: MapleDSL Manual
 site_description: Documentation for MapleDSL
 site_author: MapleDSL
-site_url: https://maple-dsl.github.io/maple-dsl/
+site_url: https://maple-dsl.github.io/
 docs_dir: docs
 repo_name: 'maple-dsl/maple-dsl'
 repo_url: 'https://github.com/maple-dsl/maple-dsl.git'
@@ -27,6 +27,7 @@ theme:
     - navigation.top
     - header.autohide
     - content.tabs.link
+    - content.code.copy
   language: 'en'
 
 extra_css:
@@ -38,6 +39,8 @@ extra_css:
 markdown_extensions:
   - footnotes
   - admonition
+  - pymdownx.details
+  - attr_list
   - codehilite:
       guess_lang: false
   - toc:
@@ -45,8 +48,6 @@ markdown_extensions:
       separator: "_"
   - mdx_truly_sane_lists
   - pymdownx.superfences
-  - pymdownx.snippets:
-      base_path: docs-2.0/reuse/
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.caret
