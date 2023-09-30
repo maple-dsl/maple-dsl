@@ -72,18 +72,15 @@ extra:
     default: master
 
 nav:
-  - About: index.md
-  - Getting started:
-      - Configure: 1.getting-started/configure.md
-      - Example: 1.getting-started/example.md
-  - DSL guide:
-      - Overview: 2.dsl-guide/1.overview/overview.md
-      - Traversal: 2.dsl-guide/2.traversal/traversal.md
-      - Match: 2.dsl-guide/2.traversal/traversal.md
-      - Fetch: 2.dsl-guide/2.traversal/traversal.md
-      - Mutation: 2.dsl-guide/2.traversal/traversal.md
-  - Integration: 2.dsl-guide/2.traversal/traversal.md
-  - FAQ: 4.appendix/FAQ.md
+  - Home: index.md
+  - Guide:
+      - Overview: 1.guide/1.overview/overview.md
+      - Traversal: 1.guide/2.traversal/traversal.md
+      - Match: 1.guide/2.traversal/traversal.md
+      - Fetch: 1.guide/2.traversal/traversal.md
+      - Mutation: 1.guide/2.traversal/traversal.md
+  - Integration: 2.integration/spring.md
+  - FAQ: 3.appendix/FAQ.md
   - Appendix:
-      - Release Note: 4.appendix/release-note.md
-      - How to contribute: 4.appendix/how-to-contribute.md
+      - Release Note: 3.appendix/release-note.md
+      - How to contribute: 3.appendix/how-to-contribute.md
