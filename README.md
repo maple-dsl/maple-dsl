@@ -36,10 +36,10 @@ Inclusion of the Nebula-DSL in a Maven project
 var statement = G.traverse(G.vertex("Person").eq("name", "Tom Hanks"))
     .outE("ACTED_IN")
     .outV("tomHanksMovies", "Movie", it -> it
-    .gte("released", 1990)
-    .lt("released", 2000)
-    .selectAs("released", "movie_released")
-    .selectAs("name", "movie_name"))
+      .gte("released", 1990)
+      .lt("released", 2000)
+      .selectAs("released", "movie_released")
+      .selectAs("name", "movie_name"))
     .render();
 
 var result = sessionTemplate.selectMaps(statement);
