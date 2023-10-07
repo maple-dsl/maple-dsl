@@ -23,18 +23,23 @@ public class MatchWrapper<M extends Model<?>> extends QueryDuplexWrapper<M, Matc
     static final int ORDER_DESC_INDEX = 5;
     static final int SKIP_INDEX = 6;
     static final int LIMIT_INDEX = 7;
+    protected static final int DELETE_INDEX = 8;
+    protected static final int DETACH_INDEX = 9;
+    protected static final int TRAVERSE_INDEX = 10;
     /**
      * Arguments position:
      * <pre>
      * [0] label
      * [1] selection
-     * [3] predicate
-     * [4] function
-     * [5] orderAsc    [6] orderDesc
-     * [7] skip        [8] limit
+     * [2] predicate
+     * [3] function
+     * [4] orderAsc    [5] orderDesc
+     * [6] skip        [7] limit
+     * [8] delete      [9] detach(only:vertex)
+     * [10] traverse(only:vertex)
      * </pre>
      */
-    final Object[] arguments = new Object[9];
+    protected final Object[] arguments = new Object[11];
     final BiFunction<MapleDslConfiguration, Object[], String> renderFunc;
 
     protected MatchWrapper(String label, BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Consumer<MapleDslDialectBase<M>> renderModelDecorator) {

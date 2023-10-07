@@ -20,41 +20,46 @@ import static java.util.Objects.requireNonNull;
 
 @SuppressWarnings("DuplicatedCode")
 public class TraversalWrapper implements Traversal {
-    static final int LENGTH = 21;
+    static final int LENGTH = 25;
     static final int STEP_M_INDEX = 0;
     static final int STEP_N_INDEX = 1;
     static final int FROM_INDEX = 2;
-    static final int OVER_INDEX = 3;
-    static final int DIRECTION_IN_INDEX = 4;
-    static final int DIRECTION_OUT_INDEX = 5;
-    static final int DIRECTION_BOTH_INDEX = 6;
-    static final int IN_ALIAS_INDEX = 7;
-    static final int OUT_ALIAS_INDEX = 8;
-    static final int EDGE_ALIAS_INDEX = 9;
-
-    static final int PREDICATE_INDEX = 10;
-    static final int SELECTION_INDEX = 11;
-    static final int FUNCTION_INDEX = 12;
-    static final int COMPANION_INDEX = 13;
-    static final int ORDER_ASC_INDEX = 14;
-    static final int ORDER_DSC_INDEX = 15;
-    static final int SKIP_INDEX = 16;
-    static final int LIMIT_INDEX = 17;
-    static final int HAS_PREV_INDEX= 18;
-    static final int HAS_NEXT_INDEX = 19;
-    static final int NEXT_INDEX = 20;
+    static final int FROM_MATCH_INDEX = 3;
+    static final int FROM_PREV_INDEX = 4;
+    static final int OVER_INDEX = 5;
+    static final int DIRECTION_IN_INDEX = 6;
+    static final int DIRECTION_OUT_INDEX = 7;
+    static final int DIRECTION_BOTH_INDEX = 8;
+    static final int IN_ALIAS_INDEX = 9;
+    static final int OUT_ALIAS_INDEX = 10;
+    static final int EDGE_ALIAS_INDEX = 11;
+    static final int PREDICATE_INDEX = 12;
+    static final int SELECTION_INDEX = 13;
+    static final int FUNCTION_INDEX = 14;
+    static final int COMPANION_INDEX = 15;
+    static final int ORDER_ASC_INDEX = 16;
+    static final int ORDER_DSC_INDEX = 17;
+    static final int SKIP_INDEX = 18;
+    static final int LIMIT_INDEX = 19;
+    static final int HAS_NEXT_INDEX = 20;
+    static final int NEXT_INDEX = 21;
+    static final int DELETE_VERTEX_INDEX = 22;
+    static final int DETACH_VERTEX_INDEX = 23;
+    static final int DELETE_EDGE_INDEX = 24;
 
     /**
      * Position arguments distributed like below:
      * <pre>
      * [0] stepM        [1] stepN
-     * [2] from         [3] over  [4] direction_in [5] direction_out [6] direction_both
-     * [7] in_alias     [8] out_alias   [9] edge_alias
-     * [10] where
-     * [11] select      [12] function   [13] companion
-     * [14] orderAsc    [15] orderDsc
-     * [16] skip        [17 limit
-     * [18] has_prev    [19] has_next   [20] next
+     * [2] from         [3] from_match      [4] from_prev
+     * [5] over         [6] direction_in    [7] direction_out [8] direction_both
+     * [9] in_alias     [10] out_alias      [11] edge_alias
+     * [12] where
+     * [13] select      [14] function       [15] companion
+     * [16] order_asc    [17] order_desc
+     * [18] skip        [19 limit
+     * [20] has_next    [21] next
+     * [22] delete_vertex [23] detach_vertex [24] delete_edge
      * </pre>
      */
     final LinkedList<Object[]> argumentsList = new LinkedList<>();
@@ -65,6 +70,9 @@ public class TraversalWrapper implements Traversal {
 
     Object[] arguments = new Object[LENGTH];
     static final String DEFAULT_NEXT_TRAVERSAL_FROM_ALIAS = "_dst";
+    static final String DEFAULT_IN_ALIAS = "src";
+    static final String DEFAULT_OUT_ALIAS = "dst";
+    static final String DEFAULT_EDGE_ALIAS = "e";
     String nextTraversalFrom;
 
     List<MapleDslDialectPredicate<?>> predicateList = new LinkedList<>();
@@ -81,6 +89,11 @@ public class TraversalWrapper implements Traversal {
         this.arguments[FROM_INDEX] = from;
     }
 
+    protected TraversalWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
+        this.renderFunc = renderFunc;
+        this.arguments[FROM_MATCH_INDEX] = true;
+    }
+
     private synchronized void nextTraversal(boolean terminate) {
         if (arguments[DIRECTION_IN_INDEX] == null && arguments[DIRECTION_OUT_INDEX] == null && arguments[DIRECTION_BOTH_INDEX] == null)
             throw new MapleDslExecutionException("Missing direction_clause value, use `inE`, `outE`, `bothE`.");
@@ -90,6 +103,10 @@ public class TraversalWrapper implements Traversal {
             nextTraversalFrom = DEFAULT_NEXT_TRAVERSAL_FROM_ALIAS;
             selectionList.add(new MapleDslDialectSelection<Model.V>(Model.ID, nextTraversalFrom) {{ setOut(true); }});
         }
+
+        if (arguments[IN_ALIAS_INDEX] == null)      arguments[IN_ALIAS_INDEX] = DEFAULT_IN_ALIAS;
+        if (arguments[OUT_ALIAS_INDEX] == null)     arguments[OUT_ALIAS_INDEX] = DEFAULT_OUT_ALIAS;
+        if (arguments[EDGE_ALIAS_INDEX] == null)    arguments[EDGE_ALIAS_INDEX] = DEFAULT_EDGE_ALIAS;
 
         if (!predicateList.isEmpty()) {
             arguments[PREDICATE_INDEX] = predicateList;
@@ -108,7 +125,8 @@ public class TraversalWrapper implements Traversal {
         // WITH m, ...
         // MATCH (new_m)
         // `WITH m` should be modified as `WITH m as new_m`
-        if (!argumentsList.isEmpty()) argumentsList.peekLast()[NEXT_INDEX] = arguments[OUT_ALIAS_INDEX];
+        if (!argumentsList.isEmpty()) argumentsList.peekLast()[NEXT_INDEX] = arguments[IN_ALIAS_INDEX];
+
         argumentsList.add(arguments);
 
         if (terminate) return;
@@ -116,13 +134,12 @@ public class TraversalWrapper implements Traversal {
 
         arguments = new Object[LENGTH];
         // specific for nebula, e.g. | GO FROM $-._dst
-        arguments[FROM_INDEX] = nextTraversalFrom;
+        arguments[FROM_PREV_INDEX] = nextTraversalFrom;
         // $-._dst or the others(next_traversal_var) should be removed from the companion set
         nextTraversalCompanionSet.remove(nextTraversalFrom);
         // clear _dst var for next filling.
         nextTraversalFrom = null;
         arguments[COMPANION_INDEX] = nextTraversalCompanionSet.isEmpty() ? null : nextTraversalCompanionSet;
-        arguments[HAS_PREV_INDEX] = true;
     }
 
     @Override

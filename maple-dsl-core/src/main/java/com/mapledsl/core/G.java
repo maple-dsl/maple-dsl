@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
 import static com.mapledsl.core.MapleDslDialectRender.fetchE;
@@ -20,6 +21,7 @@ import static com.mapledsl.core.MapleDslDialectRender.matchV;
 import static com.mapledsl.core.MapleDslDialectRender.traversal;
 
 public final class G {
+
     /**
      * A domain specific condition wrapper for traversing a graph using "graph concepts" (e.g. vertices, edges).
      * Represents a directed walk over a graph {@code Graph}.
@@ -48,15 +50,15 @@ public final class G {
     }
 
     @Contract("_ -> new")
-    public static Traversal traverse(Match<Model.V> match) {
-        return new TraversalWrapperFacade(match);
+    public static Traversal traverse(Match<? extends Model.V> match) {
+        return new TraversalWrapperFacade(((MatchVertexWrapper<?>) match));
     }
 
     /**
      * A domain specific condition wrapper for fetch vertex by the related VID & TAG.
      *
-     * @param tag      specific the tag of the vertex entity {@code Model.V}.
-     * @param <V>      specific the type of the vertex entity {@code Model.V}.
+     * @param tag specific the tag of the vertex entity {@code Model.V}.
+     * @param <V> specific the type of the vertex entity {@code Model.V}.
      * @return the basic fetching condition wrapper of the specified id of vertex & tag as origin.
      */
     @Contract("_ -> new")
@@ -92,9 +94,9 @@ public final class G {
     /**
      * A domain specific condition wrapper for fetch vertex by the related VID & TAG.
      *
-     * @param tag      specific the tag of the vertex entity {@code Model.V}.
+     * @param tag       specific the tag of the vertex entity {@code Model.V}.
      * @param vertexIds specific the id of the vertex {@code Vertex}.
-     * @param <V>      specific the type of the vertex entity {@code Model.V}.
+     * @param <V>       specific the type of the vertex entity {@code Model.V}.
      * @return the basic fetching condition wrapper of the specified id of vertex & tag as origin.
      */
     @Contract(value = "_, _ -> new", pure = true)
@@ -178,6 +180,7 @@ public final class G {
             super(labelClazz, vertices, renderFunc, it -> it.setV(true).setInstantiatedLabelClazz(labelClazz));
         }
     }
+
     static final class FetchEdgeWrapper<E extends Model.E> extends FetchWrapper<E> {
         <R> FetchEdgeWrapper(String label, R edges, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
             super(label, edges, renderFunc, it -> it.setE(true).setInstantiatedLabel(label));
@@ -187,14 +190,28 @@ public final class G {
             super(labelClazz, edges, renderFunc, it -> it.setE(true).setInstantiatedLabelClazz(labelClazz));
         }
     }
+
     static final class MatchVertexWrapper<V extends Model.V> extends MatchWrapper<V> {
         MatchVertexWrapper(String label, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
             super(label, renderFunc, it -> it.setV(true).setInstantiatedLabel(label));
         }
+
         MatchVertexWrapper(Class<V> labelClazz, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
             super(labelClazz, renderFunc, it -> it.setV(true).setInstantiatedLabelClazz(labelClazz));
         }
+
+        MatchVertexWrapper<V> asTraversal() {
+            super.arguments[TRAVERSE_INDEX] = true;
+            return this;
+        }
+
+        MatchVertexWrapper<V> asDelete(boolean withEdge) {
+            if (withEdge) super.arguments[DETACH_INDEX] = true;
+            else super.arguments[DELETE_INDEX] = true;
+            return this;
+        }
     }
+
     static final class MatchEdgeWrapper<E extends Model.E> extends MatchWrapper<E> {
         MatchEdgeWrapper(String label, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
             super(label, renderFunc, it -> it.setE(true).setInstantiatedLabel(label));
@@ -203,15 +220,29 @@ public final class G {
         MatchEdgeWrapper(Class<E> labelClazz, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
             super(labelClazz, renderFunc, it -> it.setE(true).setInstantiatedLabelClazz(labelClazz));
         }
+
+        MatchEdgeWrapper<E> asDelete() {
+            super.arguments[DELETE_INDEX] = true;
+            return this;
+        }
     }
+
     static final class TraversalWrapperFacade extends TraversalWrapper {
-        /**
-         * Traversal the vertices#ID of the graph.
-         *
-         * @param from       {@link Model.V#id()}
-         */
+        MatchVertexWrapper<?> match;
+
         <R> TraversalWrapperFacade(R from) {
             super(from, traversal);
+        }
+
+        TraversalWrapperFacade(MatchVertexWrapper<? extends Model.V> match) {
+            super(traversal);
+            this.match = match.asTraversal();
+        }
+
+        @Override
+        public String render(MapleDslConfiguration configuration) {
+            return Objects.isNull(match) ? super.render(configuration)
+                    : match.render(configuration) + super.render(configuration);
         }
     }
 }

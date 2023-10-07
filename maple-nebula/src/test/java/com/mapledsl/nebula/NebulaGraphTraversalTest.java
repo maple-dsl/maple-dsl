@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import static com.mapledsl.core.G.traverse;
+import static com.mapledsl.core.G.vertex;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -174,6 +175,19 @@ public class NebulaGraphTraversalTest {
                                 .select(Person::id, Person::getName)
                                 .selectAs(Person::getName, "dup_person_name")
                                 .selectAs(Person::id, "dup_person_id"))
+                        .render())
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = "LOOKUP ON person WHERE person.name == \"bofa\" YIELD id(vertex) as dst " +
+            "| GO 0 TO 1 STEPS FROM $-.dst OVER impact WHERE 1==1 AND id($$) IS NOT NULL YIELD id($$) AS _dst")
+    public void should_traverse_via_match(String expected) {
+        assertEquals(
+                expected,
+                formatSql(traverse(vertex(Person.class)
+                        .eq(Person::getName, "bofa"))
+                        .outE(Impact.class)
                         .render())
         );
     }
