@@ -28,22 +28,22 @@ public class MapleDslDialectMockSelectionRender extends MapleDslDialectSelection
     }
 
     @Override
-    protected String vertex(@Nullable String label, String[] columns, String[] alias) {
+    protected String vertex(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias) {
         return render(VERTEX, label, columns, alias);
     }
 
     @Override
-    protected String edge(@Nullable String label, String[] columns, String[] alias) {
+    protected String edge(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias) {
         return render(EDGE, label, columns, alias);
     }
 
     @Override
-    protected String inV(@Nullable String label, String[] columns, String[] alias) {
+    protected String inV(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias) {
         return render(IN_VERTEX, label, columns, alias);
     }
 
     @Override
-    protected String outV(@Nullable String label, String[] columns, String[] alias) {
+    protected String outV(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias) {
         return render(OUT_VERTEX, label, columns, alias);
     }
 

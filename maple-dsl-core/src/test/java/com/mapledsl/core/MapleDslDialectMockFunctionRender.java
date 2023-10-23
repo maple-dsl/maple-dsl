@@ -20,7 +20,7 @@ public class MapleDslDialectMockFunctionRender extends MapleDslDialectFunctionRe
         return toFunction(value) + COMMA + nextFunction;
     }
 
-    private String toFunction(MapleDslDialectFunction value) {
+    private String toFunction(MapleDslDialectFunction<?> value) {
         if (value == null) return NULL;
         if (functionRenderMap.containsKey(value.func())) throw new UnsupportedOperationException("Unsupported Func: " + value.func().name());
         return functionRenderMap.get(value.func()).apply(value.column()) + AS + value.alias();

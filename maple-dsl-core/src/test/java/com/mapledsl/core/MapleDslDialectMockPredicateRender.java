@@ -1,26 +1,32 @@
 package com.mapledsl.core;
 
 import com.mapledsl.core.condition.common.OP;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class MapleDslDialectMockPredicateRender extends MapleDslDialectPredicateRender implements MapleDslDialectRenderConstants {
+import static com.mapledsl.core.MapleDslDialectRenderConstants.VERTEX;
+import static com.mapledsl.core.MapleDslDialectRenderConstants.EDGE;
+import static com.mapledsl.core.MapleDslDialectRenderConstants.IN_VERTEX;
+import static com.mapledsl.core.MapleDslDialectRenderConstants.OUT_VERTEX;
+
+public class MapleDslDialectMockPredicateRender extends MapleDslDialectPredicateRender {
     @Override
-    protected String vertex(@Nullable String label, String column) {
+    protected String vertex(@NotNull String ref, @Nullable String label, String column) {
         return render(VERTEX, label, column);
     }
 
     @Override
-    protected String edge(@Nullable String label, String column) {
+    protected String edge(@NotNull String ref, @Nullable String label, String column) {
         return render(EDGE, label, column);
     }
 
     @Override
-    protected String inV(@Nullable String label, String column) {
+    protected String inV(@NotNull String ref, @Nullable String label, String column) {
         return render(IN_VERTEX, label, column);
     }
 
     @Override
-    protected String outV(@Nullable String label, String column) {
+    protected String outV(@NotNull String ref, @Nullable String label, String column) {
         return render(OUT_VERTEX, label, column);
     }
 
