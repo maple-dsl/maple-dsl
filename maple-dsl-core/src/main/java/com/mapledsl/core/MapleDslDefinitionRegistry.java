@@ -1,13 +1,11 @@
 package com.mapledsl.core;
 
-import com.mapledsl.core.annotation.Label;
 import com.mapledsl.core.exception.MapleDslBindingException;
 import com.mapledsl.core.extension.introspect.BeanDefinition;
 import com.mapledsl.core.extension.introspect.BeanDefinitionIntrospector;
 import com.mapledsl.core.extension.introspect.BeanPropertyCustomizer;
 import com.mapledsl.core.extension.introspect.DefaultModelPropertyCustomizer;
 import com.mapledsl.core.model.Model;
-import org.reflections.Reflections;
 
 import java.util.HashMap;
 import java.util.Map;
