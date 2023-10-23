@@ -3,6 +3,7 @@ package com.mapledsl.nebula;
 import com.mapledsl.core.MapleDslDialectFunctionRender;
 import com.mapledsl.core.condition.common.Func;
 import com.mapledsl.core.condition.wrapper.MapleDslDialectFunction;
+import com.mapledsl.nebula.module.MapleNebulaDslModule;
 
 import java.util.EnumMap;
 import java.util.Locale;
@@ -21,7 +22,7 @@ public class MapleNebulaDslDialectFunctionRender extends MapleDslDialectFunction
         return toFunction(value) + COMMA + nextFunction;
     }
 
-    private String toFunction(MapleDslDialectFunction value) {
+    private String toFunction(MapleDslDialectFunction<?> value) {
         if (value == null) return NULL;
         if (functionRenderMap.containsKey(value.func())) throw new UnsupportedOperationException("Unsupported Func: " + value.func().name());
         return functionRenderMap.get(value.func()).apply(value.column()) + AS + value.alias();
@@ -29,7 +30,7 @@ public class MapleNebulaDslDialectFunctionRender extends MapleDslDialectFunction
 
     @Override
     public String dialect() {
-        return "nebula";
+        return MapleNebulaDslModule.DIALECT;
     }
 
     private final Map<Func, UnaryOperator<String>> functionRenderMap = new EnumMap<Func, UnaryOperator<String>>(Func.class) {

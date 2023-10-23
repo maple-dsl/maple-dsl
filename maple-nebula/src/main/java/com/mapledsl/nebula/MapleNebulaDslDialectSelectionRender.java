@@ -4,6 +4,7 @@ import com.mapledsl.core.MapleDslDialectSelectionRender;
 import com.mapledsl.core.condition.wrapper.MapleDslDialectSelection;
 import com.mapledsl.core.model.Model;
 import com.mapledsl.nebula.model.NebulaModel;
+import com.mapledsl.nebula.module.MapleNebulaDslModule;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,7 +49,7 @@ public class MapleNebulaDslDialectSelectionRender extends MapleDslDialectSelecti
     }
 
     @Override
-    protected String vertex(@Nullable String label, String[] columns, String[] alias) {
+    protected String vertex(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias) {
         if (notEquals(columns, alias)) return NULL;
         final String prefix = nullLabel(label) ? "properties(vertex)" : label;
         final StringJoiner joiner = new StringJoiner(COMMA);
@@ -69,7 +70,7 @@ public class MapleNebulaDslDialectSelectionRender extends MapleDslDialectSelecti
     }
 
     @Override
-    protected String edge(@Nullable String label, String[] columns, String[] alias) {
+    protected String edge(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias) {
         if (notEquals(columns, alias)) return NULL;
         final String prefix = nullLabel(label) ? "properties(edge)" : label;
         final StringJoiner joiner = new StringJoiner(COMMA);
@@ -98,7 +99,7 @@ public class MapleNebulaDslDialectSelectionRender extends MapleDslDialectSelecti
     }
 
     @Override
-    protected String inV(@Nullable String label, String[] columns, String[] alias) {
+    protected String inV(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias) {
         if (notEquals(columns, alias)) return NULL;
         final String prefix = nullLabel(label) ? "properties($^)" : "$^" + DOT + label;
         final StringJoiner joiner = new StringJoiner(COMMA);
@@ -119,7 +120,7 @@ public class MapleNebulaDslDialectSelectionRender extends MapleDslDialectSelecti
     }
 
     @Override
-    protected String outV(@Nullable String label, String[] columns, String[] alias) {
+    protected String outV(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias) {
         if (notEquals(columns, alias)) return NULL;
         final String prefix = nullLabel(label) ? "properties($$)" : "$$" + DOT + label;
         final StringJoiner joiner = new StringJoiner(COMMA);
@@ -141,7 +142,7 @@ public class MapleNebulaDslDialectSelectionRender extends MapleDslDialectSelecti
 
     @Override
     public String dialect() {
-        return "nebula";
+        return MapleNebulaDslModule.DIALECT;
     }
 
     private boolean nullLabel(String label) {

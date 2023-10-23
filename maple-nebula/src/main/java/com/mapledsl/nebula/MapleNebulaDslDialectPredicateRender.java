@@ -4,6 +4,8 @@ import com.mapledsl.core.MapleDslDialectPredicateRender;
 import com.mapledsl.core.condition.common.OP;
 import com.mapledsl.core.model.Model;
 import com.mapledsl.nebula.model.NebulaModel;
+import com.mapledsl.nebula.module.MapleNebulaDslModule;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
@@ -12,7 +14,7 @@ import java.util.Map;
 public class MapleNebulaDslDialectPredicateRender extends MapleDslDialectPredicateRender {
 
     @Override
-    protected String vertex(@Nullable String label, String column) {
+    protected String vertex(@NotNull String ref,  @Nullable String label, String column) {
         if (Model.ID.equals(column))    return "id(vertex)";
         if (Model.TAG.equals(column))   return "head(labels(vertex))";
 
@@ -20,7 +22,7 @@ public class MapleNebulaDslDialectPredicateRender extends MapleDslDialectPredica
     }
 
     @Override
-    protected String edge(@Nullable String label, String column) {
+    protected String edge(@NotNull String ref, @Nullable String label, String column) {
         if (Model.E.SRC.equals(column)) return "src(edge)";
         if (Model.E.DST.equals(column)) return "dst(edge)";
         if (Model.TAG.equals(column))   return "type(edge)";
@@ -30,7 +32,7 @@ public class MapleNebulaDslDialectPredicateRender extends MapleDslDialectPredica
     }
 
     @Override
-    protected String inV(@Nullable String label, String column) {
+    protected String inV(@NotNull String ref, @Nullable String label, String column) {
         if (Model.ID.equals(column))    return "id($^)";
         if (Model.TAG.equals(column))   return "head(labels($^))";
 
@@ -38,7 +40,7 @@ public class MapleNebulaDslDialectPredicateRender extends MapleDslDialectPredica
     }
 
     @Override
-    protected String outV(@Nullable String label, String column) {
+    protected String outV(@NotNull String ref, @Nullable String label, String column) {
         if (Model.ID.equals(column))    return "id($$)";
         if (Model.TAG.equals(column))   return "head(labels($$))";
 
@@ -53,7 +55,7 @@ public class MapleNebulaDslDialectPredicateRender extends MapleDslDialectPredica
 
     @Override
     public String dialect() {
-        return "nebula";
+        return MapleNebulaDslModule.DIALECT;
     }
 
     private boolean nullLabel(String label) {
