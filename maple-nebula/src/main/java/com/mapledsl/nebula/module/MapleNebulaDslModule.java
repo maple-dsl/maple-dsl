@@ -4,15 +4,17 @@ import com.mapledsl.core.exception.MapleDslBindingException;
 import com.mapledsl.core.module.MapleDslDuplexModule;
 import com.mapledsl.core.module.MapleDslModule;
 import com.mapledsl.core.module.MapleDslResultHandler;
+import com.vesoft.nebula.Value;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.function.Predicate;
 
 import static java.util.Objects.requireNonNull;
 
-public class MapleNebulaDslModule extends MapleDslModule {
+public class MapleNebulaDslModule extends MapleDslDuplexModule {
     public static final String VERSION = "0.1.0";
     public static final String DIALECT = "nebula";
 
@@ -36,5 +38,15 @@ public class MapleNebulaDslModule extends MapleDslModule {
         }
 
         return dialectTemplateProperties;
+    }
+
+    @Override
+    public <IN, OUT> Predicate<MapleDslResultHandler<IN, OUT>> resultHandlerPredicate() {
+        return it -> it.getClass().isAssignableFrom(MapleNebulaDslResultHandler.class);
+    }
+
+    @Override
+    public Predicate<Class<?>> resultValuePredicate() {
+        return Value.class::equals;
     }
 }
