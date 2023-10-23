@@ -17,9 +17,12 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.compiler.CompiledST;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.ServiceLoader;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.lang.String.format;
 
@@ -28,24 +31,34 @@ import static java.lang.String.format;
  * @since 2023/08/21
  */
 final class MapleDslTemplateRegistry {
-    static final int DEFAULT_TEMPLATE_GROUP_POOL_MAX_TOTAL  = Runtime.getRuntime().availableProcessors() * 5;
-    static final int DEFAULT_TEMPLATE_GROUP_POOL_MAX_IDLE   = Runtime.getRuntime().availableProcessors() * 2;
-    static final int DEFAULT_TEMPLATE_GROUP_POOL_MIN_IDLE   = GenericObjectPoolConfig.DEFAULT_MIN_IDLE;
+    static final int DEFAULT_TEMPLATE_GROUP_POOL_MAX_TOTAL = Runtime.getRuntime().availableProcessors() * 5;
+    static final int DEFAULT_TEMPLATE_GROUP_POOL_MAX_IDLE = Runtime.getRuntime().availableProcessors() * 2;
+    static final int DEFAULT_TEMPLATE_GROUP_POOL_MIN_IDLE = GenericObjectPoolConfig.DEFAULT_MIN_IDLE;
 
+    final Boolean prettyPrint;
     final MapleDslConfiguration context;
     final GenericObjectPool<STGroup> templateGroup;
     final Properties templateProperties;
 
-    MapleDslTemplateRegistry(MapleDslConfiguration context, Integer maxTotal, Integer maxIdle, Integer minIdle) {
+    MapleDslTemplateRegistry(MapleDslConfiguration context, Integer maxTotal, Integer maxIdle, Integer minIdle, Boolean prettyPrint) {
         if (minIdle == null) minIdle = DEFAULT_TEMPLATE_GROUP_POOL_MIN_IDLE;
-        if (minIdle < DEFAULT_TEMPLATE_GROUP_POOL_MIN_IDLE) throw new IllegalArgumentException("TemplatePoolConfig#minIdle must not be negative.");
+        if (minIdle < DEFAULT_TEMPLATE_GROUP_POOL_MIN_IDLE) {
+            throw new IllegalArgumentException("TemplatePoolConfig#minIdle must not be negative.");
+        }
 
         if (maxIdle == null) maxIdle = DEFAULT_TEMPLATE_GROUP_POOL_MAX_IDLE;
-        if (maxIdle < DEFAULT_TEMPLATE_GROUP_POOL_MAX_IDLE) throw new IllegalArgumentException("TemplatePoolConfig#maxIdle must be greater than `CoreSize * 2`, it will occur thread-safe situation.");
-        if (maxIdle < minIdle) throw new IllegalArgumentException("TemplatePoolConfig#maxIdle must be greater than `minIdle`.");
+        if (maxIdle < DEFAULT_TEMPLATE_GROUP_POOL_MAX_IDLE) {
+            throw new IllegalArgumentException("TemplatePoolConfig#maxIdle must be greater than `Core * 2`, it will occur thread-safe situation.");
+        }
+
+        if (maxIdle < minIdle) {
+            throw new IllegalArgumentException("TemplatePoolConfig#maxIdle must be greater than `minIdle`.");
+        }
 
         if (maxTotal == null) maxTotal = DEFAULT_TEMPLATE_GROUP_POOL_MAX_TOTAL;
-        if (maxTotal < maxIdle) throw new IllegalArgumentException("TemplatePoolConfig#maxTotal must be greater than `maxIdle`.");
+        if (maxTotal < maxIdle) {
+            throw new IllegalArgumentException("TemplatePoolConfig#maxTotal must be greater than `maxIdle`.");
+        }
 
         final STGroupPooledObjectFactory templateGroupPooledObjectFactory = new STGroupPooledObjectFactory();
         final GenericObjectPoolConfig<STGroup> genericObjectPoolConfig = new GenericObjectPoolConfig<>();
@@ -54,6 +67,7 @@ final class MapleDslTemplateRegistry {
         genericObjectPoolConfig.setMinIdle(minIdle);
 
         this.context = context;
+        this.prettyPrint = prettyPrint;
         this.templateProperties = context.module().dialectProperties();
         this.templateGroup = new GenericObjectPool<>(templateGroupPooledObjectFactory, genericObjectPoolConfig);
         try {
@@ -69,20 +83,24 @@ final class MapleDslTemplateRegistry {
             final STGroup templateGroup = new STGroup();
             templateGroup.registerModelAdaptor(Object.class, new MapleDslModelAdaptor(context));
             templateGroup.registerRenderer(Class.class, new MapleDslClazzRender().bind(context));
-            templateGroup.registerRenderer(MapleDslDialectSelection.class, Optional.of(ServiceLoader.load(MapleDslDialectSelectionRender.class).iterator())
-                    .map(it -> it.hasNext() ? it.next() : null)
+            templateGroup.registerRenderer(MapleDslDialectSelection.class, spiStream(MapleDslDialectSelectionRender.class)
+                    .filter(Objects::nonNull)
                     .filter(it -> context.module.dialectPredicate().test(it.dialect()))
                     .map(it -> it.bind(context))
-                    .orElseThrow(() -> new MapleDslBindingException("selection initialize not found.")));
-            templateGroup.registerRenderer(MapleDslDialectFunction.class, Optional.of(ServiceLoader.load(MapleDslDialectFunctionRender.class).iterator())
-                    .map(it -> it.hasNext() ? it.next() : null)
+                    .findFirst()
+                    .orElseThrow(() -> new MapleDslBindingException("selection initialize not found."))
+            );
+            templateGroup.registerRenderer(MapleDslDialectFunction.class, spiStream(MapleDslDialectFunctionRender.class)
+                    .filter(Objects::nonNull)
                     .filter(it -> context.module.dialectPredicate().test(it.dialect()))
                     .map(it -> it.bind(context))
+                    .findFirst()
                     .orElseThrow(() -> new MapleDslBindingException("function initialize not found.")));
-            templateGroup.registerRenderer(MapleDslDialectPredicate.class, Optional.of(ServiceLoader.load(MapleDslDialectPredicateRender.class).iterator())
-                    .map(it -> it.hasNext() ? it.next() : null)
+            templateGroup.registerRenderer(MapleDslDialectPredicate.class, spiStream(MapleDslDialectPredicateRender.class)
+                    .filter(Objects::nonNull)
                     .filter(it -> context.module.dialectPredicate().test(it.dialect()))
                     .map(it -> it.bind(context))
+                    .findFirst()
                     .orElseThrow(() -> new MapleDslBindingException("predicate renderer not found."))
             );
 
@@ -135,7 +153,11 @@ final class MapleDslTemplateRegistry {
         }
     }
 
-    String inspect(String templateName) {
+    private String inspect(String templateName) {
         return templateName.charAt(0) != '/' ? '/' + templateName : templateName;
+    }
+
+    private <T> Stream<T> spiStream(Class<T> spiClazz) {
+        return StreamSupport.stream(ServiceLoader.load(spiClazz).spliterator(), false);
     }
 }
