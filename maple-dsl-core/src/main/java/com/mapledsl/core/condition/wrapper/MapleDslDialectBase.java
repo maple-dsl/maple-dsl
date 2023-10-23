@@ -6,6 +6,7 @@ import com.mapledsl.core.model.Model;
 public class MapleDslDialectBase<M extends Model<?>> {
     protected String instantiatedLabel;
     protected Class<M> instantiatedLabelClazz;
+    protected String instantiatedAlias;
     private boolean in = false, out = false, v = false, e = false;
 
     public String label(MapleDslConfiguration ctx) {
@@ -21,6 +22,11 @@ public class MapleDslDialectBase<M extends Model<?>> {
 
     public MapleDslDialectBase<M> setInstantiatedLabelClazz(Class<M> instantiatedLabelClazz) {
         this.instantiatedLabelClazz = instantiatedLabelClazz;
+        return this;
+    }
+
+    public MapleDslDialectBase<M> setInstantiatedAlias(String instantiatedAlias) {
+        this.instantiatedAlias = instantiatedAlias;
         return this;
     }
 
@@ -42,6 +48,10 @@ public class MapleDslDialectBase<M extends Model<?>> {
     public MapleDslDialectBase<M> setE(boolean e) {
         this.e = e;
         return this;
+    }
+
+    public String ref() {
+        return instantiatedAlias;
     }
 
     public boolean in() {

@@ -173,31 +173,55 @@ public final class G {
 
     static final class FetchVertexWrapper<V extends Model.V> extends FetchWrapper<V> {
         <R> FetchVertexWrapper(String label, R vertices, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
-            super(label, vertices, renderFunc, it -> it.setV(true).setInstantiatedLabel(label));
+            super(DEFAULT_VERTEX_ALIAS, label, vertices, renderFunc, it -> it
+                    .setV(true)
+                    .setInstantiatedLabel(label)
+                    .setInstantiatedAlias(DEFAULT_VERTEX_ALIAS))
+            ;
         }
 
         <R> FetchVertexWrapper(Class<V> labelClazz, R vertices, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
-            super(labelClazz, vertices, renderFunc, it -> it.setV(true).setInstantiatedLabelClazz(labelClazz));
+            super(DEFAULT_VERTEX_ALIAS, labelClazz, vertices, renderFunc, it -> it
+                    .setV(true)
+                    .setInstantiatedLabelClazz(labelClazz)
+                    .setInstantiatedAlias(DEFAULT_VERTEX_ALIAS)
+            );
         }
     }
 
     static final class FetchEdgeWrapper<E extends Model.E> extends FetchWrapper<E> {
         <R> FetchEdgeWrapper(String label, R edges, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
-            super(label, edges, renderFunc, it -> it.setE(true).setInstantiatedLabel(label));
+            super(DEFAULT_EDGE_ALIAS, label, edges, renderFunc, it -> it
+                    .setE(true)
+                    .setInstantiatedLabel(label)
+                    .setInstantiatedAlias(DEFAULT_EDGE_ALIAS)
+            );
         }
 
         <R> FetchEdgeWrapper(Class<E> labelClazz, R edges, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
-            super(labelClazz, edges, renderFunc, it -> it.setE(true).setInstantiatedLabelClazz(labelClazz));
+            super(DEFAULT_EDGE_ALIAS, labelClazz, edges, renderFunc, it -> it
+                    .setE(true)
+                    .setInstantiatedLabelClazz(labelClazz)
+                    .setInstantiatedAlias(DEFAULT_EDGE_ALIAS)
+            );
         }
     }
 
     static final class MatchVertexWrapper<V extends Model.V> extends MatchWrapper<V> {
         MatchVertexWrapper(String label, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
-            super(label, renderFunc, it -> it.setV(true).setInstantiatedLabel(label));
+            super(DEFAULT_VERTEX_ALIAS, label, renderFunc, it -> it
+                    .setV(true)
+                    .setInstantiatedLabel(label)
+                    .setInstantiatedAlias(DEFAULT_VERTEX_ALIAS)
+            );
         }
 
         MatchVertexWrapper(Class<V> labelClazz, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
-            super(labelClazz, renderFunc, it -> it.setV(true).setInstantiatedLabelClazz(labelClazz));
+            super(DEFAULT_VERTEX_ALIAS, labelClazz, renderFunc, it -> it
+                    .setV(true)
+                    .setInstantiatedLabelClazz(labelClazz)
+                    .setInstantiatedAlias(DEFAULT_VERTEX_ALIAS)
+            );
         }
 
         MatchVertexWrapper<V> asTraversal() {
@@ -214,11 +238,19 @@ public final class G {
 
     static final class MatchEdgeWrapper<E extends Model.E> extends MatchWrapper<E> {
         MatchEdgeWrapper(String label, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
-            super(label, renderFunc, it -> it.setE(true).setInstantiatedLabel(label));
+            super(DEFAULT_EDGE_ALIAS, label, renderFunc, it -> it
+                    .setE(true)
+                    .setInstantiatedLabel(label)
+                    .setInstantiatedAlias(DEFAULT_EDGE_ALIAS)
+            );
         }
 
         MatchEdgeWrapper(Class<E> labelClazz, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
-            super(labelClazz, renderFunc, it -> it.setE(true).setInstantiatedLabelClazz(labelClazz));
+            super(DEFAULT_EDGE_ALIAS, labelClazz, renderFunc, it -> it
+                    .setE(true)
+                    .setInstantiatedLabelClazz(labelClazz)
+                    .setInstantiatedAlias(DEFAULT_EDGE_ALIAS)
+            );
         }
 
         MatchEdgeWrapper<E> asDelete() {
@@ -235,7 +267,7 @@ public final class G {
         }
 
         TraversalWrapperFacade(MatchVertexWrapper<? extends Model.V> match) {
-            super(traversal);
+            super(DEFAULT_VERTEX_ALIAS, traversal);
             this.match = match.asTraversal();
         }
 

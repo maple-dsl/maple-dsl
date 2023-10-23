@@ -3,12 +3,17 @@ package com.mapledsl.core.condition.wrapper;
 import com.mapledsl.core.model.Model;
 import org.jetbrains.annotations.NotNull;
 
-public class MapleDslDialectSelection<M extends Model<?>> extends MapleDslDialectBase<M> {
-    private @NotNull final String[] columns;
-    private @NotNull final String[] aliases;
-
+public final class MapleDslDialectSelection<M extends Model<?>> extends MapleDslDialectBase<M> {
+    private final String[] columns;
+    private final String[] aliases;
+    private boolean all;
     public MapleDslDialectSelection<M> next;
-    public boolean all;
+
+    MapleDslDialectSelection(boolean all) {
+        this.columns = null;
+        this.aliases = null;
+        this.all = all;
+    }
 
     MapleDslDialectSelection(String column) {
         this(column, column);
@@ -40,15 +45,35 @@ public class MapleDslDialectSelection<M extends Model<?>> extends MapleDslDialec
         return columns == null;
     }
 
-    public String alias() {
-        return aliases[0];
-    }
-
     public String[] aliases() {
         return aliases;
     }
 
     public String[] columns() {
         return columns;
+    }
+
+    @Override
+    public MapleDslDialectSelection<M> setOut(boolean out) {
+        super.setOut(out);
+        return this;
+    }
+
+    @Override
+    public MapleDslDialectSelection<M> setIn(boolean in) {
+        super.setIn(in);
+        return this;
+    }
+
+    @Override
+    public MapleDslDialectSelection<M> setE(boolean e) {
+        super.setE(e);
+        return this;
+    }
+
+    @Override
+    public MapleDslDialectSelection<M> setV(boolean v) {
+        super.setV(v);
+        return this;
     }
 }

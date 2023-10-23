@@ -1,14 +1,15 @@
 package com.mapledsl.core.condition.wrapper;
 
 import com.mapledsl.core.condition.common.Func;
+import com.mapledsl.core.model.Model;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class MapleDslDialectFunction {
+public final class MapleDslDialectFunction<M extends Model<?>> extends MapleDslDialectBase<M> {
     private final @Nullable String column;
     private final @NotNull String alias;
     private final @NotNull Func func;
-    public MapleDslDialectFunction next;
+    public MapleDslDialectFunction<M> next;
 
     MapleDslDialectFunction(@NotNull Func func, @NotNull String alias) {
         this.column = null;

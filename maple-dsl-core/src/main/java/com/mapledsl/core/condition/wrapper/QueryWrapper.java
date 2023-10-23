@@ -15,20 +15,21 @@ import static java.util.Objects.requireNonNull;
 
 public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
     MapleDslDialectSelection<M> headSelect, tailSelect;
-    MapleDslDialectFunction headFunc, tailFunc;
+    MapleDslDialectFunction<M> headFunc, tailFunc;
 
     final Set<String> orderAscSet = new LinkedHashSet<>();
     final Set<String> orderDescSet = new LinkedHashSet<>();
     final Set<String> selectionColumnSet = new HashSet<>();
 
     private String[] orderCandidates;
-    private final Consumer<MapleDslDialectBase<M>> selectionDecorator;
+    private final Consumer<MapleDslDialectBase<M>> dialectBaseConsumer;
 
-    QueryWrapper(Consumer<MapleDslDialectBase<M>> selectionDecorator) {
-        this.selectionDecorator = selectionDecorator;
+    QueryWrapper(Consumer<MapleDslDialectBase<M>> dialectBaseConsumer) {
+        this.dialectBaseConsumer = dialectBaseConsumer;
     }
 
-    private synchronized void next(@NotNull MapleDslDialectFunction next) {
+    private synchronized void next(@NotNull MapleDslDialectFunction<M> next) {
+        dialectBaseConsumer.accept(next);
         orderCandidates = new String[] { next.alias() };
 
         if (next.column() != null && selectionColumnSet.contains(next.column())) {
@@ -46,7 +47,7 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
     }
 
     private synchronized void next(@NotNull MapleDslDialectSelection<M> next) {
-        selectionDecorator.accept(next);
+        dialectBaseConsumer.accept(next);
         orderCandidates = next.aliases();
         Collections.addAll(selectionColumnSet, next.columns());
 
@@ -162,7 +163,7 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
     @Override
     public Sort<M> count(String alias) {
         requireNonNull(alias);
-        next(new MapleDslDialectFunction(Func.CNT, alias));
+        next(new MapleDslDialectFunction<>(Func.CNT, alias));
         return this;
     }
 
@@ -172,7 +173,7 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
         requireNonNull(alias);
 
         // COUNT('age') missing select `age` as premiss.
-        next(new MapleDslDialectFunction(column, Func.CNT, alias));
+        next(new MapleDslDialectFunction<>(column, Func.CNT, alias));
         return this;
     }
 
@@ -187,7 +188,7 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
         requireNonNull(column);
         requireNonNull(alias);
         // SUM('age') missing select `age` as premiss.
-        next(new MapleDslDialectFunction(column, Func.SUM, alias));
+        next(new MapleDslDialectFunction<>(column, Func.SUM, alias));
         return this;
     }
 
@@ -202,7 +203,7 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
         requireNonNull(column);
         requireNonNull(alias);
         // AVG('age') missing select `age` as premiss.
-        next(new MapleDslDialectFunction(column, Func.AVG, alias));
+        next(new MapleDslDialectFunction<>(column, Func.AVG, alias));
         return this;
     }
 
@@ -217,7 +218,7 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
         requireNonNull(column);
         requireNonNull(alias);
         // MIN('age') missing select `age` as premiss.
-        next(new MapleDslDialectFunction(column, Func.MIN, alias));
+        next(new MapleDslDialectFunction<>(column, Func.MIN, alias));
         return this;
     }
 
@@ -232,7 +233,7 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
         requireNonNull(column);
         requireNonNull(alias);
         // MAX('age') missing select `age` as premiss.
-        next(new MapleDslDialectFunction(column, Func.MAX, alias));
+        next(new MapleDslDialectFunction<>(column, Func.MAX, alias));
         return this;
     }
 

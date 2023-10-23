@@ -15,21 +15,22 @@ import java.util.function.Consumer;
 import static java.util.Objects.requireNonNull;
 
 public class MatchWrapper<M extends Model<?>> extends QueryDuplexWrapper<M, Match<M>> implements Match<M>, Sort<M> {
-    static final int LABEL_INDEX = 0;
-    static final int SELECTION_INDEX = 1;
-    static final int PREDICATE_INDEX = 2;
-    static final int FUNCTION_INDEX = 3;
-    static final int ORDER_ASC_INDEX = 4;
-    static final int ORDER_DESC_INDEX = 5;
-    static final int SKIP_INDEX = 6;
-    static final int LIMIT_INDEX = 7;
-    protected static final int DELETE_INDEX = 8;
-    protected static final int DETACH_INDEX = 9;
-    protected static final int TRAVERSE_INDEX = 10;
+    static final int REF_INDEX = 0;
+    static final int LABEL_INDEX = 1;
+    static final int SELECTION_INDEX = 2;
+    static final int PREDICATE_INDEX = 3;
+    static final int FUNCTION_INDEX = 4;
+    static final int ORDER_ASC_INDEX = 5;
+    static final int ORDER_DESC_INDEX = 6;
+    static final int SKIP_INDEX = 7;
+    static final int LIMIT_INDEX = 8;
+    protected static final int DELETE_INDEX = 9;
+    protected static final int DETACH_INDEX = 10;
+    protected static final int TRAVERSE_INDEX = 11;
     /**
      * Arguments position:
      * <pre>
-     * [0] label
+     * [0] ref         [1] tag
      * [1] selection
      * [2] predicate
      * [3] function
@@ -39,18 +40,20 @@ public class MatchWrapper<M extends Model<?>> extends QueryDuplexWrapper<M, Matc
      * [10] traverse(only:vertex)
      * </pre>
      */
-    protected final Object[] arguments = new Object[11];
+    protected final Object[] arguments = new Object[12];
     final BiFunction<MapleDslConfiguration, Object[], String> renderFunc;
 
-    protected MatchWrapper(String label, BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Consumer<MapleDslDialectBase<M>> renderModelDecorator) {
+    protected MatchWrapper(String reference, String label, BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Consumer<MapleDslDialectBase<M>> renderModelDecorator) {
         super(new QueryWrapper<>(renderModelDecorator), new ConditionWrapper<>(renderModelDecorator));
         this.renderFunc = renderFunc;
+        this.arguments[REF_INDEX] = reference;
         this.arguments[LABEL_INDEX] = label;
     }
 
-    protected MatchWrapper(Class<M> labelClazz, BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Consumer<MapleDslDialectBase<M>> renderModelDecorator) {
+    protected MatchWrapper(String reference, Class<M> labelClazz, BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Consumer<MapleDslDialectBase<M>> renderModelDecorator) {
         super(new QueryWrapper<>(renderModelDecorator), new ConditionWrapper<>(renderModelDecorator));
         this.renderFunc = renderFunc;
+        this.arguments[REF_INDEX] = reference;
         this.arguments[LABEL_INDEX] = labelClazz;
     }
 
@@ -63,6 +66,8 @@ public class MatchWrapper<M extends Model<?>> extends QueryDuplexWrapper<M, Matc
         else arguments[ORDER_DESC_INDEX] = selection.orderDescSet;
 
         this.arguments[PREDICATE_INDEX] = predicate.head;
+
+        if (selection.headSelect == null) selection.headSelect = new MapleDslDialectSelection<>(true);
         this.arguments[SELECTION_INDEX] = selection.headSelect;
         this.arguments[FUNCTION_INDEX] = selection.headFunc;
 

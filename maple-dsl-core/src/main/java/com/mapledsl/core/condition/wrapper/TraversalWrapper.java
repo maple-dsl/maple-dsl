@@ -9,12 +9,18 @@ import com.mapledsl.core.model.Model;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static java.util.Objects.requireNonNull;
 
@@ -69,15 +75,11 @@ public class TraversalWrapper implements Traversal {
     final BiFunction<MapleDslConfiguration, Object[], String> renderFunc;
 
     Object[] arguments = new Object[LENGTH];
-    static final String DEFAULT_NEXT_TRAVERSAL_FROM_ALIAS = "_dst";
-    static final String DEFAULT_IN_ALIAS = "src";
-    static final String DEFAULT_OUT_ALIAS = "dst";
-    static final String DEFAULT_EDGE_ALIAS = "e";
     String nextTraversalFrom;
 
     List<MapleDslDialectPredicate<?>> predicateList = new LinkedList<>();
     List<MapleDslDialectSelection<?>> selectionList = new LinkedList<>();
-    List<MapleDslDialectFunction> functionList = new LinkedList<>();
+    List<MapleDslDialectFunction<?>> functionList = new LinkedList<>();
 
     /**
      * Traversal the vertices#ID of the graph.
@@ -89,24 +91,25 @@ public class TraversalWrapper implements Traversal {
         this.arguments[FROM_INDEX] = from;
     }
 
-    protected TraversalWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
+    protected TraversalWrapper(String fromMatchReference, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
         this.renderFunc = renderFunc;
-        this.arguments[FROM_MATCH_INDEX] = true;
+        this.arguments[FROM_MATCH_INDEX] = fromMatchReference;
     }
 
     private synchronized void nextTraversal(boolean terminate) {
-        if (arguments[DIRECTION_IN_INDEX] == null && arguments[DIRECTION_OUT_INDEX] == null && arguments[DIRECTION_BOTH_INDEX] == null)
+        if (arguments[DIRECTION_IN_INDEX] == null && arguments[DIRECTION_OUT_INDEX] == null && arguments[DIRECTION_BOTH_INDEX] == null) {
             throw new MapleDslExecutionException("Missing direction_clause value, use `inE`, `outE`, `bothE`.");
-
-        // missing select will append `outV(it -> it.selectAs(Model.ID, "_dst")` automatically.
-        if (nextTraversalFrom == null) {
-            nextTraversalFrom = DEFAULT_NEXT_TRAVERSAL_FROM_ALIAS;
-            selectionList.add(new MapleDslDialectSelection<Model.V>(Model.ID, nextTraversalFrom) {{ setOut(true); }});
         }
 
         if (arguments[IN_ALIAS_INDEX] == null)      arguments[IN_ALIAS_INDEX] = DEFAULT_IN_ALIAS;
         if (arguments[OUT_ALIAS_INDEX] == null)     arguments[OUT_ALIAS_INDEX] = DEFAULT_OUT_ALIAS;
         if (arguments[EDGE_ALIAS_INDEX] == null)    arguments[EDGE_ALIAS_INDEX] = DEFAULT_EDGE_ALIAS;
+
+        // missing select will append `outV(it -> it.selectAs(Model.ID, "_dst")` automatically.
+        if (nextTraversalFrom == null) {
+            nextTraversalFrom = DEFAULT_NEXT_TRAVERSAL_FROM_ALIAS;
+            selectionList.add(new MapleDslDialectSelection<Model.V>(Model.ID, nextTraversalFrom).setOut(true));
+        }
 
         if (!predicateList.isEmpty()) {
             arguments[PREDICATE_INDEX] = predicateList;
@@ -569,7 +572,7 @@ public class TraversalWrapper implements Traversal {
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("outV alias must not be empty.");
         this.arguments[OUT_ALIAS_INDEX] = alias;
 
-        final StepWrapper<V> outStep = new StepWrapper<>(alias, it -> it.setOut(true));
+        final StepWrapper<V> outStep = new StepWrapper<>(it -> it.setOut(true).setInstantiatedAlias(alias));
         step.accept(outStep);
         outStep.rebaseNextTraversal();
         outStep.sink();
@@ -583,7 +586,7 @@ public class TraversalWrapper implements Traversal {
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("outV alias must not be empty.");
         this.arguments[OUT_ALIAS_INDEX] = alias;
 
-        final StepWrapper<V> outStep = new StepWrapper<>(alias, it -> it.setOut(true).setInstantiatedLabelClazz(label));
+        final StepWrapper<V> outStep = new StepWrapper<>(it -> it.setOut(true).setInstantiatedLabelClazz(label).setInstantiatedAlias(alias));
         step.accept(outStep);
         outStep.rebaseNextTraversal();
         outStep.sink();
@@ -597,7 +600,7 @@ public class TraversalWrapper implements Traversal {
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("outV alias must not be empty.");
         this.arguments[OUT_ALIAS_INDEX] = alias;
 
-        final StepWrapper<V> outStep = new StepWrapper<>(alias, it -> it.setOut(true).setInstantiatedLabel(label));
+        final StepWrapper<V> outStep = new StepWrapper<>(it -> it.setOut(true).setInstantiatedLabel(label).setInstantiatedAlias(alias));
         step.accept(outStep);
         outStep.rebaseNextTraversal();
         outStep.sink();
@@ -610,7 +613,7 @@ public class TraversalWrapper implements Traversal {
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("inV alias must not be empty.");
         this.arguments[IN_ALIAS_INDEX] = alias;
 
-        final StepWrapper<V> inStep = new StepWrapper<>(alias, it -> it.setIn(true));
+        final StepWrapper<V> inStep = new StepWrapper<>(it -> it.setIn(true).setInstantiatedAlias(alias));
         step.accept(inStep);
         inStep.sink();
         return this;
@@ -623,7 +626,7 @@ public class TraversalWrapper implements Traversal {
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("inV alias must not be empty.");
         this.arguments[IN_ALIAS_INDEX] = alias;
 
-        final StepWrapper<V> inStep = new StepWrapper<>(alias, it -> it.setIn(true).setInstantiatedLabelClazz(label));
+        final StepWrapper<V> inStep = new StepWrapper<>(it -> it.setIn(true).setInstantiatedLabelClazz(label));
         step.accept(inStep);
         inStep.sink();
         return this;
@@ -636,7 +639,7 @@ public class TraversalWrapper implements Traversal {
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("inV alias must not be empty.");
         this.arguments[IN_ALIAS_INDEX] = alias;
 
-        final StepWrapper<V> inStep = new StepWrapper<>(alias, it -> it.setIn(true).setInstantiatedLabel(label));
+        final StepWrapper<V> inStep = new StepWrapper<>(it -> it.setIn(true).setInstantiatedLabel(label).setInstantiatedAlias(alias));
         step.accept(inStep);
         inStep.sink();
         return this;
@@ -649,7 +652,7 @@ public class TraversalWrapper implements Traversal {
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("edge alias must not be empty.");
         this.arguments[EDGE_ALIAS_INDEX] = alias;
 
-        final StepWrapper<E> edgeStep = new StepWrapper<>(alias, it -> it.setE(true).setInstantiatedLabelClazz(label));
+        final StepWrapper<E> edgeStep = new StepWrapper<>(it -> it.setE(true).setInstantiatedLabelClazz(label).setInstantiatedAlias(alias));
         step.accept(edgeStep);
         edgeStep.sink();
         return this;
@@ -661,7 +664,7 @@ public class TraversalWrapper implements Traversal {
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("edge alias must not be empty.");
         this.arguments[EDGE_ALIAS_INDEX] = alias;
 
-        final StepWrapper<E> edgeStep = new StepWrapper<>(alias, it -> it.setE(true));
+        final StepWrapper<E> edgeStep = new StepWrapper<>(it -> it.setE(true).setInstantiatedAlias(alias));
         step.accept(edgeStep);
         edgeStep.sink();
         return this;
@@ -674,18 +677,18 @@ public class TraversalWrapper implements Traversal {
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("edge alias must not be empty.");
         this.arguments[EDGE_ALIAS_INDEX] = alias;
 
-        final StepWrapper<E> edgeStep = new StepWrapper<>(alias, it -> it.setE(true).setInstantiatedLabel(label));
+        final StepWrapper<E> edgeStep = new StepWrapper<>(it -> it.setE(true).setInstantiatedLabel(label).setInstantiatedAlias(alias));
         stepConsumer.accept(edgeStep);
         edgeStep.sink();
         return this;
     }
 
     class StepWrapper<M extends Model<?>> extends QueryDuplexWrapper<M, Step<M>> implements Step<M> {
-        private final String alias;
+        private final Consumer<MapleDslDialectBase<M>> decorator;
 
-        StepWrapper(String alias, Consumer<MapleDslDialectBase<M>> decorator) {
+        StepWrapper(Consumer<MapleDslDialectBase<M>> decorator) {
             super(new QueryWrapper<>(decorator), new ConditionWrapper<>(decorator));
-            this.alias = alias;
+            this.decorator = decorator;
         }
 
         @Override
@@ -741,7 +744,8 @@ public class TraversalWrapper implements Traversal {
         @Override
         public void allSelect() {
             if (selection.headSelect != null) selection.headSelect = null;
-            selection.headSelect = new MapleDslDialectSelection<M>(alias) {{ all = true; }};
+            selection.headSelect = new MapleDslDialectSelection<>(true);
+            decorator.accept(selection.headSelect);
         }
 
         @Override
@@ -753,10 +757,9 @@ public class TraversalWrapper implements Traversal {
             // quickly-check selection whether for out vertex.
             if (!selection.headSelect.out()) return;
             // check selection chains whether alias contains "ID".
+
             for (MapleDslDialectSelection<M> cur = selection.headSelect;; cur = cur.next) {
-                int index = Arrays.binarySearch(
-                        cur.columns(),
-                        Model.ID,
+                int index = Arrays.binarySearch(cur.columns(), Model.ID,
                         Comparator.comparing(Function.identity(), String::compareToIgnoreCase)
                 );
                 if (index != -1) {

@@ -4,42 +4,47 @@ import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.condition.Fetch;
 import com.mapledsl.core.condition.Sort;
 import com.mapledsl.core.model.Model;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public class FetchWrapper<M extends Model<?>> extends QueryDuplexWrapper<M, Fetch<M>> implements Fetch<M>, Sort<M> {
-    static final int LABEL_INDEX = 0;
-    static final int FROM_INDEX = 1;
-    static final int SELECTION_INDEX = 2;
-    static final int FUNCTION_INDEX = 3;
-    static final int ORDER_ASC_INDEX = 4;
-    static final int ORDER_DESC_INDEX = 5;
-    static final int SKIP_INDEX = 6;
-    static final int LIMIT_INDEX = 7;
+    static final int REF_INDEX = 0;
+    static final int LABEL_INDEX = 1;
+    static final int FROM_INDEX = 2;
+    static final int SELECTION_INDEX = 3;
+    static final int FUNCTION_INDEX = 4;
+    static final int ORDER_ASC_INDEX = 5;
+    static final int ORDER_DESC_INDEX = 6;
+    static final int SKIP_INDEX = 7;
+    static final int LIMIT_INDEX = 8;
     /**
      * Arguments position:
      * <pre>
-     * [0] label       [1] from
-     * [2] selection
-     * [3] function
-     * [4] orderAsc    [5] orderDsc
-     * [6] skip        [7] limit
+     * [0] ref         [1] label
+     * [2] from
+     * [3] selection
+     * [4] function
+     * [5] orderAsc    [6] orderDsc
+     * [7] skip        [8] limit
      * </pre>
      */
     final Object[] arguments = new Object[9];
     final BiFunction<MapleDslConfiguration, Object[], String> renderFunc;
 
-    protected <R> FetchWrapper(String label, R vertices, BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Consumer<MapleDslDialectBase<M>> renderModelDecorator) {
+    protected <R> FetchWrapper(@NotNull String reference, @NotNull String label, R vertices, BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Consumer<MapleDslDialectBase<M>> renderModelDecorator) {
         super(new QueryWrapper<>(renderModelDecorator), new ConditionWrapper<>(renderModelDecorator));
         this.renderFunc = renderFunc;
+        this.arguments[REF_INDEX] = reference;
         this.arguments[LABEL_INDEX] = label;
         this.arguments[FROM_INDEX] = vertices;
     }
 
-    protected <R> FetchWrapper(Class<M> labelClazz, R vertices, BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Consumer<MapleDslDialectBase<M>> renderModelDecorator) {
+    protected <R> FetchWrapper(@NotNull String reference, @NotNull Class<M> labelClazz, R vertices, BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Consumer<MapleDslDialectBase<M>> renderModelDecorator) {
         super(new QueryWrapper<>(renderModelDecorator), new ConditionWrapper<>(renderModelDecorator));
         this.renderFunc = renderFunc;
+        this.arguments[REF_INDEX] = reference;
         this.arguments[LABEL_INDEX] = labelClazz;
         this.arguments[FROM_INDEX] = vertices;
     }
@@ -57,6 +62,7 @@ public class FetchWrapper<M extends Model<?>> extends QueryDuplexWrapper<M, Fetc
         if (selection.orderDescSet.isEmpty()) arguments[ORDER_DESC_INDEX] = null;
         else arguments[ORDER_DESC_INDEX] = selection.orderDescSet;
 
+        if (selection.headSelect == null) selection.headSelect = new MapleDslDialectSelection<>(true);
         this.arguments[SELECTION_INDEX] = selection.headSelect;
         this.arguments[FUNCTION_INDEX] = selection.headFunc;
 

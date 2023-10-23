@@ -15,10 +15,10 @@ public abstract class MapleDslDialectSelectionRender extends MapleDslDialectBase
     protected abstract String inVRef(@Nullable String label, @NotNull String alias);
     protected abstract String outVRef(@Nullable String label, @NotNull String alias);
 
-    protected abstract String vertex(@Nullable String label, String[] columns, String[] alias);
-    protected abstract String edge(@Nullable String label, String[] columns, String[] alias);
-    protected abstract String inV(@Nullable String label, String[] columns, String[] alias);
-    protected abstract String outV(@Nullable String label, String[] columns, String[] alias);
+    protected abstract String vertex(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias);
+    protected abstract String edge(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias);
+    protected abstract String inV(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias);
+    protected abstract String outV(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias);
 
     @Override
     public String toString(MapleDslDialectSelection value, String formatString, Locale locale) {
@@ -33,18 +33,19 @@ public abstract class MapleDslDialectSelectionRender extends MapleDslDialectBase
 
     private String toSelection(MapleDslDialectSelection<?> value) {
         if (value.isAllPresent())  {
-            if (value.v())    return vertexRef(value.alias());
-            if (value.e())    return edgeRef(value.alias());
-            if (value.in())   return inVRef(value.label(context), value.alias());
-            if (value.out())  return outVRef(value.label(context), value.alias());
+            if (value.v())    return vertexRef(value.ref());
+            if (value.e())    return edgeRef(value.ref());
+            if (value.in())   return inVRef(value.label(context), value.ref());
+            if (value.out())  return outVRef(value.label(context), value.ref());
 
             throw new MapleDslBindingException(NULL);
         }
 
-        if (value.v())    return vertex(value.label(context), value.columns(), value.aliases());
-        if (value.e())    return edge(value.label(context), value.columns(), value.aliases());
-        if (value.in())   return inV(value.label(context), value.columns(), value.aliases());
-        if (value.out())  return outV(value.label(context), value.columns(), value.aliases());
+        if (value.v())    return vertex(value.ref(), value.label(context), value.columns(), value.aliases());
+        if (value.e())    return edge(value.ref(), value.label(context), value.columns(), value.aliases());
+
+        if (value.in())   return inV(value.ref(), value.label(context), value.columns(), value.aliases());
+        if (value.out())  return outV(value.ref(), value.label(context), value.columns(), value.aliases());
 
         throw new MapleDslBindingException(NULL);
     }

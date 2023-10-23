@@ -3,24 +3,25 @@ package com.mapledsl.core;
 import com.mapledsl.core.condition.common.OP;
 import com.mapledsl.core.condition.wrapper.MapleDslDialectPredicate;
 import com.mapledsl.core.exception.MapleDslBindingException;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.stringtemplate.v4.AttributeRenderer;
 
 import java.util.Locale;
 
 public abstract class MapleDslDialectPredicateRender extends MapleDslDialectBaseRender implements AttributeRenderer<MapleDslDialectPredicate> {
-    protected abstract String vertex(@Nullable String label, String column);
-    protected abstract String edge(@Nullable String label, String column);
-    protected abstract String inV(@Nullable String label, String column);
-    protected abstract String outV(@Nullable String label, String column);
+    protected abstract String vertex(@NotNull String ref, @Nullable String label, String column);
+    protected abstract String edge(@NotNull String ref, @Nullable String label, String column);
+    protected abstract String inV(@NotNull String ref, @Nullable String label, String column);
+    protected abstract String outV(@NotNull String ref, @Nullable String label, String column);
 
     protected abstract String op(OP op);
 
     private String column(MapleDslDialectPredicate<?> predicate) {
-        if (predicate.v())    return vertex(predicate.label(context), predicate.column());
-        if (predicate.e())    return edge(predicate.label(context), predicate.column());
-        if (predicate.in())   return inV(predicate.label(context), predicate.column());
-        if (predicate.out())  return outV(predicate.label(context), predicate.column());
+        if (predicate.v())    return vertex(predicate.ref(), predicate.label(context), predicate.column());
+        if (predicate.e())    return edge(predicate.ref(), predicate.label(context), predicate.column());
+        if (predicate.in())   return inV(predicate.ref(), predicate.label(context), predicate.column());
+        if (predicate.out())  return outV(predicate.ref(), predicate.label(context), predicate.column());
 
         throw new MapleDslBindingException(NULL);
     }
