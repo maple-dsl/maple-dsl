@@ -7,7 +7,7 @@ import com.mapledsl.core.exception.MapleDslException;
  * @author bofa1ex
  * @since 2023/08/28
  */
-public interface Wrapper<Children> {
+public interface Wrapper<Children> extends WrapperConstants {
     Children limit(int limit);
     Children limit(int skip, int limit);
 
