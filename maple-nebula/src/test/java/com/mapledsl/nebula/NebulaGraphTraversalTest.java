@@ -3,19 +3,12 @@ package com.mapledsl.nebula;
 import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.annotation.Label;
 import com.mapledsl.core.exception.MapleDslExecutionException;
-import com.mapledsl.core.extension.KeyPolicyStrategies;
-import com.mapledsl.core.extension.NamingStrategies;
 import com.mapledsl.core.model.Model;
 import com.mapledsl.nebula.model.NebulaModel;
-import com.mapledsl.nebula.module.MapleNebulaDslModule;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import java.time.ZoneId;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import static com.mapledsl.core.G.traverse;
 import static com.mapledsl.core.G.vertex;
@@ -25,19 +18,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class NebulaGraphTraversalTest {
     @BeforeAll
     public static void init() {
-        new MapleDslConfiguration.Builder()
-                .module(MapleNebulaDslModule.class)
-                .templatePoolConfig(200, Runtime.getRuntime().availableProcessors() * 2, 2)
-                .templatePrettyPrint()
-                .namingStrategy(NamingStrategies.SNAKE_CASE)
-                .keyPolicyStrategy(KeyPolicyStrategies.MANUAL)
-                .dateFormatter("yyyy-MM-dd")
-                .dateTimeFormatter("yyyy-MM-dd HH:mm:ss")
-                .timeFormatter("HH:mm:ss")
-                .locale(Locale.ENGLISH)
-                .zoneId(ZoneId.systemDefault())
-                .timeZone(TimeZone.getDefault())
-                .build();
+        MapleDslConfiguration.primaryConfiguration(MapleDslConfiguration.Builder::templatePrettyPrint)
+                .registerBeanDefinition("com.mapledsl.nebula");
+//                .registerBeanDefinition(Person.class)
+//                .registerBeanDefinition(Impact.class)
+//                .registerBeanDefinition(Follow.class);
     }
 
     @Test
@@ -164,8 +149,25 @@ public class NebulaGraphTraversalTest {
         );
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"p001\",\"p002\" OVER impact WHERE id($$) IS NOT NULL YIELD id($$) AS p_id,$$.person.name AS p_name,head(labels($$)) AS p_tag " +
+            "| ORDER BY $-.p_tag ASC,$-.p_id,$-.p_name DESC")
+    public void should_traverse_order(String expected) {
+        assertEquals(expected, traverse("p001", "p002")
+                .outE(Impact.class)
+                .outV("p", Person.class, it -> it
+                        .selectAs(Person::id, "p_id")
+                        .selectAs(Person::getName, "p_name")
+                        .descending()
+                        .selectAs(Person::label, "p_tag")
+                        .ascending()
+                )
+                .render()
+        );
+    }
+
     @Label("person")
-    static class Person extends Model.V {
+    public static class Person extends Model.V {
         private String name;
 
         public String getName() {
@@ -174,10 +176,10 @@ public class NebulaGraphTraversalTest {
     }
 
     @Label("impact")
-    static class Impact extends NebulaModel.E {
+    public static class Impact extends NebulaModel.E {
     }
 
     @Label("follow")
-    static class Follow extends NebulaModel.E {
+    public static class Follow extends NebulaModel.E {
     }
 }
