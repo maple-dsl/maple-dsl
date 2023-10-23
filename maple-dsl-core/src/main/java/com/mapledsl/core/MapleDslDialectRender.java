@@ -11,18 +11,20 @@ import java.util.function.BiFunction;
  * @author bofa1ex
  * @since 2023/08/23
  */
+@SuppressWarnings("DuplicatedCode")
 enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[], String> {
     fetchV {
         @Override
         ST fill(ST fmt, Object[] args) {
-            fmt.add("tag", args[0]);
-            fmt.add("from", args[1]);
+            fmt.add("ref", args[0]);
+            fmt.add("tag", args[1]);
             fmt.add("selection", args[2]);
-            fmt.add("function", args[3]);
-            fmt.add("order_asc", args[4]);
-            fmt.add("order_desc", args[5]);
-            fmt.add("skip", args[6]);
-            fmt.add("limit", args[7]);
+            fmt.add("where", args[3]);
+            fmt.add("function", args[4]);
+            fmt.add("order_asc", args[5]);
+            fmt.add("order_desc", args[6]);
+            fmt.add("skip", args[7]);
+            fmt.add("limit", args[8]);
             return fmt;
         }
     },
@@ -35,32 +37,34 @@ enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[]
     matchV {
         @Override
         ST fill(ST fmt, Object[] args) {
-            fmt.add("tag", args[0]);
-            fmt.add("selection", args[1]);
-            fmt.add("where", args[2]);
-            fmt.add("function", args[3]);
-            fmt.add("order_asc", args[4]);
-            fmt.add("order_desc", args[5]);
-            fmt.add("skip", args[6]);
-            fmt.add("limit", args[7]);
-            fmt.add("delete", args[8]);
-            fmt.add("detach", args[9]);
-            fmt.add("traverse", args[10]);
+            fmt.add("ref", args[0]);
+            fmt.add("tag", args[1]);
+            fmt.add("selection", args[2]);
+            fmt.add("where", args[3]);
+            fmt.add("function", args[4]);
+            fmt.add("order_asc", args[5]);
+            fmt.add("order_desc", args[6]);
+            fmt.add("skip", args[7]);
+            fmt.add("limit", args[8]);
+            fmt.add("delete", args[9]);
+            fmt.add("detach", args[10]);
+            fmt.add("traverse", args[11]);
             return fmt;
         }
     },
     matchE {
         @Override
         ST fill(ST fmt, Object[] args) {
-            fmt.add("tag", args[0]);
-            fmt.add("selection", args[1]);
-            fmt.add("where", args[2]);
-            fmt.add("function", args[3]);
-            fmt.add("order_asc", args[4]);
-            fmt.add("order_desc", args[5]);
-            fmt.add("skip", args[6]);
-            fmt.add("limit", args[7]);
-            fmt.add("delete", args[8]);
+            fmt.add("ref", args[0]);
+            fmt.add("tag", args[1]);
+            fmt.add("selection", args[2]);
+            fmt.add("where", args[3]);
+            fmt.add("function", args[4]);
+            fmt.add("order_asc", args[5]);
+            fmt.add("order_desc", args[6]);
+            fmt.add("skip", args[7]);
+            fmt.add("limit", args[8]);
+            fmt.add("delete", args[9]);
             return fmt;
         }
     },
@@ -103,7 +107,8 @@ enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[]
         final @NotNull String templateName = name();
         final @NotNull ST fmt = context.templateRegistry.borrowTemplate(templateName);
         try {
-            return fill(fmt, args).render();
+            final String statement = fill(fmt, args).render();
+            return context.templateRegistry.prettyPrint ? statement.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s+", ",") : statement;
         } finally {
             context.templateRegistry.returnTemplate(fmt);
         }

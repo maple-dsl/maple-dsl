@@ -46,7 +46,7 @@ public final class MapleDslConfiguration {
 
     MapleDslConfiguration(@NotNull MapleDslModule module, @NotNull RegionConfig regionConfig,
                           @NotNull NamingStrategy namingStrategy, @NotNull KeyPolicyStrategy keyPolicyStrategy,
-                          @Nullable Integer templatePoolConfigMaxTotal, @Nullable Integer templatePoolConfigMaxIdle, @Nullable Integer templatePoolConfigMinIdle) {
+                          @Nullable Integer templatePoolConfigMaxTotal, @Nullable Integer templatePoolConfigMaxIdle, @Nullable Integer templatePoolConfigMinIdle, @NotNull boolean templatePrettyPrint) {
         this.module = module;
         this.regionConfig = regionConfig;
         this.namingStrategy = namingStrategy;
@@ -54,7 +54,7 @@ public final class MapleDslConfiguration {
 
         this.mapperRegistry = new MapleDslDefinitionRegistry(this);
         this.handlerRegistry = new MapleDslHandlerRegistry(this);
-        this.templateRegistry = new MapleDslTemplateRegistry(this, templatePoolConfigMaxTotal, templatePoolConfigMaxIdle, templatePoolConfigMinIdle);
+        this.templateRegistry = new MapleDslTemplateRegistry(this, templatePoolConfigMaxTotal, templatePoolConfigMaxIdle, templatePoolConfigMinIdle, templatePrettyPrint);
     }
 
     public <BEAM> MapleDslConfiguration registerBeanPropertyCustomizer(Class<BEAM> clazz, BeanPropertyCustomizer<BEAM> customizer) {
@@ -104,6 +104,10 @@ public final class MapleDslConfiguration {
 
     public MapleDslResultHandler<?,?> getResultHandler(Class<?> clazz) {
         return handlerRegistry.getResultHandler(clazz);
+    }
+
+    public MapleDslResultHandler<?,?> getDefaultResultHandler() {
+        return handlerRegistry.getDefaultResultHandler();
     }
 
     public MapleDslParameterHandler getNullParameterHandler() {
@@ -156,7 +160,7 @@ public final class MapleDslConfiguration {
     }
 
     public static class Builder {
-        boolean primary;
+        boolean primary, templatePrettyPrint;
         Integer templatePoolConfigMaxTotal, templatePoolConfigMaxIdle, templatePoolConfigMinIdle;
         Class<? extends MapleDslModule> moduleClazz;
         MapleDslModule module;
@@ -263,6 +267,11 @@ public final class MapleDslConfiguration {
             return this;
         }
 
+        public Builder templatePrettyPrint() {
+            this.templatePrettyPrint = true;
+            return this;
+        }
+
         public Builder asPrimary() {
             this.primary = true;
             return this;
@@ -280,7 +289,7 @@ public final class MapleDslConfiguration {
 
             final MapleDslConfiguration configuration = new MapleDslConfiguration(
                     module, regionConfig, namingStrategy, keyPolicyStrategy,
-                    templatePoolConfigMaxTotal, templatePoolConfigMaxIdle, templatePoolConfigMinIdle
+                    templatePoolConfigMaxTotal, templatePoolConfigMaxIdle, templatePoolConfigMinIdle, templatePrettyPrint
             );
 
             if (primary) PRIMARY_CONFIGURATION.set(configuration);
