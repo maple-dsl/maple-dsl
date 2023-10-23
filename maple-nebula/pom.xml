@@ -12,11 +12,19 @@
     <version>0.1.0</version>
     <modelVersion>4.0.0</modelVersion>
 
+    <properties>
+        <nebula.client.version>3.0.0</nebula.client.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.maple</groupId>
             <artifactId>maple-dsl-core</artifactId>
-            <version>0.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vesoft</groupId>
+            <artifactId>client</artifactId>
+            <version>${nebula.client.version}</version>
         </dependency>
         <!-- test -->
         <dependency>
