@@ -1,7 +1,7 @@
 package com.mapledsl.core;
 
+import com.mapledsl.core.annotation.Label;
 import com.mapledsl.core.exception.MapleDslBindingException;
-import com.mapledsl.core.exception.MapleDslException;
 import com.mapledsl.core.extension.KeyPolicyStrategies;
 import com.mapledsl.core.extension.KeyPolicyStrategy;
 import com.mapledsl.core.extension.NamingStrategies;
@@ -14,22 +14,18 @@ import com.mapledsl.core.module.MapleDslResultHandler;
 import com.mapledsl.core.module.MapleDslModule;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.reflections.Reflections;
+import org.reflections.util.ClasspathHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.ServiceLoader;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.UnaryOperator;
 import java.util.stream.StreamSupport;
 
 public final class MapleDslConfiguration {
@@ -46,7 +42,7 @@ public final class MapleDslConfiguration {
 
     MapleDslConfiguration(@NotNull MapleDslModule module, @NotNull RegionConfig regionConfig,
                           @NotNull NamingStrategy namingStrategy, @NotNull KeyPolicyStrategy keyPolicyStrategy,
-                          @Nullable Integer templatePoolConfigMaxTotal, @Nullable Integer templatePoolConfigMaxIdle, @Nullable Integer templatePoolConfigMinIdle, @NotNull boolean templatePrettyPrint) {
+                          @Nullable Integer templatePoolConfigMaxTotal, @Nullable Integer templatePoolConfigMaxIdle, @Nullable Integer templatePoolConfigMinIdle, boolean templatePrettyPrint) {
         this.module = module;
         this.regionConfig = regionConfig;
         this.namingStrategy = namingStrategy;
@@ -77,7 +73,24 @@ public final class MapleDslConfiguration {
         return this;
     }
 
-    public @Nullable <M extends Model<?>> String getLabel(Class<M> beanClazz) {
+    public <BEAN> MapleDslConfiguration registerBeanDefinition(Class<BEAN> clazz) {
+        mapperRegistry.registerBeanDefinition(clazz);
+        return this;
+    }
+
+    public MapleDslConfiguration registerBeanDefinition(String scanPackage) {
+        final Reflections reflections = new Reflections(ClasspathHelper.forPackage(scanPackage));
+        final Set<Class<?>> beanClazzSet = reflections.getTypesAnnotatedWith(Label.class);
+        if (beanClazzSet == null || beanClazzSet.isEmpty()) return this;
+
+        for (Class<?> beanClazz : beanClazzSet) {
+            mapperRegistry.registerBeanDefinition(beanClazz);
+        }
+
+        return this;
+    }
+
+    public @Nullable <M extends Model<?>> String label(Class<M> beanClazz) {
         if (beanClazz.isPrimitive() || beanClazz.isArray()) return null;
         if (Number.class.isAssignableFrom(beanClazz)) return null;
         if (CharSequence.class.isAssignableFrom(beanClazz)) return null;
@@ -86,31 +99,31 @@ public final class MapleDslConfiguration {
         return mapperRegistry.getBeanDefinition(beanClazz).label();
     }
 
-    public <BEAN> BeanDefinition<BEAN> getBeanDefinition(Class<BEAN> clazz) {
+    public <BEAN> BeanDefinition<BEAN> beanDefinition(Class<BEAN> clazz) {
         return mapperRegistry.getBeanDefinition(clazz);
     }
 
-    public <BEAN> BeanPropertyCustomizer<BEAN> getBeanPropertyCustomizer(Class<BEAN> clazz) {
+    public <BEAN> BeanPropertyCustomizer<BEAN> beanPropertyCustomizer(Class<BEAN> clazz) {
         return mapperRegistry.getBeanPropertyCustomizer(clazz);
     }
 
-    public BeanPropertyCustomizer<Model<?>> getModelPropertyCustomizer() {
+    public BeanPropertyCustomizer<Model<?>> modelPropertyCustomizer() {
         return mapperRegistry.getModelPropertyCustomizer();
     }
 
-    public MapleDslParameterHandler getParameterHandler(Class<?> clazz) {
+    public MapleDslParameterHandler parameterHandler(Class<?> clazz) {
         return handlerRegistry.getParameterHandler(clazz);
     }
 
-    public MapleDslResultHandler<?,?> getResultHandler(Class<?> clazz) {
+    public MapleDslResultHandler<?,?> resultHandler(Class<?> clazz) {
         return handlerRegistry.getResultHandler(clazz);
     }
 
-    public MapleDslResultHandler<?,?> getDefaultResultHandler() {
+    public MapleDslResultHandler<?,?> defaultResultHandler() {
         return handlerRegistry.getDefaultResultHandler();
     }
 
-    public MapleDslParameterHandler getNullParameterHandler() {
+    public MapleDslParameterHandler nullParameterHandler() {
         return handlerRegistry.getNullParameterHandler();
     }
 
@@ -298,10 +311,17 @@ public final class MapleDslConfiguration {
         }
     }
 
-    public static MapleDslConfiguration primaryConfiguration() throws MapleDslException {
-        final MapleDslConfiguration primaryConfiguration = PRIMARY_CONFIGURATION.get();
-        if (primaryConfiguration == null) throw new MapleDslException("configuration not initialized.");
-        return primaryConfiguration;
+    public static MapleDslConfiguration primaryConfiguration() {
+        return primaryConfiguration(UnaryOperator.identity());
+    }
+
+    public static MapleDslConfiguration primaryConfiguration(UnaryOperator<Builder> configurationBuilderUnary) {
+        return PRIMARY_CONFIGURATION.updateAndGet(primaryConfiguration -> {
+            if (primaryConfiguration == null) {
+                primaryConfiguration = configurationBuilderUnary.apply(new Builder()).build();
+            }
+            return primaryConfiguration;
+        });
     }
 
     static void disableAccessWarnings() {

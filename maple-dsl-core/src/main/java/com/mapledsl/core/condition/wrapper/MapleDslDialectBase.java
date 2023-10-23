@@ -12,7 +12,7 @@ public class MapleDslDialectBase<M extends Model<?>> {
     public String label(MapleDslConfiguration ctx) {
         if (instantiatedLabel != null && !instantiatedLabel.trim().isEmpty()) return instantiatedLabel;
         if (instantiatedLabelClazz == null) return null;
-        return ctx.getLabel(instantiatedLabelClazz);
+        return ctx.label(instantiatedLabelClazz);
     }
 
     public MapleDslDialectBase<M> setInstantiatedLabel(String instantiatedLabel) {

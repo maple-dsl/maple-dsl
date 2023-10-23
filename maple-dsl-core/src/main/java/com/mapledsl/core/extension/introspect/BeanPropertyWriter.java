@@ -58,7 +58,7 @@ class BeanPropertyWriter {
     }
 
     BeanPropertyWriter(MapleDslConfiguration context, Class<?> propertyType, MethodHandles.Lookup lookup, Method setterMethod) {
-        this(context, context.getResultHandler(propertyType));
+        this(context, context.resultHandler(propertyType));
         final Class<?> returnType = setterMethod.getReturnType();
         final Class<?>[] parameterTypes = setterMethod.getParameterTypes();
 

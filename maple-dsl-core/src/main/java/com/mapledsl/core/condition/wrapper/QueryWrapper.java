@@ -8,7 +8,11 @@ import com.mapledsl.core.model.Model;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
@@ -21,7 +25,7 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
     final Set<String> orderDescSet = new LinkedHashSet<>();
     final Set<String> selectionColumnSet = new HashSet<>();
 
-    private String[] orderCandidates;
+    private final Set<String> orderCandidateSet = new LinkedHashSet<>();
     private final Consumer<MapleDslDialectBase<M>> dialectBaseConsumer;
 
     QueryWrapper(Consumer<MapleDslDialectBase<M>> dialectBaseConsumer) {
@@ -30,7 +34,7 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
 
     private synchronized void next(@NotNull MapleDslDialectFunction<M> next) {
         dialectBaseConsumer.accept(next);
-        orderCandidates = new String[] { next.alias() };
+        orderCandidateSet.add(next.alias());
 
         if (next.column() != null && selectionColumnSet.contains(next.column())) {
             next(new MapleDslDialectSelection<>(next.column()));
@@ -48,7 +52,7 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
 
     private synchronized void next(@NotNull MapleDslDialectSelection<M> next) {
         dialectBaseConsumer.accept(next);
-        orderCandidates = next.aliases();
+        Collections.addAll(orderCandidateSet, next.aliases());
         Collections.addAll(selectionColumnSet, next.columns());
 
         if (headSelect == null) {
@@ -245,17 +249,17 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
 
     @Override
     public synchronized Query<M, Sort<M>> ascending() {
-        if (orderCandidates == null || orderCandidates.length == 0) return this;
-        Collections.addAll(orderAscSet, orderCandidates);
-        orderCandidates = null;
+        if (orderCandidateSet.isEmpty()) return this;
+        orderAscSet.addAll(orderCandidateSet);
+        orderCandidateSet.clear();
         return this;
     }
 
     @Override
     public synchronized Query<M, Sort<M>> descending() {
-        if (orderCandidates == null || orderCandidates.length == 0) return this;
-        Collections.addAll(orderDescSet, orderCandidates);
-        orderCandidates = null;
+        if (orderCandidateSet.isEmpty()) return this;
+        orderDescSet.addAll(orderCandidateSet);
+        orderCandidateSet.clear();
         return this;
     }
 }

@@ -25,7 +25,7 @@ class MapleDslModelAdaptor implements ModelAdaptor<Object> {
             return ((Map<?,?>) o).get(property);
         }
 
-        final BeanDefinition definition = context.getBeanDefinition(o.getClass());
+        final BeanDefinition definition = context.beanDefinition(o.getClass());
         if (definition == null) return null;
 
         if ("KEYS".equalsIgnoreCase(propertyName)) {

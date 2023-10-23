@@ -5,7 +5,6 @@ import org.apiguardian.api.API;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
-import java.util.AbstractMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,18 +37,5 @@ public interface SerializableFunction<T, R> extends Function<T, R>, Serializable
         return ofNullable(INSTANTIATED_PROPERTY_CACHE.get(instantiatedClass))
                 .map(it -> it.get(implMethodName))
                 .orElse(implMethodName.startsWith("get") ? implMethodName.substring(implMethodName.indexOf("get") + 3).toLowerCase() : implMethodName);
-    }
-
-    @SuppressWarnings("unchecked")
-    @API(status = API.Status.INTERNAL)
-    default Map.Entry<Class<T>, String> asMeta() {
-        @NotNull LambdaMeta meta = LambdaMeta.extract(this);
-        @NotNull Class<T> instantiatedClass = (Class<T>) meta.getInstantiatedClass();
-        @NotNull String implMethodName = meta.getImplMethodName();
-        return new AbstractMap.SimpleImmutableEntry<>(
-                instantiatedClass, ofNullable(INSTANTIATED_PROPERTY_CACHE.get(instantiatedClass))
-                .map(it -> it.get(implMethodName))
-                .orElse(implMethodName)
-        );
     }
 }

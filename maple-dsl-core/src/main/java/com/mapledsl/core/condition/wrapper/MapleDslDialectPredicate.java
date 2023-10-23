@@ -33,9 +33,9 @@ public final class MapleDslDialectPredicate<M extends Model<?>> extends MapleDsl
     public String value(MapleDslConfiguration ctx) {
         if (value == null) return null;
         if (ctx == null) throw new IllegalArgumentException();
-        if (instantiatedLabelClazz != null) return ctx.getBeanDefinition(instantiatedLabelClazz).parameterized(column, value);
+        if (instantiatedLabelClazz != null) return ctx.beanDefinition(instantiatedLabelClazz).parameterized(column, value);
 
-        return ofNullable(ctx.getParameterHandler(value.getClass()))
+        return ofNullable(ctx.parameterHandler(value.getClass()))
                 .map(it -> it.apply(value, ctx))
                 .orElse(null);
     }

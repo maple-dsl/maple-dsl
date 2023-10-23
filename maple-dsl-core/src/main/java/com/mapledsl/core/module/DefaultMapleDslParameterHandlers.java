@@ -2,7 +2,6 @@ package com.mapledsl.core.module;
 
 import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.model.Model;
-import com.mapledsl.core.module.MapleDslParameterHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +37,7 @@ enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
         @Override
         public Object compose(@NotNull Object parameter, MapleDslConfiguration ctx) {
             Class<?> it = (Class<?>) parameter;
-            final String label = ctx.getLabel(it.asSubclass(Model.class));
+            final String label = ctx.label(it.asSubclass(Model.class));
             return label == null ? it.getSimpleName().toLowerCase(ctx.globalLocale()) : label;
         }
     },
@@ -121,7 +120,7 @@ enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
         public Object compose(@NotNull Object parameter, MapleDslConfiguration ctx) {
             StringJoiner joiner = new StringJoiner(",", "[", "]");
             for (Object it : (List<?>) parameter) {
-                MapleDslParameterHandler parameterHandler = ctx.getParameterHandler(it.getClass());
+                MapleDslParameterHandler parameterHandler = ctx.parameterHandler(it.getClass());
                 joiner.add(parameterHandler.apply(it, ctx));
             }
             return joiner;
@@ -132,7 +131,7 @@ enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
         public Object compose(@NotNull Object parameter, MapleDslConfiguration ctx) {
             StringJoiner joiner = new StringJoiner(",", "[", "]");
             for (Object it : (Set<?>) parameter) {
-                MapleDslParameterHandler parameterHandler = ctx.getParameterHandler(it.getClass());
+                MapleDslParameterHandler parameterHandler = ctx.parameterHandler(it.getClass());
                 joiner.add(parameterHandler.apply(it, ctx));
             }
             return joiner;

@@ -42,7 +42,7 @@ class BeanPropertyAccessor {
     }
 
     BeanPropertyAccessor(MapleDslConfiguration context, MethodHandles.Lookup lookup, Class propertyType, Method getterMethod) {
-        this(context, new AtomicReference<>(context.getParameterHandler(propertyType)));
+        this(context, new AtomicReference<>(context.parameterHandler(propertyType)));
 
         final Class<?> returnType = getterMethod.getReturnType();
         if (!returnType.isPrimitive()) {
@@ -84,8 +84,8 @@ class BeanPropertyAccessor {
         // if bean property type is not sure in compile stage,
         // it will complete in runtime automatically.
         @NotNull final MapleDslParameterHandler parameterHandler = parameterHandlerRef.updateAndGet(it -> {
-            if (it == null) it = context.getParameterHandler(value.getClass());
-            if (it == null) it = context.getNullParameterHandler();
+            if (it == null) it = context.parameterHandler(value.getClass());
+            if (it == null) it = context.nullParameterHandler();
             return it;
         });
 

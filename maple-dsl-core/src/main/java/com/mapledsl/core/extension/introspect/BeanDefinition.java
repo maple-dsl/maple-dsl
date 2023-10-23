@@ -51,7 +51,7 @@ public class BeanDefinition<BEAN> {
         this.label = label;
         this.beanClazz = beanClazz;
         this.propertyCustomizer = beanClazz.isAssignableFrom(Model.class) ?
-                context.getModelPropertyCustomizer() : context.getBeanPropertyCustomizer(beanClazz);
+                context.modelPropertyCustomizer() : context.beanPropertyCustomizer(beanClazz);
         this.lookup = LookupSettings.privateLookupIn(beanClazz);
         this.creator = new BeanCreator<>(lookup, beanClazz);
     }
@@ -88,11 +88,11 @@ public class BeanDefinition<BEAN> {
 
         if (propertyCustomizer != null) {
             Object propertyValue = propertyCustomizer.getter(target, propertyName, context);
-            final MapleDslParameterHandler parameterHandler = context.getParameterHandler(propertyValue.getClass());
+            final MapleDslParameterHandler parameterHandler = context.parameterHandler(propertyValue.getClass());
             if (parameterHandler != null) return parameterHandler.apply(propertyValue, context);
         }
 
-        return context.getNullParameterHandler().apply(null, context);
+        return context.nullParameterHandler().apply(null, context);
     }
 
     /**
@@ -108,11 +108,11 @@ public class BeanDefinition<BEAN> {
             return beanPropertyAccessor.parameterized(propertyValue);
         }
 
-        final MapleDslParameterHandler parameterHandler = context.getParameterHandler(propertyValue.getClass());
+        final MapleDslParameterHandler parameterHandler = context.parameterHandler(propertyValue.getClass());
         if (parameterHandler != null) return parameterHandler.apply(propertyValue, context);
 
         LOG.warn("{} {} missing the parameterHandler.", beanClazz, propertyName);
-        return context.getNullParameterHandler().apply(propertyValue, context);
+        return context.nullParameterHandler().apply(propertyValue, context);
     }
 
     public boolean hasSetter(BEAN target, String propertyName) {

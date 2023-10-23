@@ -11,7 +11,7 @@ public class MapleDslClazzRender extends MapleDslDialectBaseRender implements At
     @Override
     public String toString(Class value, String formatString, Locale locale) {
         if (Model.class.isAssignableFrom(value)) {
-            String label = context.getLabel(value.asSubclass(Model.class));
+            String label = context.label(value.asSubclass(Model.class));
             return label == null ? NULL : label;
         }
         return NULL;

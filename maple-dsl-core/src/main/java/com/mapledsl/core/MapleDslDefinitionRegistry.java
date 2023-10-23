@@ -1,11 +1,13 @@
 package com.mapledsl.core;
 
+import com.mapledsl.core.annotation.Label;
 import com.mapledsl.core.exception.MapleDslBindingException;
 import com.mapledsl.core.extension.introspect.BeanDefinition;
 import com.mapledsl.core.extension.introspect.BeanDefinitionIntrospector;
 import com.mapledsl.core.extension.introspect.BeanPropertyCustomizer;
 import com.mapledsl.core.extension.introspect.DefaultModelPropertyCustomizer;
 import com.mapledsl.core.model.Model;
+import org.reflections.Reflections;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,9 +30,7 @@ final class MapleDslDefinitionRegistry {
      * key: model class, value: bean property customizer.
      */
     final Map<Class, BeanPropertyCustomizer> beanPropertyCustomizerMap = new HashMap<>();
-
     final BeanDefinitionIntrospector beanDefinitionIntrospector;
-
     BeanPropertyCustomizer<Model<?>> defaultModelPropertyCustomizer = new DefaultModelPropertyCustomizer();
 
     MapleDslDefinitionRegistry(MapleDslConfiguration configuration) {
@@ -39,10 +39,12 @@ final class MapleDslDefinitionRegistry {
     }
 
     <BEAN> BeanDefinition<BEAN> getBeanDefinition(Class<BEAN> beanClazz) {
+        requireNonNull(beanClazz, "bean type must not be null.");
         return beanDefinitionMap.computeIfAbsent(beanClazz, beanDefinitionIntrospector::resolve);
     }
 
     <BEAN> BeanPropertyCustomizer<BEAN> getBeanPropertyCustomizer(Class<BEAN> beanClazz) {
+        requireNonNull(beanClazz, "bean type must not be null.");
         return beanPropertyCustomizerMap.get(beanClazz);
     }
 
@@ -53,6 +55,11 @@ final class MapleDslDefinitionRegistry {
     void registerModelPropertyCustomizer(BeanPropertyCustomizer<Model<?>> customizer) {
         requireNonNull(customizer, "customizer must not be null.");
         defaultModelPropertyCustomizer = customizer;
+    }
+
+    <BEAN> void registerBeanDefinition(Class<BEAN> beanClazz) {
+        requireNonNull(beanClazz, "bean type must not be null.");
+        beanDefinitionMap.putIfAbsent(beanClazz, beanDefinitionIntrospector.resolve(beanClazz));
     }
 
     <BEAM> void registerBeanPropertyCustomizer(Class<BEAM> beanClazz, BeanPropertyCustomizer<BEAM> customizer) {
