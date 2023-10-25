@@ -108,7 +108,7 @@ enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[]
         final @NotNull ST fmt = context.templateRegistry.borrowTemplate(templateName);
         try {
             final String statement = fill(fmt, args).render();
-            return context.templateRegistry.prettyPrint ? statement.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s+", ",") : statement;
+            return context.templateRegistry.prettyPrint ? statement.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",") : statement;
         } finally {
             context.templateRegistry.returnTemplate(fmt);
         }
