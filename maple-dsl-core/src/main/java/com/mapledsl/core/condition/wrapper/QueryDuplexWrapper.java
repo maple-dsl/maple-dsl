@@ -500,7 +500,7 @@ abstract class QueryDuplexWrapper<M extends Model<?>, Children> implements Sort<
     public Sort<M> sum(String column, String alias) {
         requireNonNull(column);
         requireNonNull(alias);
-        this.sum(column, alias);
+        this.selection.sum(column, alias);
         return this;
     }
 
