@@ -71,6 +71,8 @@ public class TraversalWrapper implements Traversal {
     final LinkedList<Object[]> argumentsList = new LinkedList<>();
     final List<String> orderAscList = new LinkedList<>();
     final List<String> orderDescList = new LinkedList<>();
+
+    final Set<String> curTraversalCompanionSet = new LinkedHashSet<>();
     final Set<String> nextTraversalCompanionSet = new LinkedHashSet<>();
     final BiFunction<MapleDslConfiguration, Object[], String> renderFunc;
 
@@ -108,12 +110,21 @@ public class TraversalWrapper implements Traversal {
         // if outV#step missing Model.ID selection by `nextTraversalFrom` is null,
         // or missing outV#step by check `nextTraversalCompanionSet` whether empty.
         // :/ then append `outV(it -> it.selectAs(Model.ID, "dst_id")` automatically.
-        if (nextTraversalFrom == null && nextTraversalCompanionSet.isEmpty()) {
-            nextTraversalFrom = DEFAULT_NEXT_TRAVERSAL_FROM_ALIAS;
-            selectionList.add(new MapleDslDialectSelection<Model.V>(Model.ID, nextTraversalFrom)
-                    .setOut(true)
-                    .setInstantiatedAlias(DEFAULT_OUT_ALIAS)
-            );
+        if (nextTraversalFrom == null) {
+            if (terminate && curTraversalCompanionSet.isEmpty()) {
+                nextTraversalFrom = DEFAULT_NEXT_TRAVERSAL_FROM_ALIAS;
+                selectionList.add(new MapleDslDialectSelection<Model.V>(Model.ID, nextTraversalFrom)
+                        .setOut(true)
+                        .setInstantiatedAlias(DEFAULT_OUT_ALIAS)
+                );
+            }
+            if (!terminate) {
+                nextTraversalFrom = DEFAULT_NEXT_TRAVERSAL_FROM_ALIAS;
+                selectionList.add(new MapleDslDialectSelection<Model.V>(Model.ID, nextTraversalFrom)
+                        .setOut(true)
+                        .setInstantiatedAlias(DEFAULT_OUT_ALIAS)
+                );
+            }
         }
 
         if (!predicateList.isEmpty()) {
@@ -137,20 +148,19 @@ public class TraversalWrapper implements Traversal {
 
         argumentsList.add(arguments);
         // check next_traversal should be terminated or mark it `has_next`.
-        if (terminate) {
-            return;
-        } else {
-            arguments[HAS_NEXT_INDEX] = true;
-        }
+        if (terminate) return;
+        else arguments[HAS_NEXT_INDEX] = true;
 
         arguments = new Object[LENGTH];
         // specific for nebula, e.g. | GO FROM $-.dst_id
         arguments[FROM_PREV_INDEX] = nextTraversalFrom;
         // $-.dst_id or the others(next_traversal_variable) should be removed from the companion set
-        nextTraversalCompanionSet.remove(nextTraversalFrom);
+        curTraversalCompanionSet.remove(nextTraversalFrom);
+        nextTraversalCompanionSet.addAll(curTraversalCompanionSet);
+        curTraversalCompanionSet.clear();
         // clear dst_id var for next filling.
         nextTraversalFrom = null;
-        arguments[COMPANION_INDEX] = nextTraversalCompanionSet.isEmpty() ? null : nextTraversalCompanionSet;
+        arguments[COMPANION_INDEX] = nextTraversalCompanionSet.isEmpty() ? null : new LinkedHashSet<>(nextTraversalCompanionSet);
     }
 
     @Override
@@ -702,10 +712,10 @@ public class TraversalWrapper implements Traversal {
         @Override
         public Sort<M> select(String first, String... columns) {
             super.select(first, columns);
-            nextTraversalCompanionSet.add(first);
+            curTraversalCompanionSet.add(first);
 
             if (columns.length == 0) return this;
-            Collections.addAll(nextTraversalCompanionSet, columns);
+            Collections.addAll(curTraversalCompanionSet, columns);
             return this;
         }
 
@@ -733,7 +743,7 @@ public class TraversalWrapper implements Traversal {
         @Override
         public Sort<M> selectAs(String column, String alias) {
             super.selectAs(column, alias);
-            nextTraversalCompanionSet.add(alias);
+            curTraversalCompanionSet.add(alias);
             return this;
         }
 
@@ -764,9 +774,9 @@ public class TraversalWrapper implements Traversal {
         private void rebaseNextTraversal() {
             // quickly-check selection whether for out vertex.
             if (!selection.headSelect.out()) return;
+            if (nextTraversalFrom != null) return;
             // check selection chains whether alias contains "ID".
-            MapleDslDialectSelection<M> cur = selection.headSelect;
-            while (cur.hasNext()) {
+            for (MapleDslDialectSelection<M> cur = selection.headSelect;;cur = cur.next) {
                 int index = Arrays.binarySearch(cur.columns(), Model.ID,
                         Comparator.comparing(Function.identity(), String::compareToIgnoreCase)
                 );
@@ -774,7 +784,8 @@ public class TraversalWrapper implements Traversal {
                     nextTraversalFrom = cur.aliases()[index];
                     return;
                 }
-                cur = cur.next;
+
+                if (!cur.hasNext()) break;
             }
         }
 

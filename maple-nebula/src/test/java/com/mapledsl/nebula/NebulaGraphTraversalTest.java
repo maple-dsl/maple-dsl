@@ -20,9 +20,6 @@ public class NebulaGraphTraversalTest {
     public static void init() {
         MapleDslConfiguration.primaryConfiguration(MapleDslConfiguration.Builder::templatePrettyPrint)
                 .registerBeanDefinition("com.mapledsl.nebula");
-//                .registerBeanDefinition(Person.class)
-//                .registerBeanDefinition(Impact.class)
-//                .registerBeanDefinition(Follow.class);
     }
 
     @Test
@@ -114,7 +111,7 @@ public class NebulaGraphTraversalTest {
 
     @ParameterizedTest
     @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"{{ vid }}\" OVER follow REVERSELY " +
-            "WHERE id($$) IS NOT NULL YIELD properties(edge).type AS follow_type,id($$) AS dst_id")
+            "WHERE id($$) IS NOT NULL YIELD properties(edge).type AS follow_type")
     public void should_traverse_then_output_follow_type(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
                 .inE(Follow.class)
@@ -125,7 +122,7 @@ public class NebulaGraphTraversalTest {
 
     @ParameterizedTest
     @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"{{ vid }}\" OVER follow REVERSELY " +
-            "WHERE $$.person.id == \"p001\" YIELD $$.person.id AS id,$$.person.name AS name,$$.person.name AS dup_person_name,$$.person.id AS dup_person_id")
+            "WHERE id($$) == \"p001\" YIELD id($$) AS ID,$$.person.name AS name,$$.person.name AS dup_person_name,id($$) AS dup_person_id")
     public void should_traverse_then_output_out_vertex_id_and_desc(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
                 .inE(Follow.class)
