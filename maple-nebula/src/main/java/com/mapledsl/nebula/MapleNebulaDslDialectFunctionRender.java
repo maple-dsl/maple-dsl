@@ -3,6 +3,7 @@ package com.mapledsl.nebula;
 import com.mapledsl.core.MapleDslDialectFunctionRender;
 import com.mapledsl.core.condition.common.Func;
 import com.mapledsl.core.condition.wrapper.MapleDslDialectFunction;
+import com.mapledsl.core.condition.wrapper.MapleDslDialectSelection;
 import com.mapledsl.nebula.module.MapleNebulaDslModule;
 
 import java.util.EnumMap;
@@ -16,15 +17,23 @@ public class MapleNebulaDslDialectFunctionRender extends MapleDslDialectFunction
     public String toString(MapleDslDialectFunction value, String formatString, Locale locale) {
         if (value == null)  return NULL;
 
-        if (!value.hasNext()) return toFunction(value);
+        String curFunction;
+        if ("as_selection".equalsIgnoreCase(formatString)) {
+            final MapleDslDialectSelection<?> selection = value.asSelection();
+            curFunction =  context.selectionRender().toString(selection, null, locale);
+        } else {
+            curFunction = toFunction(value);
+        }
+
+        if (!value.hasNext()) return curFunction;
         final String nextFunction = toString(value.next, formatString, locale);
-        if (nextFunction.trim().isEmpty()) return toFunction(value);
-        return toFunction(value) + COMMA + nextFunction;
+        if (nextFunction.trim().isEmpty()) return curFunction;
+        return curFunction + COMMA + nextFunction;
     }
 
     private String toFunction(MapleDslDialectFunction<?> value) {
         if (value == null) return NULL;
-        if (functionRenderMap.containsKey(value.func())) throw new UnsupportedOperationException("Unsupported Func: " + value.func().name());
+        if (!functionRenderMap.containsKey(value.func())) throw new UnsupportedOperationException("Unsupported Func: " + value.func().name());
         return functionRenderMap.get(value.func()).apply(value.column()) + AS + value.alias();
     }
 

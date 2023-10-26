@@ -139,6 +139,35 @@ public class NebulaGraphTraversalTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"{{ vid }}\" OVER follow REVERSELY WHERE id($$) IS NOT NULL YIELD id($$) AS dst_id")
+    public void should_append_dst_model_id_auto(String expected) {
+        assertEquals(expected, traverse("{{ vid }}")
+                .inE(Follow.class)
+                .render()
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"{{ vid }}\" OVER follow REVERSELY WHERE id($$) IS NOT NULL YIELD $^.person.name AS p_name")
+    public void should_not_append_dst_model_id_auto(String expected) {
+        assertEquals(expected, traverse("{{ vid }}")
+                .inE(Follow.class)
+                .inV("src", Person.class, it -> it.selectAs(Person::getName, "p_name"))
+                .render()
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"{{ vid }}\" OVER follow REVERSELY WHERE id($$) IS NOT NULL YIELD id($$) AS custom_dst_id")
+    public void should_rebase_dst_model_id(String expected) {
+        assertEquals(expected, traverse("{{ vid }}")
+                .inE(Follow.class)
+                .outV("dst", Person.class, it -> it.selectAs(Person::id, "custom_dst_id"))
+                .render()
+        );
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = "LOOKUP ON person WHERE person.name == \"bofa\" YIELD id(vertex) as dst" +
             "| GO 0 TO 1 STEPS FROM $-.dst OVER impact WHERE id($$) IS NOT NULL YIELD id($$) AS dst_id")
     public void should_traverse_via_match(String expected) {
@@ -152,7 +181,7 @@ public class NebulaGraphTraversalTest {
     @ParameterizedTest
     @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"p001\",\"p002\" OVER impact WHERE id($$) IS NOT NULL YIELD id($$) AS p_id,$$.person.name AS p_name,head(labels($$)) AS p_tag " +
             "| ORDER BY $-.p_tag ASC,$-.p_id,$-.p_name DESC")
-    public void should_traverse_order(String expected) {
+    public void should_traverse_ordering(String expected) {
         assertEquals(expected, traverse("p001", "p002")
                 .outE(Impact.class)
                 .outV("p", Person.class, it -> it
@@ -166,12 +195,32 @@ public class NebulaGraphTraversalTest {
         );
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"p001\",\"p002\" OVER impact WHERE id($$) IS NOT NULL YIELD $$.person.name AS p_name,$$.person.age AS age " +
+            "| YIELD $-.p_name,SUM($-.age) AS p_sum_page,COUNT($-.p_name) AS p_cnt_name")
+    public void should_traverse_sum(String expected) {
+        assertEquals(expected, traverse("p001", "p002")
+                .outE(Impact.class)
+                .outV("p", Person.class, it -> it
+                        .selectAs(Person::getName, "p_name")
+                        .sum(Person::getAge, "p_sum_page")
+                        .count("p_name", "p_cnt_name")
+                )
+                .render()
+        );
+    }
+
     @Label("person")
     public static class Person extends Model.V {
         private String name;
+        private Integer age;
 
         public String getName() {
             return name;
+        }
+
+        public Integer getAge() {
+            return age;
         }
     }
 
