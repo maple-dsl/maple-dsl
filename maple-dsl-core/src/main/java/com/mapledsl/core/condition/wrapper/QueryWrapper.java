@@ -105,7 +105,7 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
     public <R extends Serializable> Sort<M> select(SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2) {
         requireNonNull(col1);
         requireNonNull(col2);
-        next(new MapleDslDialectSelection<>(col1.asText(), col2.asText()));
+        next(new MapleDslDialectSelection<>(new String[] { col1.asText(), col2.asText() }));
         return this;
     }
 
