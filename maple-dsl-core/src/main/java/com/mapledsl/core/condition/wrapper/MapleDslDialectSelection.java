@@ -1,7 +1,6 @@
 package com.mapledsl.core.condition.wrapper;
 
 import com.mapledsl.core.model.Model;
-import org.jetbrains.annotations.NotNull;
 
 public final class MapleDslDialectSelection<M extends Model<?>> extends MapleDslDialectBase<M> {
     private final String[] columns;
