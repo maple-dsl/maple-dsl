@@ -10,6 +10,7 @@ public final class MapleDslDialectFunction<M extends Model<?>> extends MapleDslD
     private final @NotNull String alias;
     private final @NotNull Func func;
     public MapleDslDialectFunction<M> next;
+    boolean missingSelection;
 
     MapleDslDialectFunction(@NotNull Func func, @NotNull String alias) {
         this.column = null;
@@ -21,6 +22,12 @@ public final class MapleDslDialectFunction<M extends Model<?>> extends MapleDslD
         this.column = column;
         this.alias = alias;
         this.func = func;
+    }
+
+    public MapleDslDialectSelection<M> asSelection() {
+        if (!missingSelection) return null;
+        final MapleDslDialectSelection<M> selection = new MapleDslDialectSelection<>(column);
+        return selection.merge(this);
     }
 
     public String column() {

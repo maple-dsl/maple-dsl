@@ -105,10 +105,15 @@ public class TraversalWrapper implements Traversal {
         if (arguments[OUT_ALIAS_INDEX] == null)     arguments[OUT_ALIAS_INDEX] = DEFAULT_OUT_ALIAS;
         if (arguments[EDGE_ALIAS_INDEX] == null)    arguments[EDGE_ALIAS_INDEX] = DEFAULT_EDGE_ALIAS;
 
-        // missing select will append `outV(it -> it.selectAs(Model.ID, "_dst")` automatically.
-        if (nextTraversalFrom == null) {
+        // if outV#step missing Model.ID selection by `nextTraversalFrom` is null,
+        // or missing outV#step by check `nextTraversalCompanionSet` whether empty.
+        // :/ then append `outV(it -> it.selectAs(Model.ID, "dst_id")` automatically.
+        if (nextTraversalFrom == null && nextTraversalCompanionSet.isEmpty()) {
             nextTraversalFrom = DEFAULT_NEXT_TRAVERSAL_FROM_ALIAS;
-            selectionList.add(new MapleDslDialectSelection<Model.V>(Model.ID, nextTraversalFrom).setOut(true));
+            selectionList.add(new MapleDslDialectSelection<Model.V>(Model.ID, nextTraversalFrom)
+                    .setOut(true)
+                    .setInstantiatedAlias(DEFAULT_OUT_ALIAS)
+            );
         }
 
         if (!predicateList.isEmpty()) {
@@ -131,16 +136,19 @@ public class TraversalWrapper implements Traversal {
         if (!argumentsList.isEmpty()) argumentsList.peekLast()[NEXT_INDEX] = arguments[IN_ALIAS_INDEX];
 
         argumentsList.add(arguments);
-
-        if (terminate) return;
-        else arguments[HAS_NEXT_INDEX] = true;
+        // check next_traversal should be terminated or mark it `has_next`.
+        if (terminate) {
+            return;
+        } else {
+            arguments[HAS_NEXT_INDEX] = true;
+        }
 
         arguments = new Object[LENGTH];
-        // specific for nebula, e.g. | GO FROM $-._dst
+        // specific for nebula, e.g. | GO FROM $-.dst_id
         arguments[FROM_PREV_INDEX] = nextTraversalFrom;
-        // $-._dst or the others(next_traversal_var) should be removed from the companion set
+        // $-.dst_id or the others(next_traversal_variable) should be removed from the companion set
         nextTraversalCompanionSet.remove(nextTraversalFrom);
-        // clear _dst var for next filling.
+        // clear dst_id var for next filling.
         nextTraversalFrom = null;
         arguments[COMPANION_INDEX] = nextTraversalCompanionSet.isEmpty() ? null : nextTraversalCompanionSet;
     }
@@ -626,7 +634,7 @@ public class TraversalWrapper implements Traversal {
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("inV alias must not be empty.");
         this.arguments[IN_ALIAS_INDEX] = alias;
 
-        final StepWrapper<V> inStep = new StepWrapper<>(it -> it.setIn(true).setInstantiatedLabelClazz(label));
+        final StepWrapper<V> inStep = new StepWrapper<>(it -> it.setIn(true).setInstantiatedLabelClazz(label).setInstantiatedAlias(alias));
         step.accept(inStep);
         inStep.sink();
         return this;
@@ -757,21 +765,17 @@ public class TraversalWrapper implements Traversal {
             // quickly-check selection whether for out vertex.
             if (!selection.headSelect.out()) return;
             // check selection chains whether alias contains "ID".
-
-            for (MapleDslDialectSelection<M> cur = selection.headSelect;; cur = cur.next) {
+            MapleDslDialectSelection<M> cur = selection.headSelect;
+            while (cur.hasNext()) {
                 int index = Arrays.binarySearch(cur.columns(), Model.ID,
                         Comparator.comparing(Function.identity(), String::compareToIgnoreCase)
                 );
-                if (index != -1) {
+                if (index > -1) {
                     nextTraversalFrom = cur.aliases()[index];
                     return;
                 }
-
-                if (!cur.hasNext()) break;
+                cur = cur.next;
             }
-
-            selection.selectAs(Model.ID, DEFAULT_NEXT_TRAVERSAL_FROM_ALIAS);
-            nextTraversalFrom = DEFAULT_NEXT_TRAVERSAL_FROM_ALIAS;
         }
 
         private void sink() {

@@ -115,6 +115,18 @@ public final class MapleDslConfiguration {
         return handlerRegistry.getParameterHandler(clazz);
     }
 
+    public MapleDslDialectSelectionRender selectionRender() {
+        return templateRegistry.selectionRender;
+    }
+
+    public MapleDslDialectFunctionRender functionRender() {
+        return templateRegistry.functionRender;
+    }
+
+    public MapleDslDialectPredicateRender predicateRender() {
+        return templateRegistry.predicateRender;
+    }
+
     public MapleDslResultHandler<?,?> resultHandler(Class<?> clazz) {
         return handlerRegistry.getResultHandler(clazz);
     }

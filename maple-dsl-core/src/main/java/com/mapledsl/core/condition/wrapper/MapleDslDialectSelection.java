@@ -76,4 +76,28 @@ public final class MapleDslDialectSelection<M extends Model<?>> extends MapleDsl
         super.setV(v);
         return this;
     }
+
+    @Override
+    public MapleDslDialectSelection<M> setInstantiatedAlias(String instantiatedAlias) {
+        super.setInstantiatedAlias(instantiatedAlias);
+        return this;
+    }
+
+    @Override
+    public MapleDslDialectSelection<M> setInstantiatedLabel(String instantiatedLabel) {
+        super.setInstantiatedLabel(instantiatedLabel);
+        return this;
+    }
+
+    @Override
+    public MapleDslDialectSelection<M> setInstantiatedLabelClazz(Class<M> instantiatedLabelClazz) {
+        super.setInstantiatedLabelClazz(instantiatedLabelClazz);
+        return this;
+    }
+
+    @Override
+    MapleDslDialectSelection<M> merge(MapleDslDialectBase<M> merge) {
+        super.merge(merge);
+        return this;
+    }
 }

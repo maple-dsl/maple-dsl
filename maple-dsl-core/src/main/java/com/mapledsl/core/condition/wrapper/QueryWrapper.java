@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -23,8 +22,9 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
 
     final Set<String> orderAscSet = new LinkedHashSet<>();
     final Set<String> orderDescSet = new LinkedHashSet<>();
-    final Set<String> selectionColumnSet = new HashSet<>();
 
+    private final Set<String> selectionColumnSet = new LinkedHashSet<>();
+    private final Set<String> selectionAliaSet = new LinkedHashSet<>();
     private final Set<String> orderCandidateSet = new LinkedHashSet<>();
     private final Consumer<MapleDslDialectBase<M>> dialectBaseConsumer;
 
@@ -36,8 +36,12 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
         dialectBaseConsumer.accept(next);
         orderCandidateSet.add(next.alias());
 
-        if (next.column() != null && selectionColumnSet.contains(next.column())) {
-            next(new MapleDslDialectSelection<>(next.column()));
+        // e.g. selectAs("name","person_name").sum("age","sum_age")
+        // `age` was missing selected, checking from column_set whether contains.
+        // e.g. selectAs("name","person_name").count("person_name","cnt_n")
+        // `person_name` should check from alias_set whether contains.
+        if (next.column() != null) {
+            next.missingSelection = !selectionColumnSet.contains(next.column()) && !selectionAliaSet.contains(next.column());
         }
 
         if (headFunc == null) {
@@ -53,6 +57,7 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
     private synchronized void next(@NotNull MapleDslDialectSelection<M> next) {
         dialectBaseConsumer.accept(next);
         Collections.addAll(orderCandidateSet, next.aliases());
+        Collections.addAll(selectionAliaSet, next.aliases());
         Collections.addAll(selectionColumnSet, next.columns());
 
         if (headSelect == null) {

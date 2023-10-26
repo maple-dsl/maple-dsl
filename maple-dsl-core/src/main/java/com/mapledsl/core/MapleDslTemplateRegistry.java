@@ -34,6 +34,11 @@ final class MapleDslTemplateRegistry {
     static final int DEFAULT_TEMPLATE_GROUP_POOL_MAX_IDLE = Runtime.getRuntime().availableProcessors() * 2;
     static final int DEFAULT_TEMPLATE_GROUP_POOL_MIN_IDLE = GenericObjectPoolConfig.DEFAULT_MIN_IDLE;
 
+    final MapleDslModelAdaptor modelAdaptor;
+    final MapleDslClazzRender clazzRender;
+    final MapleDslDialectSelectionRender selectionRender;
+    final MapleDslDialectFunctionRender functionRender;
+    final MapleDslDialectPredicateRender predicateRender;
     final Boolean prettyPrint;
     final MapleDslConfiguration context;
     final GenericObjectPool<STGroup> templateGroup;
@@ -69,6 +74,28 @@ final class MapleDslTemplateRegistry {
         this.prettyPrint = prettyPrint;
         this.templateProperties = context.module().dialectProperties();
         this.templateGroup = new GenericObjectPool<>(templateGroupPooledObjectFactory, genericObjectPoolConfig);
+
+        this.modelAdaptor = new MapleDslModelAdaptor(context);
+        this.clazzRender = new MapleDslClazzRender().bind(context);
+        this.selectionRender = spiStream(MapleDslDialectSelectionRender.class)
+                .filter(Objects::nonNull)
+                .filter(it -> context.module.dialectPredicate().test(it.dialect()))
+                .map(it -> it.bind(context))
+                .findFirst()
+                .orElseThrow(() -> new MapleDslBindingException("selection initialize not found."));
+        this.functionRender = spiStream(MapleDslDialectFunctionRender.class)
+                .filter(Objects::nonNull)
+                .filter(it -> context.module.dialectPredicate().test(it.dialect()))
+                .map(it -> it.bind(context))
+                .findFirst()
+                .orElseThrow(() -> new MapleDslBindingException("function initialize not found."));
+        this.predicateRender = spiStream(MapleDslDialectPredicateRender.class)
+                .filter(Objects::nonNull)
+                .filter(it -> context.module.dialectPredicate().test(it.dialect()))
+                .map(it -> it.bind(context))
+                .findFirst()
+                .orElseThrow(() -> new MapleDslBindingException("predicate renderer not found."));
+
         try {
             templateGroup.preparePool();
         } catch (Exception e) {
@@ -80,28 +107,11 @@ final class MapleDslTemplateRegistry {
         @Override
         public STGroup create() {
             final STGroup templateGroup = new STGroup();
-            templateGroup.registerModelAdaptor(Object.class, new MapleDslModelAdaptor(context));
-            templateGroup.registerRenderer(Class.class, new MapleDslClazzRender().bind(context));
-            templateGroup.registerRenderer(MapleDslDialectSelection.class, spiStream(MapleDslDialectSelectionRender.class)
-                    .filter(Objects::nonNull)
-                    .filter(it -> context.module.dialectPredicate().test(it.dialect()))
-                    .map(it -> it.bind(context))
-                    .findFirst()
-                    .orElseThrow(() -> new MapleDslBindingException("selection initialize not found."))
-            );
-            templateGroup.registerRenderer(MapleDslDialectFunction.class, spiStream(MapleDslDialectFunctionRender.class)
-                    .filter(Objects::nonNull)
-                    .filter(it -> context.module.dialectPredicate().test(it.dialect()))
-                    .map(it -> it.bind(context))
-                    .findFirst()
-                    .orElseThrow(() -> new MapleDslBindingException("function initialize not found.")));
-            templateGroup.registerRenderer(MapleDslDialectPredicate.class, spiStream(MapleDslDialectPredicateRender.class)
-                    .filter(Objects::nonNull)
-                    .filter(it -> context.module.dialectPredicate().test(it.dialect()))
-                    .map(it -> it.bind(context))
-                    .findFirst()
-                    .orElseThrow(() -> new MapleDslBindingException("predicate renderer not found."))
-            );
+            templateGroup.registerModelAdaptor(Object.class, modelAdaptor);
+            templateGroup.registerRenderer(Class.class, clazzRender);
+            templateGroup.registerRenderer(MapleDslDialectSelection.class, selectionRender);
+            templateGroup.registerRenderer(MapleDslDialectFunction.class, functionRender);
+            templateGroup.registerRenderer(MapleDslDialectPredicate.class, predicateRender);
 
             for (String templateName : templateProperties.stringPropertyNames()) {
                 final String template = templateProperties.getProperty(templateName);

@@ -15,6 +15,14 @@ public class MapleDslDialectBase<M extends Model<?>> {
         return ctx.label(instantiatedLabelClazz);
     }
 
+    MapleDslDialectBase<M> merge(MapleDslDialectBase<M> merge) {
+        this.instantiatedAlias = merge.instantiatedAlias;
+        this.instantiatedLabel = merge.instantiatedLabel;
+        this.instantiatedLabelClazz = merge.instantiatedLabelClazz;
+        this.in = merge.in; this.out = merge.out; this.v = merge.v; this.e = merge.e;
+        return this;
+    }
+
     public MapleDslDialectBase<M> setInstantiatedLabel(String instantiatedLabel) {
         this.instantiatedLabel = instantiatedLabel;
         return this;
