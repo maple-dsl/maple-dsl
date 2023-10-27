@@ -12,15 +12,15 @@ import java.util.function.BiFunction;
 @FunctionalInterface
 public interface MapleDslParameterHandler extends BiFunction<Object, MapleDslConfiguration, String> {
 
-    default Object compose(@NotNull Object parameter, MapleDslConfiguration configuration){
+    default Object compose(@NotNull Object parameter, MapleDslConfiguration configuration) {
         return parameter;
     }
 
-    static MapleDslParameterHandler identity(){
+    static MapleDslParameterHandler identity() {
         return (parameter, ctx) -> parameter + "";
     }
 
-    static MapleDslParameterHandler escaped(){
+    static MapleDslParameterHandler escaped() {
         return (parameter, ctx) -> "\"" + parameter + "\"";
     }
 }
