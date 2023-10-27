@@ -141,7 +141,7 @@ public final class ConditionWrapper<M extends Model<?>> implements Condition.Una
     @Override
     public <R extends Serializable> ConditionWrapper<M> gt(String column, R value) {
         requireNonNull(column);
-        next(new MapleDslDialectPredicate<>(column, OP.NE, value));
+        next(new MapleDslDialectPredicate<>(column, OP.GT, value));
         return this;
     }
 
