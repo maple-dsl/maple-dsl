@@ -72,6 +72,19 @@ public class NebulaGraphTraversalTest {
         assertEquals(expected, traverse("{{ vid }}").inE(Impact.class).outE(Follow.class).render());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"{{ vid }}\" OVER impact REVERSELY WHERE id($$) IS NOT NULL YIELD id($$) AS dst_id" +
+            "| GO 0 TO 1 STEPS FROM $-.dst_id OVER follow WHERE id($$) IS NOT NULL YIELD id($$) AS next_id" +
+            "| GO 0 TO 1 STEPS FROM $-.next_id OVER follow REVERSELY WHERE id($$) IS NOT NULL YIELD id($$) AS dst_id")
+    public void should_traverse_multi_step_v2(String expected) {
+        assertEquals(expected, traverse("{{ vid }}")
+                .inE(Impact.class)
+                .outE(Follow.class)
+                .outV("dst", it -> it.selectAs(Model.ID, "next_id"))
+                .inE(Follow.class)
+                .render());
+    }
+
     @Test
     public void should_failure_traverse_range_null_edge_types() {
         assertThrows(MapleDslExecutionException.class, () -> traverse("{{ vid }}").inE(1, Impact.class, null, Follow.class));
@@ -198,7 +211,7 @@ public class NebulaGraphTraversalTest {
     @ParameterizedTest
     @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"p001\",\"p002\" OVER impact WHERE id($$) IS NOT NULL YIELD $$.person.name AS p_name,$$.person.age AS age " +
             "| YIELD $-.p_name AS p_name,SUM($-.age) AS p_sum_page,COUNT($-.p_name) AS p_cnt_name")
-    public void should_traverse_sum(String expected) {
+    public void should_traverse_function_with_shadow_selection(String expected) {
         assertEquals(expected, traverse("p001", "p002")
                 .outE(Impact.class)
                 .outV("p", Person.class, it -> it
