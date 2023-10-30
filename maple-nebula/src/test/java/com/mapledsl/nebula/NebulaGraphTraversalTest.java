@@ -2,7 +2,6 @@ package com.mapledsl.nebula;
 
 import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.annotation.Label;
-import com.mapledsl.core.condition.Traversal;
 import com.mapledsl.core.exception.MapleDslExecutionException;
 import com.mapledsl.core.model.Model;
 import com.mapledsl.nebula.model.NebulaModel;
@@ -10,8 +9,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import java.util.Arrays;
 
 import static com.mapledsl.core.G.traverse;
 import static com.mapledsl.core.G.vertex;
