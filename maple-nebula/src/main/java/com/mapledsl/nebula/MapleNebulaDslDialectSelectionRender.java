@@ -18,13 +18,13 @@ public class MapleNebulaDslDialectSelectionRender extends MapleDslDialectSelecti
     public String toString(MapleDslDialectSelection value, String formatString, Locale locale) {
         if (StringUtils.isNotBlank(formatString)) {
             if (value == null)         return NULL;
-            if (value.isNotPresent())  return NULL;
+            if (value.isAllPresent())  return joinFormat(formatString, value.ref());
 
             final String curSelection = joinFormat(formatString, value.aliases());
             if (!value.hasNext()) return curSelection;
 
             final String nextSelection = toString(value.next, formatString, locale);
-            if (nextSelection.trim().isEmpty()) return curSelection;
+            if (nextSelection.equalsIgnoreCase(NULL)) return curSelection;
 
             return curSelection + COMMA + nextSelection;
         }
@@ -58,11 +58,11 @@ public class MapleNebulaDslDialectSelectionRender extends MapleDslDialectSelecti
         final String prefix = nullLabel(label) ? "properties(vertex)" : label;
         final StringJoiner joiner = new StringJoiner(COMMA);
         for (int i = 0; i < columns.length; i++) {
-            if (Model.ID.equals(columns[i])) {
+            if (Model.ID.equalsIgnoreCase(columns[i])) {
                 joiner.add("id(vertex)" + AS + alias[i]);
                 continue;
             }
-            if (Model.TAG.equals(columns[i])) {
+            if (Model.TAG.equalsIgnoreCase(columns[i])) {
                 joiner.add("head(labels(vertex))" + AS + alias[i]);
                 continue;
             }
@@ -79,19 +79,19 @@ public class MapleNebulaDslDialectSelectionRender extends MapleDslDialectSelecti
         final String prefix = nullLabel(label) ? "properties(edge)" : label;
         final StringJoiner joiner = new StringJoiner(COMMA);
         for (int i = 0; i < columns.length; i++) {
-            if (Model.E.SRC.equals(columns[i])) {
+            if (Model.E.SRC.equalsIgnoreCase(columns[i])) {
                 joiner.add("src(edge)" + AS + alias[i]);
                 continue;
             }
-            if (Model.E.DST.equals(columns[i])) {
+            if (Model.E.DST.equalsIgnoreCase(columns[i])) {
                 joiner.add("dst(edge)" + AS + alias[i]);
                 continue;
             }
-            if (NebulaModel.E.RANK.equals(columns[i])) {
+            if (NebulaModel.E.RANK.equalsIgnoreCase(columns[i])) {
                 joiner.add("rank(edge)" + AS + alias[i]);
                 continue;
             }
-            if (Model.TAG.equals(columns[i])) {
+            if (Model.TAG.equalsIgnoreCase(columns[i])) {
                 joiner.add("type(edge)" + AS + alias[i]);
                 continue;
             }
@@ -108,11 +108,11 @@ public class MapleNebulaDslDialectSelectionRender extends MapleDslDialectSelecti
         final String prefix = nullLabel(label) ? "properties($^)" : "$^" + DOT + label;
         final StringJoiner joiner = new StringJoiner(COMMA);
         for (int i = 0; i < columns.length; i++) {
-            if (Model.ID.equals(columns[i])) {
+            if (Model.ID.equalsIgnoreCase(columns[i])) {
                 joiner.add("id($^)" + AS + alias[i]);
                 continue;
             }
-            if (Model.TAG.equals(columns[i])) {
+            if (Model.TAG.equalsIgnoreCase(columns[i])) {
                 joiner.add("head(labels($^))" + AS + alias[i]);
                 continue;
             }
@@ -129,11 +129,11 @@ public class MapleNebulaDslDialectSelectionRender extends MapleDslDialectSelecti
         final String prefix = nullLabel(label) ? "properties($$)" : "$$" + DOT + label;
         final StringJoiner joiner = new StringJoiner(COMMA);
         for (int i = 0; i < columns.length; i++) {
-            if (Model.ID.equals(columns[i])) {
+            if (Model.ID.equalsIgnoreCase(columns[i])) {
                 joiner.add("id($$)" + AS + alias[i]);
                 continue;
             }
-            if (Model.TAG.equals(columns[i])) {
+            if (Model.TAG.equalsIgnoreCase(columns[i])) {
                 joiner.add("head(labels($$))" + AS + alias[i]);
                 continue;
             }
@@ -159,12 +159,12 @@ public class MapleNebulaDslDialectSelectionRender extends MapleDslDialectSelecti
         return columns.length != alias.length;
     }
 
-    private String joinFormat(@NotNull String formatString, @NotNull String[] items) {
+    private String joinFormat(@NotNull String formatString, @NotNull String... items) {
         if (items == null || items.length == 0) return NULL;
 
         final StringJoiner joiner = new StringJoiner(COMMA);
         for (String alias : items) {
-            joiner.add(formatString + alias);
+            joiner.add(formatString + alias + AS + alias);
         }
 
         return joiner.toString();

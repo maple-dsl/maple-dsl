@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 import static java.util.Objects.requireNonNull;
 
 public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
-    MapleDslDialectSelection<M> headSelect, tailSelect;
+    MapleDslDialectSelection<M> headSelect, tailSelect, headShadowSelect, tailShadowSelect;
     MapleDslDialectFunction<M> headFunc, tailFunc;
 
     final Set<String> orderAscSet = new LinkedHashSet<>();
@@ -40,8 +40,8 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
         // `age` was missing selected, checking from column_set whether contains.
         // e.g. selectAs("name","person_name").count("person_name","cnt_n")
         // `person_name` should check from alias_set whether contains.
-        if (next.column() != null) {
-            next.missingSelection = !selectionColumnSet.contains(next.column()) && !selectionAliaSet.contains(next.column());
+        if (next.column() != null && !selectionColumnSet.contains(next.column()) && !selectionAliaSet.contains(next.column())) {
+            shadow(new MapleDslDialectSelection<>(next.column()));
         }
 
         if (headFunc == null) {
@@ -68,6 +68,21 @@ public final class QueryWrapper<M extends Model<?>> implements Sort<M> {
 
         tailSelect.next = next;
         tailSelect = tailSelect.next;
+    }
+
+    private synchronized void shadow(@NotNull MapleDslDialectSelection<M> shadow) {
+        dialectBaseConsumer.accept(shadow);
+        Collections.addAll(selectionAliaSet, shadow.aliases());
+        Collections.addAll(selectionColumnSet, shadow.columns());
+
+        if (headShadowSelect == null) {
+            headShadowSelect = shadow;
+            tailShadowSelect = headShadowSelect;
+            return;
+        }
+
+        tailShadowSelect.next = shadow;
+        tailShadowSelect = tailShadowSelect.next;
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.mapledsl.nebula;
 import com.mapledsl.core.MapleDslDialectFunctionRender;
 import com.mapledsl.core.condition.common.Func;
 import com.mapledsl.core.condition.wrapper.MapleDslDialectFunction;
-import com.mapledsl.core.condition.wrapper.MapleDslDialectSelection;
 import com.mapledsl.nebula.module.MapleNebulaDslModule;
 
 import java.util.EnumMap;
@@ -17,17 +16,12 @@ public class MapleNebulaDslDialectFunctionRender extends MapleDslDialectFunction
     public String toString(MapleDslDialectFunction value, String formatString, Locale locale) {
         if (value == null)  return NULL;
 
-        String curFunction;
-        if ("as_selection".equalsIgnoreCase(formatString)) {
-            final MapleDslDialectSelection<?> selection = value.asSelection();
-            curFunction =  context.selectionRender().toString(selection, null, locale);
-        } else {
-            curFunction = toFunction(value);
-        }
-
+        final String curFunction = toFunction(value);
         if (!value.hasNext()) return curFunction;
+
         final String nextFunction = toString(value.next, formatString, locale);
-        if (nextFunction.trim().isEmpty()) return curFunction;
+        if (nextFunction.equals(NULL)) return curFunction;
+
         return curFunction + COMMA + nextFunction;
     }
 

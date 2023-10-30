@@ -22,12 +22,12 @@ public abstract class MapleDslDialectSelectionRender extends MapleDslDialectBase
 
     @Override
     public String toString(MapleDslDialectSelection value, String formatString, Locale locale) {
-        if (value == null)         return NULL;
-        if (value.isNotPresent())  return NULL;
-
+        if (value == null) return NULL;
         if (!value.hasNext()) return toSelection(value);
+
         final String nextSelection = toString(value.next, formatString, locale);
-        if (nextSelection.trim().isEmpty()) return toSelection(value);
+        if (nextSelection.equals(NULL)) return toSelection(value);
+
         return toSelection(value) + COMMA + nextSelection;
     }
 

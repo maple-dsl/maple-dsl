@@ -26,7 +26,7 @@ import static java.util.Objects.requireNonNull;
 
 @SuppressWarnings("DuplicatedCode")
 public class TraversalWrapper implements Traversal {
-    static final int LENGTH = 25;
+    static final int LENGTH = 26;
     static final int STEP_M_INDEX = 0;
     static final int STEP_N_INDEX = 1;
     static final int FROM_INDEX = 2;
@@ -41,31 +41,32 @@ public class TraversalWrapper implements Traversal {
     static final int EDGE_ALIAS_INDEX = 11;
     static final int PREDICATE_INDEX = 12;
     static final int SELECTION_INDEX = 13;
-    static final int FUNCTION_INDEX = 14;
-    static final int COMPANION_INDEX = 15;
-    static final int ORDER_ASC_INDEX = 16;
-    static final int ORDER_DSC_INDEX = 17;
-    static final int SKIP_INDEX = 18;
-    static final int LIMIT_INDEX = 19;
-    static final int HAS_NEXT_INDEX = 20;
-    static final int NEXT_INDEX = 21;
-    static final int DELETE_VERTEX_INDEX = 22;
-    static final int DETACH_VERTEX_INDEX = 23;
-    static final int DELETE_EDGE_INDEX = 24;
+    static final int SHADOW_SELECTION_INDEX = 14;
+    static final int FUNCTION_INDEX = 15;
+    static final int COMPANION_INDEX = 16;
+    static final int ORDER_ASC_INDEX = 17;
+    static final int ORDER_DSC_INDEX = 18;
+    static final int SKIP_INDEX = 19;
+    static final int LIMIT_INDEX = 20;
+    static final int HAS_NEXT_INDEX = 21;
+    static final int NEXT_INDEX = 22;
+    static final int DELETE_VERTEX_INDEX = 23;
+    static final int DETACH_VERTEX_INDEX = 24;
+    static final int DELETE_EDGE_INDEX = 25;
 
     /**
      * Position arguments distributed like below:
      * <pre>
-     * [0] stepM        [1] stepN
-     * [2] from         [3] from_match      [4] from_prev
-     * [5] over         [6] direction_in    [7] direction_out [8] direction_both
-     * [9] in_alias     [10] out_alias      [11] edge_alias
+     * [0] stepM            [1] stepN
+     * [2] from             [3] from_match          [4] from_prev
+     * [5] over             [6] direction_in        [7] direction_out   [8] direction_both
+     * [9] in_alias         [10] out_alias          [11] edge_alias
      * [12] where
-     * [13] select      [14] function       [15] companion
-     * [16] order_asc    [17] order_desc
-     * [18] skip        [19 limit
-     * [20] has_next    [21] next
-     * [22] delete_vertex [23] detach_vertex [24] delete_edge
+     * [13] selection       [14] shadow_selection   [15] function       [16] companion
+     * [17] order_asc       [18] order_desc
+     * [19] skip            [20] limit
+     * [21] has_next        [22] next
+     * [23] delete_vertex   [24] detach_vertex      [25] delete_edge
      * </pre>
      */
     final LinkedList<Object[]> argumentsList = new LinkedList<>();
@@ -81,6 +82,7 @@ public class TraversalWrapper implements Traversal {
 
     List<MapleDslDialectPredicate<?>> predicateList = new LinkedList<>();
     List<MapleDslDialectSelection<?>> selectionList = new LinkedList<>();
+    List<MapleDslDialectSelection<?>> shadowSelectionList = new LinkedList<>();
     List<MapleDslDialectFunction<?>> functionList = new LinkedList<>();
 
     /**
@@ -134,6 +136,10 @@ public class TraversalWrapper implements Traversal {
         if (!selectionList.isEmpty()) {
             arguments[SELECTION_INDEX] = selectionList;
             selectionList = new LinkedList<>();
+        }
+        if (!shadowSelectionList.isEmpty()){
+            arguments[SHADOW_SELECTION_INDEX] = shadowSelectionList;
+            shadowSelectionList = new LinkedList<>();
         }
         if (!functionList.isEmpty()) {
             arguments[FUNCTION_INDEX] = functionList;
@@ -791,6 +797,7 @@ public class TraversalWrapper implements Traversal {
 
         private void sink() {
             if (selection.headSelect != null)          selectionList.add(selection.headSelect);
+            if (selection.headShadowSelect != null)    shadowSelectionList.add(selection.headShadowSelect);
             if (selection.headFunc != null)            functionList.add(selection.headFunc);
             if (predicate.head != null)                predicateList.add(predicate.head);
             if (!selection.orderAscSet.isEmpty())      orderAscList.addAll(selection.orderAscSet);
