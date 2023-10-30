@@ -11,11 +11,7 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZonedDateTime;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 
 enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
     NULL(void.class, MapleDslParameterHandler.identity()) {
@@ -147,6 +143,23 @@ enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
 
             return delegate.apply(joiner, ctx);
         }
+    },
+    MAP(Map.class, MapleDslParameterHandler.identity()) {
+        @Override
+        public String apply(@Nullable Object parameter, MapleDslConfiguration ctx) {
+            if (parameter == null) return NULL.apply(parameter, ctx);
+            final StringJoiner joiner = new StringJoiner(",", "{", "}");
+            for (Map.Entry<?, ?> entry : ((Map<?, ?>) parameter).entrySet()) {
+                final Object key = entry.getKey();
+                final Object value = entry.getValue();
+                if (key == null) continue;
+
+                final MapleDslParameterHandler parameterHandler = ctx.parameterHandler(value.getClass());
+                joiner.add(key + ":" + parameterHandler.apply(value, ctx));
+            }
+
+            return delegate.apply(joiner, ctx);
+        }
     };
 
     final Class<?> parameterType;
@@ -163,6 +176,7 @@ enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
         if (parameter instanceof List) return LIST.apply(parameter, ctx);
         if (parameter instanceof Set) return SET.apply(parameter, ctx);
         if (parameter instanceof Collection) return SET.apply(new LinkedHashSet<>(((Collection<?>) parameter)), ctx);
+        if (parameter instanceof Map) return MAP.apply(parameter, ctx);
 
         final Object composed = compose(parameter, ctx);
         return this.delegate.apply(composed, ctx);
