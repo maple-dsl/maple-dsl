@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public interface Model<R extends Number & CharSequence> extends Serializable {
-    String ID = "ID", TAG = "TAG";
+    String ID = "id", TAG = "tag";
 
     @Nullable R id();
     @Nullable String label();
@@ -232,7 +232,7 @@ public interface Model<R extends Number & CharSequence> extends Serializable {
             return "@" + id + "#" + src + "->" + dst;
         }
 
-        public static final String SRC = "SRC", DST = "DST";
+        public static final String SRC = "src", DST = "dst";
 
         public static E of(ID id, ID src, ID dst) {
             return new E().setId(id).setSrc(src).setDst(dst);
