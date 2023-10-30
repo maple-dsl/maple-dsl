@@ -2,6 +2,7 @@ package com.mapledsl.nebula;
 
 import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.annotation.Label;
+import com.mapledsl.core.condition.Traversal;
 import com.mapledsl.core.exception.MapleDslExecutionException;
 import com.mapledsl.core.model.Model;
 import com.mapledsl.nebula.model.NebulaModel;
@@ -9,6 +10,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.Arrays;
 
 import static com.mapledsl.core.G.traverse;
 import static com.mapledsl.core.G.vertex;
@@ -76,8 +79,8 @@ public class NebulaGraphTraversalTest {
 
     @ParameterizedTest
     @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"{{ vid }}\" OVER follow REVERSELY " +
-            "WHERE $$.person.age < 30 AND ($$.person.name STARTS WITH \"bofa\" OR $$.person.name STARTS WITH \"zhangsan\") OR $$.person.age != 50 AND $$.person.aaaa != 1000 " +
-            "YIELD $$.person.id AS id,$$.person.name AS name,$$.person.id AS dst_id")
+            "WHERE $$.person.age < 30 AND ($$.person.name STARTS WITH \"bofa\" OR $$.person.name STARTS WITH \"zhangsan\") OR $$.person.age > 50 AND $$.person.aaaa > 1000 " +
+            "YIELD id($$) AS id,$$.person.name AS name,id($$) AS dst_id")
     public void should_traverse_then_output_out_vertex_id(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
                 .inE(Follow.class)
@@ -87,8 +90,8 @@ public class NebulaGraphTraversalTest {
                         .or()
                         .gt("age", 50)
                         .gt("aaaa", 1000)
-                        .select("id", "name")
-                        .selectAs("id", "dst_id")
+                        .select(Model.ID, "name")
+                        .selectAs(Model.ID, "dst_id")
                 )
                 .render()
         );
@@ -96,9 +99,9 @@ public class NebulaGraphTraversalTest {
 
     @ParameterizedTest
     @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"{{ vid }}\" OVER follow REVERSELY " +
-            "WHERE id($$) IS NOT NULL YIELD properties($^).id AS prop_id,id($^) AS real_vertex_id,id($$) AS next_traversal_id" +
+            "WHERE id($$) IS NOT NULL YIELD id($^) AS prop_id,id($^) AS real_vertex_id,id($$) AS next_traversal_id" +
             "| GO 0 TO 1 STEPS FROM $-.next_traversal_id OVER follow REVERSELY " +
-            "WHERE id($$) IS NOT NULL YIELD id($$) AS dst_id,$-.prop_id,$-.real_vertex_id")
+            "WHERE id($$) IS NOT NULL YIELD $-.prop_id AS prop_id,$-.real_vertex_id AS real_vertex_id,id($$) AS dst_id")
     public void should_traverse_then_output_in_vertex_id(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
                 .inE(Follow.class)
@@ -122,7 +125,7 @@ public class NebulaGraphTraversalTest {
 
     @ParameterizedTest
     @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"{{ vid }}\" OVER follow REVERSELY " +
-            "WHERE id($$) == \"p001\" YIELD id($$) AS ID,$$.person.name AS name,$$.person.name AS dup_person_name,id($$) AS dup_person_id")
+            "WHERE id($$) == \"p001\" YIELD id($$) AS id,$$.person.name AS name,$$.person.name AS dup_person_name,id($$) AS dup_person_id")
     public void should_traverse_then_output_out_vertex_id_and_desc(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
                 .inE(Follow.class)
@@ -194,7 +197,7 @@ public class NebulaGraphTraversalTest {
 
     @ParameterizedTest
     @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"p001\",\"p002\" OVER impact WHERE id($$) IS NOT NULL YIELD $$.person.name AS p_name,$$.person.age AS age " +
-            "| YIELD $-.p_name,SUM($-.age) AS p_sum_page,COUNT($-.p_name) AS p_cnt_name")
+            "| YIELD $-.p_name AS p_name,SUM($-.age) AS p_sum_page,COUNT($-.p_name) AS p_cnt_name")
     public void should_traverse_sum(String expected) {
         assertEquals(expected, traverse("p001", "p002")
                 .outE(Impact.class)
