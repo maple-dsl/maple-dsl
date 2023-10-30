@@ -86,7 +86,7 @@ public interface NebulaModel {
             return "#" +  src + "->" + dst + "@" + rank;
         }
 
-        public static final String RANK = "RANK";
+        public static final String RANK = "rank";
 
         public static NebulaModel.E of(ID id, ID src, ID dst, long rank) {
             return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
