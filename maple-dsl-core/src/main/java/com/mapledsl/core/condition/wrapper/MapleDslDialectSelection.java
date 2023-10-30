@@ -40,10 +40,6 @@ public final class MapleDslDialectSelection<M extends Model<?>> extends MapleDsl
         return all;
     }
 
-    public boolean isNotPresent() {
-        return columns == null;
-    }
-
     public String[] aliases() {
         return aliases;
     }
