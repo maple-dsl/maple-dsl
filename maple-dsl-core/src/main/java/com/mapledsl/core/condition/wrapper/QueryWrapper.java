@@ -58,9 +58,11 @@ public abstract class QueryWrapper<M extends Model<?>> implements Query<M>, Wrap
     public abstract <R extends Serializable> SortWrapper<M> select(boolean condition, SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2, SerializableFunction<M, ?> col3);
 
     @Override
+    @SuppressWarnings("unchecked")
     public abstract <R extends Serializable> SortWrapper<M> select(SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2, SerializableFunction<M, ?> col3, SerializableFunction<M, ?>... others);
 
     @Override
+    @SuppressWarnings("unchecked")
     public abstract <R extends Serializable> SortWrapper<M> select(boolean condition, SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2, SerializableFunction<M, ?> col3, SerializableFunction<M, ?>... others);
 
     @Override

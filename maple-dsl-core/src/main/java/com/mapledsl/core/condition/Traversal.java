@@ -7,7 +7,6 @@ import java.util.Collection;
 /**
  * @author bofa1ex
  * @since 2023/08/28
- * @param <>
  */
 public interface Traversal {
     /**
