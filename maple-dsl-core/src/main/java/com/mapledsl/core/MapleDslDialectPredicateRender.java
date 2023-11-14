@@ -2,7 +2,6 @@ package com.mapledsl.core;
 
 import com.mapledsl.core.condition.common.OP;
 import com.mapledsl.core.condition.wrapper.MapleDslDialectPredicate;
-import com.mapledsl.core.exception.MapleDslBindingException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.stringtemplate.v4.AttributeRenderer;
@@ -23,7 +22,7 @@ public abstract class MapleDslDialectPredicateRender extends MapleDslDialectBase
         if (predicate.in())   return inV(predicate.ref(), predicate.label(context), predicate.column());
         if (predicate.out())  return outV(predicate.ref(), predicate.label(context), predicate.column());
 
-        throw new MapleDslBindingException(NULL);
+        throw new UnsupportedOperationException();
     }
 
     @Override

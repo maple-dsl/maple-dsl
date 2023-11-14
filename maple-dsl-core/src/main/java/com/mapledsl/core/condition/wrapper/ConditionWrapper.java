@@ -1,6 +1,8 @@
 package com.mapledsl.core.condition.wrapper;
 
+import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.condition.Condition;
+import com.mapledsl.core.condition.Wrapper;
 import com.mapledsl.core.condition.common.OP;
 import com.mapledsl.core.extension.func.SerializableFunction;
 import com.mapledsl.core.model.Model;
@@ -13,13 +15,15 @@ import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
 
-public final class ConditionWrapper<M extends Model<?>> implements Condition.Unary<M> {
+public class ConditionWrapper<M extends Model<?>> implements Condition.Unary<M>, Wrapper {
     MapleDslDialectPredicate<M> head, tail;
     private final Consumer<MapleDslDialectBase<M>> predicateDecorator;
+    private final Wrapper delegateWrapper;
     private final AtomicReference<OP> connection = new AtomicReference<>(OP.AND);
 
-    ConditionWrapper(Consumer<MapleDslDialectBase<M>> predicateDecorator) {
+    ConditionWrapper(@NotNull Consumer<MapleDslDialectBase<M>> predicateDecorator, @NotNull Wrapper delegateWrapper) {
         this.predicateDecorator = predicateDecorator;
+        this.delegateWrapper = delegateWrapper;
     }
 
     private synchronized void next(@NotNull MapleDslDialectPredicate<M> next) {
@@ -424,5 +428,10 @@ public final class ConditionWrapper<M extends Model<?>> implements Condition.Una
     public <R extends Serializable> ConditionWrapper<M> notNull(boolean condition, SerializableFunction<M, R> column) {
         if (!condition) return this;
         return notNull(column);
+    }
+
+    @Override
+    public String render(MapleDslConfiguration context) {
+        return delegateWrapper.render(context);
     }
 }

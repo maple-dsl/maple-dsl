@@ -41,7 +41,7 @@ public class GraphTraversalTest {
 
     @Test
     public void should_traverse_use_out_vertex_id_as_default_output() {
-        assertTrue(traverse("{{ vid }}").inE("follow").render().contains("SELECT OUT.ID AS _dst"));
+        assertTrue(traverse("{{ vid }}").inE("follow").render().contains("SELECT OUT.id AS dst_id"));
     }
 
     @Test

@@ -1,10 +1,8 @@
 package com.mapledsl.core;
 
-import com.mapledsl.core.condition.Fetch;
-import com.mapledsl.core.condition.Match;
-import com.mapledsl.core.condition.Traversal;
 import com.mapledsl.core.condition.wrapper.FetchWrapper;
 import com.mapledsl.core.condition.wrapper.MatchWrapper;
+import com.mapledsl.core.condition.wrapper.TraversalStepWrapper;
 import com.mapledsl.core.condition.wrapper.TraversalWrapper;
 import com.mapledsl.core.model.Model;
 import org.jetbrains.annotations.Contract;
@@ -14,11 +12,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
-import static com.mapledsl.core.MapleDslDialectRender.fetchE;
-import static com.mapledsl.core.MapleDslDialectRender.fetchV;
-import static com.mapledsl.core.MapleDslDialectRender.matchE;
-import static com.mapledsl.core.MapleDslDialectRender.matchV;
-import static com.mapledsl.core.MapleDslDialectRender.traversal;
+import static com.mapledsl.core.MapleDslDialectRender.*;
 
 public final class G {
 
@@ -30,27 +24,27 @@ public final class G {
      * @return the basic traversing condition wrapper of the specific id of vertex as origin.
      */
     @Contract("_ -> new")
-    public static @NotNull Traversal traverse(String vertexId) {
+    public static @NotNull TraversalWrapper traverse(String vertexId) {
         return new TraversalWrapperFacade(vertexId);
     }
 
     @Contract("_ -> new")
-    public static @NotNull Traversal traverse(Number vertexId) {
+    public static @NotNull TraversalWrapper traverse(Number vertexId) {
         return new TraversalWrapperFacade(vertexId);
     }
 
     @Contract("_ -> new")
-    public static @NotNull Traversal traverse(String... vertexIds) {
+    public static @NotNull TraversalWrapper traverse(String... vertexIds) {
         return new TraversalWrapperFacade(vertexIds);
     }
 
     @Contract("_ -> new")
-    public static @NotNull Traversal traverse(Number... vertexIds) {
+    public static @NotNull TraversalWrapper traverse(Number... vertexIds) {
         return new TraversalWrapperFacade(vertexIds);
     }
 
     @Contract("_ -> new")
-    public static Traversal traverse(Match<? extends Model.V> match) {
+    public static TraversalWrapper traverse(MatchWrapper<? extends Model.V> match) {
         return new TraversalWrapperFacade(((MatchVertexWrapper<?>) match));
     }
 
@@ -62,32 +56,32 @@ public final class G {
      * @return the basic fetching condition wrapper of the specified id of vertex & tag as origin.
      */
     @Contract("_ -> new")
-    public static <V extends Model.V> @NotNull Match<V> vertex(Class<V> tag) {
+    public static <V extends Model.V> @NotNull MatchWrapper<V> vertex(Class<V> tag) {
         return new MatchVertexWrapper<>(tag, matchV);
     }
 
     @Contract("_ -> new")
-    public static @NotNull Match<Model.V> vertex(String tag) {
+    public static @NotNull MatchWrapper<Model.V> vertex(String tag) {
         return new MatchVertexWrapper<>(tag, matchV);
     }
 
     @Contract("_ -> new")
-    public static <E extends Model.E> @NotNull Match<E> edge(Class<E> tag) {
+    public static <E extends Model.E> @NotNull MatchWrapper<E> edge(Class<E> tag) {
         return new MatchEdgeWrapper<>(tag, matchE);
     }
 
     @Contract("_ -> new")
-    public static <E extends Model.E> @NotNull Match<E> edge(String tag) {
+    public static <E extends Model.E> @NotNull MatchWrapper<E> edge(String tag) {
         return new MatchEdgeWrapper<>(tag, matchE);
     }
 
     @Contract(value = "_, _ -> new", pure = true)
-    public static @NotNull Fetch<Model.V> vertex(String tag, String... vertexIds) {
+    public static @NotNull FetchWrapper<Model.V> vertex(String tag, String... vertexIds) {
         return new FetchVertexWrapper<>(tag, vertexIds, fetchV);
     }
 
     @Contract(value = "_, _ -> new", pure = true)
-    public static @NotNull Fetch<Model.V> vertex(String tag, Number... vertexIds) {
+    public static @NotNull FetchWrapper<Model.V> vertex(String tag, Number... vertexIds) {
         return new FetchVertexWrapper<>(tag, vertexIds, fetchV);
     }
 
@@ -100,7 +94,7 @@ public final class G {
      * @return the basic fetching condition wrapper of the specified id of vertex & tag as origin.
      */
     @Contract(value = "_, _ -> new", pure = true)
-    public static <V extends Model.V> @NotNull Fetch<V> vertex(Class<V> tag, String... vertexIds) {
+    public static <V extends Model.V> @NotNull FetchWrapper<V> vertex(Class<V> tag, String... vertexIds) {
         return new FetchVertexWrapper<>(tag, vertexIds, fetchV);
     }
 
@@ -113,7 +107,7 @@ public final class G {
      * @return the basic fetching condition wrapper of the specified id of vertices & tag as origin.
      */
     @Contract("_, _ -> new")
-    public static <V extends Model.V> @NotNull Fetch<V> vertex(Class<V> tag, Number... vertexIds) {
+    public static <V extends Model.V> @NotNull FetchWrapper<V> vertex(Class<V> tag, Number... vertexIds) {
         return new FetchVertexWrapper<>(tag, vertexIds, fetchV);
     }
 
@@ -127,7 +121,7 @@ public final class G {
      */
     @Contract("_, _ -> new")
     @SafeVarargs
-    public static <E extends Model.E> @NotNull Fetch<E> edge(Class<E> tag, E... edges) {
+    public static <E extends Model.E> @NotNull FetchWrapper<E> edge(Class<E> tag, E... edges) {
         return new FetchEdgeWrapper<>(tag, edges, fetchE);
     }
 
@@ -140,7 +134,7 @@ public final class G {
      * @return the basic fetching condition wrapper of the specified edges basic props & tag as origin.
      */
     @Contract("_, _ -> new")
-    public static <E extends Model.E> @NotNull Fetch<E> edge(Class<E> tag, Collection<E> edges) {
+    public static <E extends Model.E> @NotNull FetchWrapper<E> edge(Class<E> tag, Collection<E> edges) {
         return new FetchEdgeWrapper<>(tag, edges, fetchE);
     }
 
@@ -154,7 +148,7 @@ public final class G {
      */
     @Contract("_, _ -> new")
     @SafeVarargs
-    public static <E extends Model.E> @NotNull Fetch<E> edge(String tag, E... edges) {
+    public static <E extends Model.E> @NotNull FetchWrapper<E> edge(String tag, E... edges) {
         return new FetchEdgeWrapper<>(tag, edges, fetchE);
     }
 
@@ -167,7 +161,7 @@ public final class G {
      * @return the basic fetching condition wrapper of the specified edges basic props & tag as origin.
      */
     @Contract("_, _ -> new")
-    public static <E extends Model.E> @NotNull Fetch<E> edge(String tag, Collection<E> edges) {
+    public static <E extends Model.E> @NotNull FetchWrapper<E> edge(String tag, Collection<E> edges) {
         return new FetchEdgeWrapper<>(tag, edges, fetchE);
     }
 
@@ -259,7 +253,7 @@ public final class G {
         }
     }
 
-    static final class TraversalWrapperFacade extends TraversalWrapper {
+    static final class TraversalWrapperFacade extends TraversalStepWrapper {
         MatchVertexWrapper<?> match;
 
         <R> TraversalWrapperFacade(R from) {

@@ -19,12 +19,13 @@ enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[]
             fmt.add("ref", args[0]);
             fmt.add("tag", args[1]);
             fmt.add("selection", args[2]);
-            fmt.add("where", args[3]);
-            fmt.add("function", args[4]);
-            fmt.add("order_asc", args[5]);
-            fmt.add("order_desc", args[6]);
-            fmt.add("skip", args[7]);
-            fmt.add("limit", args[8]);
+            fmt.add("shadow_selection", args[3]);
+            fmt.add("where", args[4]);
+            fmt.add("function", args[5]);
+            fmt.add("order_asc", args[6]);
+            fmt.add("order_desc", args[7]);
+            fmt.add("skip", args[8]);
+            fmt.add("limit", args[9]);
             return fmt;
         }
     },
@@ -40,15 +41,16 @@ enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[]
             fmt.add("ref", args[0]);
             fmt.add("tag", args[1]);
             fmt.add("selection", args[2]);
-            fmt.add("where", args[3]);
-            fmt.add("function", args[4]);
-            fmt.add("order_asc", args[5]);
-            fmt.add("order_desc", args[6]);
-            fmt.add("skip", args[7]);
-            fmt.add("limit", args[8]);
-            fmt.add("delete", args[9]);
-            fmt.add("detach", args[10]);
-            fmt.add("traverse", args[11]);
+            fmt.add("shadow_selection", args[3]);
+            fmt.add("where", args[4]);
+            fmt.add("function", args[5]);
+            fmt.add("order_asc", args[6]);
+            fmt.add("order_desc", args[7]);
+            fmt.add("skip", args[8]);
+            fmt.add("limit", args[9]);
+            fmt.add("delete", args[10]);
+            fmt.add("detach", args[11]);
+            fmt.add("traverse", args[12]);
             return fmt;
         }
     },
@@ -58,13 +60,14 @@ enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[]
             fmt.add("ref", args[0]);
             fmt.add("tag", args[1]);
             fmt.add("selection", args[2]);
-            fmt.add("where", args[3]);
-            fmt.add("function", args[4]);
-            fmt.add("order_asc", args[5]);
-            fmt.add("order_desc", args[6]);
-            fmt.add("skip", args[7]);
-            fmt.add("limit", args[8]);
-            fmt.add("delete", args[9]);
+            fmt.add("shadow_selection", args[3]);
+            fmt.add("where", args[4]);
+            fmt.add("function", args[5]);
+            fmt.add("order_asc", args[6]);
+            fmt.add("order_desc", args[7]);
+            fmt.add("skip", args[8]);
+            fmt.add("limit", args[9]);
+            fmt.add("delete", args[10]);
             return fmt;
         }
     },

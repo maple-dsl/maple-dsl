@@ -1,31 +1,16 @@
 package com.mapledsl.core.condition.wrapper;
 
 import com.mapledsl.core.MapleDslConfiguration;
-import com.mapledsl.core.condition.Sort;
 import com.mapledsl.core.condition.Traversal;
+import com.mapledsl.core.condition.Wrapper;
 import com.mapledsl.core.exception.MapleDslExecutionException;
-import com.mapledsl.core.extension.func.SerializableFunction;
 import com.mapledsl.core.model.Model;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
-import static java.util.Objects.requireNonNull;
-
-@SuppressWarnings("DuplicatedCode")
-public class TraversalWrapper implements Traversal {
+public abstract class TraversalWrapper implements Traversal, Wrapper {
     static final int LENGTH = 26;
     static final int STEP_M_INDEX = 0;
     static final int STEP_N_INDEX = 1;
@@ -59,10 +44,12 @@ public class TraversalWrapper implements Traversal {
      * <pre>
      * [0] stepM            [1] stepN
      * [2] from             [3] from_match          [4] from_prev
-     * [5] over             [6] direction_in        [7] direction_out   [8] direction_both
+     * [5] over
+     * [6] direction_in     [7] direction_out       [8] direction_both
      * [9] in_alias         [10] out_alias          [11] edge_alias
      * [12] where
-     * [13] selection       [14] shadow_selection   [15] function       [16] companion
+     * [13] selection       [14] shadow_selection
+     * [15] function        [16] companion
      * [17] order_asc       [18] order_desc
      * [19] skip            [20] limit
      * [21] has_next        [22] next
@@ -100,7 +87,221 @@ public class TraversalWrapper implements Traversal {
         this.arguments[FROM_MATCH_INDEX] = fromMatchReference;
     }
 
-    private synchronized void nextTraversal(boolean terminate) {
+    @Override
+    public String render(MapleDslConfiguration configuration) {
+        nextTraversal(true);
+
+        final StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < argumentsList.size(); i++) {
+            final Object[] arguments = argumentsList.get(i);
+            if (i == argumentsList.size() - 1) {
+                arguments[ORDER_ASC_INDEX]  = orderAscList.isEmpty()    ? null : orderAscList;
+                arguments[ORDER_DSC_INDEX]  = orderDescList.isEmpty()   ? null : orderDescList;
+            }
+
+            final String sql = renderFunc.apply(configuration, arguments);
+            builder.append(sql);
+        }
+
+        return builder.toString();
+    }
+
+    @Override
+    public abstract TraversalStepWrapper inE(int stepM, int stepN, Collection<Class<? extends Model.E>> over);
+
+    @Override
+    public abstract TraversalStepWrapper inE(int stepM, int stepN, Class<? extends Model.E> over);
+
+    @Override
+    public abstract TraversalStepWrapper inE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second);
+
+    @Override
+    public abstract TraversalStepWrapper inE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
+
+    @Override
+    public abstract TraversalStepWrapper inE(int stepM, int stepN, @NotNull String... over);
+
+    @Override
+    public TraversalStepWrapper inE(int step, Collection<Class<? extends Model.E>> over) {
+        return inE(0, step, over);
+    }
+
+    @Override
+    public TraversalStepWrapper inE(int step, Class<? extends Model.E> over) {
+        return inE(0, step, over);
+    }
+
+    @Override
+    public TraversalStepWrapper inE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second) {
+        return inE(0, step, first, second);
+    }
+
+    @Override
+    public TraversalStepWrapper inE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
+        return inE(0, step, first, second, third);
+    }
+
+    @Override
+    public TraversalStepWrapper inE(int step, String... over) {
+        return inE(0, step, over);
+    }
+
+    @Override
+    public TraversalStepWrapper inE(Collection<Class<? extends Model.E>> over) {
+        return inE(1, over);
+    }
+
+    @Override
+    public TraversalStepWrapper inE(Class<? extends Model.E> over) {
+        return inE(1, over);
+    }
+
+    @Override
+    public TraversalStepWrapper inE(Class<? extends Model.E> first, Class<? extends Model.E> second) {
+        return inE(1, first, second);
+    }
+
+    @Override
+    public TraversalStepWrapper inE(Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
+        return inE(1, first, second, third);
+    }
+
+    @Override
+    public TraversalStepWrapper inE(String... over) {
+        return inE(1, over);
+    }
+
+    @Override
+    public abstract TraversalStepWrapper outE(int stepM, int stepN, Collection<Class<? extends Model.E>> over);
+
+    @Override
+    public abstract TraversalStepWrapper outE(int stepM, int stepN, Class<? extends Model.E> over);
+
+    @Override
+    public abstract TraversalStepWrapper outE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second);
+
+    @Override
+    public abstract TraversalStepWrapper outE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
+
+    @Override
+    public abstract TraversalStepWrapper outE(int stepM, int stepN, String... over);
+
+    @Override
+    public TraversalStepWrapper outE(int step, Collection<Class<? extends Model.E>> over) {
+        return outE(0, step, over);
+    }
+
+    @Override
+    public TraversalStepWrapper outE(int step, Class<? extends Model.E> over) {
+        return outE(0, step, over);
+    }
+
+    @Override
+    public TraversalStepWrapper outE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second) {
+        return outE(0, step, first, second);
+    }
+
+    @Override
+    public TraversalStepWrapper outE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
+        return outE(0, step, first, second, third);
+    }
+
+    @Override
+    public TraversalStepWrapper outE(int step, String... over) {
+        return outE(0, step, over);
+    }
+
+    @Override
+    public TraversalStepWrapper outE(Collection<Class<? extends Model.E>> over) {
+        return outE(1, over);
+    }
+
+    @Override
+    public TraversalStepWrapper outE(Class<? extends Model.E> over) {
+        return outE(1, over);
+    }
+
+    @Override
+    public TraversalStepWrapper outE(Class<? extends Model.E> first, Class<? extends Model.E> second) {
+        return outE(1, first, second);
+    }
+
+    @Override
+    public TraversalStepWrapper outE(Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
+        return outE(1, first, second, third);
+    }
+
+    @Override
+    public TraversalStepWrapper outE(String... over) {
+        return outE(1, over);
+    }
+
+    @Override
+    public abstract TraversalStepWrapper bothE(int stepM, int stepN, Collection<Class<? extends Model.E>> over);
+
+    @Override
+    public abstract TraversalStepWrapper bothE(int stepM, int stepN, Class<? extends Model.E> over);
+
+    @Override
+    public abstract TraversalStepWrapper bothE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second);
+
+    @Override
+    public abstract TraversalStepWrapper bothE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
+
+    @Override
+    public abstract TraversalStepWrapper bothE(int stepM, int stepN, String... over);
+
+    @Override
+    public TraversalStepWrapper bothE(int step, Collection<Class<? extends Model.E>> over) {
+        return bothE(0, step, over);
+    }
+
+    @Override
+    public TraversalStepWrapper bothE(int step, Class<? extends Model.E> over) {
+        return bothE(0, step, over);
+    }
+
+    @Override
+    public TraversalStepWrapper bothE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second) {
+        return bothE(0, step, first, second);
+    }
+
+    @Override
+    public TraversalStepWrapper bothE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
+        return bothE(0, step, first, second, third);
+    }
+
+    @Override
+    public TraversalStepWrapper bothE(int step, String... over) {
+        return bothE(0, step, over);
+    }
+
+    @Override
+    public TraversalStepWrapper bothE(Collection<Class<? extends Model.E>> over) {
+        return bothE(1, over);
+    }
+
+    @Override
+    public TraversalStepWrapper bothE(Class<? extends Model.E> over) {
+        return bothE(1, over);
+    }
+
+    @Override
+    public TraversalStepWrapper bothE(Class<? extends Model.E> first, Class<? extends Model.E> second) {
+        return bothE(1, first, second);
+    }
+
+    @Override
+    public TraversalStepWrapper bothE(Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
+        return bothE(1, first, second, third);
+    }
+
+    @Override
+    public TraversalStepWrapper bothE(String... over) {
+        return bothE(1, over);
+    }
+
+    protected final synchronized void nextTraversal(boolean terminate) {
         if (arguments[DIRECTION_IN_INDEX] == null && arguments[DIRECTION_OUT_INDEX] == null && arguments[DIRECTION_BOTH_INDEX] == null) {
             throw new MapleDslExecutionException("Missing direction_clause value, use `inE`, `outE`, `bothE`.");
         }
@@ -167,641 +368,5 @@ public class TraversalWrapper implements Traversal {
         // clear dst_id var for next filling.
         nextTraversalFrom = null;
         arguments[COMPANION_INDEX] = nextTraversalCompanionSet.isEmpty() ? null : new LinkedHashSet<>(nextTraversalCompanionSet);
-    }
-
-    @Override
-    public String render(MapleDslConfiguration configuration) {
-        nextTraversal(true);
-
-        final StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < argumentsList.size(); i++) {
-            final Object[] arguments = argumentsList.get(i);
-            if (i == argumentsList.size() - 1) {
-                arguments[ORDER_ASC_INDEX]  = orderAscList.isEmpty()    ? null : orderAscList;
-                arguments[ORDER_DSC_INDEX]  = orderDescList.isEmpty()   ? null : orderDescList;
-            }
-
-            final String sql = renderFunc.apply(configuration, arguments);
-            builder.append(sql);
-        }
-
-        return builder.toString();
-    }
-
-    @Override
-    public Traversal limit(int limit) {
-        return limit(0, limit);
-    }
-
-    @Override
-    public Traversal limit(int skip, int limit) {
-        arguments[SKIP_INDEX] = skip;
-        arguments[LIMIT_INDEX] = limit;
-        return this;
-    }
-
-    @Override
-    public Traversal inE(int stepM, int stepN, Collection<Class<? extends Model.E>> over) {
-        if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
-        if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
-        // if over is null, it will render as `*`
-        if (arguments[OVER_INDEX] != null) nextTraversal(false);
-
-        arguments[STEP_M_INDEX] = stepM;
-        arguments[STEP_N_INDEX] = stepN;
-        arguments[OVER_INDEX] = over == null || over.isEmpty() ? null : over;
-        arguments[DIRECTION_IN_INDEX] = true;
-
-        return this;
-    }
-
-    @Override
-    public Traversal inE(int stepM, int stepN, Class<? extends Model.E> over) {
-        if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
-        if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
-        // if over is null, it will render as `*`
-        if (arguments[OVER_INDEX] != null) nextTraversal(false);
-
-        arguments[STEP_M_INDEX] = stepM;
-        arguments[STEP_N_INDEX] = stepN;
-        arguments[OVER_INDEX] = over;
-        arguments[DIRECTION_IN_INDEX] = true;
-
-        return this;
-    }
-
-    @Override
-    public Traversal inE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second) {
-        if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
-        if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
-        if (first == null) throw new MapleDslExecutionException("edgeType `first` must not be null.");
-        if (second == null) throw new MapleDslExecutionException("edgeType `second` must not be null.");
-        // if over is null, it will render as `*`
-        if (arguments[OVER_INDEX] != null) nextTraversal(false);
-
-        arguments[STEP_M_INDEX] = stepM;
-        arguments[STEP_N_INDEX] = stepN;
-        arguments[OVER_INDEX] = new Class<?>[]{ first, second };
-        arguments[DIRECTION_IN_INDEX] = true;
-
-        return this;
-    }
-
-    @Override
-    public Traversal inE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
-        if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
-        if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
-        if (first == null) throw new MapleDslExecutionException("edgeType `first` must not be null.");
-        if (second == null) throw new MapleDslExecutionException("edgeType `second` must not be null.");
-        if (third == null) throw new MapleDslExecutionException("edgeType `third` must not be null.");
-        // if over is null, it will render as `*`
-        if (arguments[OVER_INDEX] != null) nextTraversal(false);
-
-        arguments[STEP_M_INDEX] = stepM;
-        arguments[STEP_N_INDEX] = stepN;
-        arguments[OVER_INDEX] = new Class<?>[]{ first, second, third };
-        arguments[DIRECTION_IN_INDEX] = true;
-
-        return this;
-    }
-
-    @Override
-    public Traversal inE(int stepM, int stepN, @NotNull String[] over) {
-        if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
-        if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
-        // if over is null, it will render as `*`
-        if (arguments[OVER_INDEX] != null) nextTraversal(false);
-
-        arguments[STEP_M_INDEX] = stepM;
-        arguments[STEP_N_INDEX] = stepN;
-        arguments[OVER_INDEX] = over == null || over.length == 0 ? null : over;
-        arguments[DIRECTION_IN_INDEX] = true;
-
-        return this;
-    }
-
-    @Override
-    public Traversal inE(int step, Collection<Class<? extends Model.E>> over) {
-        return inE(0, step, over);
-    }
-
-    @Override
-    public Traversal inE(int step, Class<? extends Model.E> over) {
-        return inE(0, step, over);
-    }
-
-    @Override
-    public Traversal inE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second) {
-        return inE(0, step, first, second);
-    }
-
-    @Override
-    public Traversal inE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
-        return inE(0, step, first, second, third);
-    }
-
-    @Override
-    public Traversal inE(int step, String... over) {
-        return inE(0, step, over);
-    }
-
-    @Override
-    public Traversal inE(Collection<Class<? extends Model.E>> over) {
-        return inE(1, over);
-    }
-
-    @Override
-    public Traversal inE(Class<? extends Model.E> over) {
-        return inE(1, over);
-    }
-
-    @Override
-    public Traversal inE(Class<? extends Model.E> first, Class<? extends Model.E> second) {
-        return inE(1, first, second);
-    }
-
-    @Override
-    public Traversal inE(Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
-        return inE(1, first, second, third);
-    }
-
-    @Override
-    public Traversal inE(String[] over) {
-        return inE(1, over);
-    }
-
-    @Override
-    public Traversal outE(int stepM, int stepN, Collection<Class<? extends Model.E>> over) {
-        if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0");
-        if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1");
-        // if over is null, it will render as `*`
-        if (arguments[OVER_INDEX] != null) nextTraversal(false);
-
-        arguments[STEP_M_INDEX] = stepM;
-        arguments[STEP_N_INDEX] = stepN;
-        arguments[OVER_INDEX] = over == null || over.isEmpty() ? null : over;
-        arguments[DIRECTION_OUT_INDEX] = true;
-
-        return this;
-    }
-
-    @Override
-    public Traversal outE(int stepM, int stepN, Class<? extends Model.E> over) {
-        if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0");
-        if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1");
-        // if over is null, it will render as `*`
-        if (arguments[OVER_INDEX] != null) nextTraversal(false);
-
-        arguments[STEP_M_INDEX] = stepM;
-        arguments[STEP_N_INDEX] = stepN;
-        arguments[OVER_INDEX] = over;
-        arguments[DIRECTION_OUT_INDEX] = true;
-
-        return this;
-    }
-
-    @Override
-    public Traversal outE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second) {
-        if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
-        if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
-        if (first == null) throw new MapleDslExecutionException("edgeType `first` must not be null.");
-        if (second == null) throw new MapleDslExecutionException("edgeType `second` must not be null.");
-        // if over is null, it will render as `*`
-        if (arguments[OVER_INDEX] != null) nextTraversal(false);
-
-        arguments[STEP_M_INDEX] = stepM;
-        arguments[STEP_N_INDEX] = stepN;
-        arguments[OVER_INDEX] = new Class<?>[]{ first, second };
-        arguments[DIRECTION_OUT_INDEX] = true;
-
-        return this;
-    }
-
-    @Override
-    public Traversal outE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
-        if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
-        if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
-        if (first == null) throw new MapleDslExecutionException("edgeType `first` must not be null.");
-        if (second == null) throw new MapleDslExecutionException("edgeType `second` must not be null.");
-        if (third == null) throw new MapleDslExecutionException("edgeType `third` must not be null.");
-        // if over is null, it will render as `*`
-        if (arguments[OVER_INDEX] != null) nextTraversal(false);
-
-        arguments[STEP_M_INDEX] = stepM;
-        arguments[STEP_N_INDEX] = stepN;
-        arguments[OVER_INDEX] = new Class<?>[]{ first, second, third };
-        arguments[DIRECTION_OUT_INDEX] = true;
-
-        return this;
-    }
-
-    @Override
-    public Traversal outE(int stepM, int stepN, String[] over) {
-        if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
-        if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
-        // if over is null, it will render as `*`
-        if (arguments[OVER_INDEX] != null) nextTraversal(false);
-
-        arguments[STEP_M_INDEX] = stepM;
-        arguments[STEP_N_INDEX] = stepN;
-        arguments[OVER_INDEX] = over == null || over.length == 0 ? null : over;
-        arguments[DIRECTION_OUT_INDEX] = true;
-
-        return this;
-    }
-
-    @Override
-    public Traversal outE(int step, Collection<Class<? extends Model.E>> over) {
-        return outE(0, step, over);
-    }
-
-    @Override
-    public Traversal outE(int step, Class<? extends Model.E> over) {
-        return outE(0, step, over);
-    }
-
-    @Override
-    public Traversal outE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second) {
-        return outE(0, step, first, second);
-    }
-
-    @Override
-    public Traversal outE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
-        return outE(0, step, first, second, third);
-    }
-
-    @Override
-    public Traversal outE(int step, String[] over) {
-        return outE(0, step, over);
-    }
-
-    @Override
-    public Traversal outE(Collection<Class<? extends Model.E>> over) {
-        return outE(1, over);
-    }
-
-    @Override
-    public Traversal outE(Class<? extends Model.E> over) {
-        return outE(1, over);
-    }
-
-    @Override
-    public Traversal outE(Class<? extends Model.E> first, Class<? extends Model.E> second) {
-        return outE(1, first, second);
-    }
-
-    @Override
-    public Traversal outE(Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
-        return outE(1, first, second, third);
-    }
-
-    @Override
-    public Traversal outE(String[] over) {
-        return outE(1, over);
-    }
-
-    @Override
-    public Traversal bothE(int stepM, int stepN, Collection<Class<? extends Model.E>> over) {
-        if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
-        if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
-        // if over is null, it will render as `*`
-        if (arguments[OVER_INDEX] != null) nextTraversal(false);
-
-        arguments[STEP_M_INDEX] = stepM;
-        arguments[STEP_N_INDEX] = stepN;
-        arguments[OVER_INDEX] = over == null || over.isEmpty() ? null : over;
-        arguments[DIRECTION_BOTH_INDEX] = true;
-
-        return this;
-    }
-
-    @Override
-    public Traversal bothE(int stepM, int stepN, Class<? extends Model.E> over) {
-        if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
-        if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
-        // if over is null, it will render as `*`
-        if (arguments[OVER_INDEX] != null) nextTraversal(false);
-
-        arguments[STEP_M_INDEX] = stepM;
-        arguments[STEP_N_INDEX] = stepN;
-        arguments[OVER_INDEX] = over;
-        arguments[DIRECTION_BOTH_INDEX] = true;
-
-        return this;
-    }
-
-    @Override
-    public Traversal bothE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second) {
-        if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
-        if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
-        if (first == null) throw new MapleDslExecutionException("edgeType `first` must not be null.");
-        if (second == null) throw new MapleDslExecutionException("edgeType `second` must not be null.");
-        // if over is null, it will render as `*`
-        if (arguments[OVER_INDEX] != null) nextTraversal(false);
-
-        arguments[STEP_M_INDEX] = stepM;
-        arguments[STEP_N_INDEX] = stepN;
-        arguments[OVER_INDEX] = new Class<?>[]{ first, second };
-        arguments[DIRECTION_BOTH_INDEX] = true;
-
-        return this;
-    }
-
-    @Override
-    public Traversal bothE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
-        if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
-        if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
-        if (first == null) throw new MapleDslExecutionException("edgeType `first` must not be null.");
-        if (second == null) throw new MapleDslExecutionException("edgeType `second` must not be null.");
-        if (third == null) throw new MapleDslExecutionException("edgeType `third` must not be null.");
-        // if over is null, it will render as `*`
-        if (arguments[OVER_INDEX] != null) nextTraversal(false);
-
-        arguments[STEP_M_INDEX] = stepM;
-        arguments[STEP_N_INDEX] = stepN;
-        arguments[OVER_INDEX] = new Class<?>[]{ first, second, third};
-        arguments[DIRECTION_BOTH_INDEX] = true;
-
-        return this;
-    }
-
-    @Override
-    public Traversal bothE(int stepM, int stepN, String[] over) {
-        if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0");
-        if (stepN < 1) throw new MapleDslExecutionException("stepM must not >= 1");
-        // if over is null, it will render as `*`
-        if (arguments[OVER_INDEX] != null) nextTraversal(false);
-
-        arguments[STEP_M_INDEX] = stepM;
-        arguments[STEP_N_INDEX] = stepN;
-        arguments[OVER_INDEX] = over == null || over.length == 0 ? null : over;
-        arguments[DIRECTION_BOTH_INDEX] = true;
-
-        return this;
-    }
-
-    @Override
-    public Traversal bothE(int step, Collection<Class<? extends Model.E>> over) {
-        return bothE(0, step, over);
-    }
-
-    @Override
-    public Traversal bothE(int step, Class<? extends Model.E> over) {
-        return bothE(0, step, over);
-    }
-
-    @Override
-    public Traversal bothE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second) {
-        return bothE(0, step, first, second);
-    }
-
-    @Override
-    public Traversal bothE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
-        return bothE(0, step, first, second, third);
-    }
-
-    @Override
-    public Traversal bothE(int step, String[] over) {
-        return bothE(0, step, over);
-    }
-
-    @Override
-    public Traversal bothE(Collection<Class<? extends Model.E>> over) {
-        return bothE(1, over);
-    }
-
-    @Override
-    public Traversal bothE(Class<? extends Model.E> over) {
-        return bothE(1, over);
-    }
-
-    @Override
-    public Traversal bothE(Class<? extends Model.E> first, Class<? extends Model.E> second) {
-        return bothE(1, first, second);
-    }
-
-    @Override
-    public Traversal bothE(Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
-        return bothE(1, first, second, third);
-    }
-
-    @Override
-    public Traversal bothE(String[] over) {
-        return bothE(1, over);
-    }
-
-    @Override
-    public <V extends Model.V> Traversal outV(String alias, Consumer<Step<V>> step) {
-        if (Objects.nonNull(arguments[OUT_ALIAS_INDEX])) throw new IllegalArgumentException("outV alias has been defined.");
-        if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("outV alias must not be empty.");
-        this.arguments[OUT_ALIAS_INDEX] = alias;
-
-        final StepWrapper<V> outStep = new StepWrapper<>(it -> it.setOut(true).setInstantiatedAlias(alias));
-        step.accept(outStep);
-        outStep.rebaseNextTraversal();
-        outStep.sink();
-        return this;
-    }
-
-    @Override
-    public <V extends Model.V> Traversal outV(String alias, Class<V> label, Consumer<Step<V>> step) {
-        if (Objects.nonNull(arguments[OUT_ALIAS_INDEX])) throw new IllegalArgumentException("outV alias has been defined.");
-        if (Objects.isNull(label)) throw new IllegalArgumentException("outV label must not be null.");
-        if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("outV alias must not be empty.");
-        this.arguments[OUT_ALIAS_INDEX] = alias;
-
-        final StepWrapper<V> outStep = new StepWrapper<>(it -> it.setOut(true).setInstantiatedLabelClazz(label).setInstantiatedAlias(alias));
-        step.accept(outStep);
-        outStep.rebaseNextTraversal();
-        outStep.sink();
-        return this;
-    }
-
-    @Override
-    public <V extends Model.V> Traversal outV(String alias, String label, Consumer<Step<V>> step) {
-        if (Objects.nonNull(arguments[OUT_ALIAS_INDEX])) throw new IllegalArgumentException("outV alias has been defined.");
-        if (Objects.isNull(label)) throw new IllegalArgumentException("outV label must not be null.");
-        if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("outV alias must not be empty.");
-        this.arguments[OUT_ALIAS_INDEX] = alias;
-
-        final StepWrapper<V> outStep = new StepWrapper<>(it -> it.setOut(true).setInstantiatedLabel(label).setInstantiatedAlias(alias));
-        step.accept(outStep);
-        outStep.rebaseNextTraversal();
-        outStep.sink();
-        return this;
-    }
-
-    @Override
-    public <V extends Model.V> Traversal inV(String alias, Consumer<Step<V>> step) {
-        if (Objects.nonNull(arguments[IN_ALIAS_INDEX])) throw new IllegalArgumentException("inV alias has been defined.");
-        if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("inV alias must not be empty.");
-        this.arguments[IN_ALIAS_INDEX] = alias;
-
-        final StepWrapper<V> inStep = new StepWrapper<>(it -> it.setIn(true).setInstantiatedAlias(alias));
-        step.accept(inStep);
-        inStep.sink();
-        return this;
-    }
-
-    @Override
-    public <V extends Model.V> Traversal inV(String alias, Class<V> label, Consumer<Step<V>> step) {
-        if (Objects.nonNull(arguments[IN_ALIAS_INDEX])) throw new IllegalArgumentException("inV alias has been defined.");
-        if (Objects.isNull(label)) throw new IllegalArgumentException("inV label must not be null.");
-        if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("inV alias must not be empty.");
-        this.arguments[IN_ALIAS_INDEX] = alias;
-
-        final StepWrapper<V> inStep = new StepWrapper<>(it -> it.setIn(true).setInstantiatedLabelClazz(label).setInstantiatedAlias(alias));
-        step.accept(inStep);
-        inStep.sink();
-        return this;
-    }
-
-    @Override
-    public <V extends Model.V> Traversal inV(String alias, String label, Consumer<Step<V>> step) {
-        if (Objects.nonNull(arguments[IN_ALIAS_INDEX])) throw new IllegalArgumentException("inV alias has been defined.");
-        if (Objects.isNull(label)) throw new IllegalArgumentException("inV label must not be null.");
-        if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("inV alias must not be empty.");
-        this.arguments[IN_ALIAS_INDEX] = alias;
-
-        final StepWrapper<V> inStep = new StepWrapper<>(it -> it.setIn(true).setInstantiatedLabel(label).setInstantiatedAlias(alias));
-        step.accept(inStep);
-        inStep.sink();
-        return this;
-    }
-
-    @Override
-    public <E extends Model.E> Traversal edge(String alias, Class<E> label, Consumer<Step<E>> step) {
-        if (Objects.nonNull(arguments[EDGE_ALIAS_INDEX])) throw new IllegalArgumentException("edge alias has been defined.");
-        if (Objects.isNull(label)) throw new IllegalArgumentException("edge label must not be null.");
-        if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("edge alias must not be empty.");
-        this.arguments[EDGE_ALIAS_INDEX] = alias;
-
-        final StepWrapper<E> edgeStep = new StepWrapper<>(it -> it.setE(true).setInstantiatedLabelClazz(label).setInstantiatedAlias(alias));
-        step.accept(edgeStep);
-        edgeStep.sink();
-        return this;
-    }
-
-    @Override
-    public <E extends Model.E> Traversal edge(String alias, Consumer<Step<E>> step) {
-        if (Objects.nonNull(arguments[EDGE_ALIAS_INDEX])) throw new IllegalArgumentException("edge alias has been defined.");
-        if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("edge alias must not be empty.");
-        this.arguments[EDGE_ALIAS_INDEX] = alias;
-
-        final StepWrapper<E> edgeStep = new StepWrapper<>(it -> it.setE(true).setInstantiatedAlias(alias));
-        step.accept(edgeStep);
-        edgeStep.sink();
-        return this;
-    }
-
-    @Override
-    public <E extends Model.E> Traversal edge(String alias, String label, Consumer<Step<E>> stepConsumer) {
-        if (Objects.nonNull(arguments[EDGE_ALIAS_INDEX])) throw new IllegalArgumentException("edge alias has been defined.");
-        if (Objects.isNull(label)) throw new IllegalArgumentException("edge label must not be null.");
-        if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("edge alias must not be empty.");
-        this.arguments[EDGE_ALIAS_INDEX] = alias;
-
-        final StepWrapper<E> edgeStep = new StepWrapper<>(it -> it.setE(true).setInstantiatedLabel(label).setInstantiatedAlias(alias));
-        stepConsumer.accept(edgeStep);
-        edgeStep.sink();
-        return this;
-    }
-
-    class StepWrapper<M extends Model<?>> extends QueryDuplexWrapper<M, Step<M>> implements Step<M> {
-        private final Consumer<MapleDslDialectBase<M>> decorator;
-
-        StepWrapper(Consumer<MapleDslDialectBase<M>> decorator) {
-            super(new QueryWrapper<>(decorator), new ConditionWrapper<>(decorator));
-            this.decorator = decorator;
-        }
-
-        @Override
-        public Sort<M> select(String first, String... columns) {
-            super.select(first, columns);
-            curTraversalCompanionSet.add(first);
-
-            if (columns.length == 0) return this;
-            Collections.addAll(curTraversalCompanionSet, columns);
-            return this;
-        }
-
-        @Override
-        public <R extends Serializable> Sort<M> select(SerializableFunction<M, R> col) {
-            requireNonNull(col);
-            return select(col.asText());
-        }
-
-        @Override
-        public <R extends Serializable> Sort<M> select(SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2) {
-            requireNonNull(col1);
-            requireNonNull(col2);
-            return select(col1.asText(), col2.asText());
-        }
-
-        @Override
-        public <R extends Serializable> Sort<M> select(SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2, SerializableFunction<M, ?> col3) {
-            requireNonNull(col1);
-            requireNonNull(col2);
-            requireNonNull(col3);
-            return select(col1.asText(), col2.asText(), col3.asText());
-        }
-
-        @Override
-        public Sort<M> selectAs(String column, String alias) {
-            super.selectAs(column, alias);
-            curTraversalCompanionSet.add(alias);
-            return this;
-        }
-
-        @Override
-        public Sort<M> selectAs(SerializableFunction<M, ?> column, String alias) {
-            requireNonNull(column);
-            return selectAs(column.asText(), alias);
-        }
-
-        @Override
-        public void noneSelect() {
-            selection.headFunc = null;
-            selection.headSelect = null;
-        }
-
-        @Override
-        public void allSelect() {
-            if (selection.headSelect != null) selection.headSelect = null;
-            selection.headSelect = new MapleDslDialectSelection<>(true);
-            decorator.accept(selection.headSelect);
-        }
-
-        @Override
-        protected Step<M> instance() {
-            return this;
-        }
-
-        private void rebaseNextTraversal() {
-            // quickly-check selection whether for out vertex.
-            if (!selection.headSelect.out()) return;
-            if (nextTraversalFrom != null) return;
-            // check selection chains whether alias contains "ID".
-            for (MapleDslDialectSelection<M> cur = selection.headSelect;;cur = cur.next) {
-                int index = Arrays.binarySearch(cur.columns(), Model.ID,
-                        Comparator.comparing(Function.identity(), String::compareToIgnoreCase)
-                );
-                if (index > -1) {
-                    nextTraversalFrom = cur.aliases()[index];
-                    return;
-                }
-
-                if (!cur.hasNext()) break;
-            }
-        }
-
-        private void sink() {
-            if (selection.headSelect != null)          selectionList.add(selection.headSelect);
-            if (selection.headShadowSelect != null)    shadowSelectionList.add(selection.headShadowSelect);
-            if (selection.headFunc != null)            functionList.add(selection.headFunc);
-            if (predicate.head != null)                predicateList.add(predicate.head);
-            if (!selection.orderAscSet.isEmpty())      orderAscList.addAll(selection.orderAscSet);
-            if (!selection.orderDescSet.isEmpty())     orderDescList.addAll(selection.orderDescSet);
-        }
     }
 }

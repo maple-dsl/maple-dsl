@@ -1,7 +1,6 @@
 package com.mapledsl.core;
 
 import com.mapledsl.core.condition.wrapper.MapleDslDialectSelection;
-import com.mapledsl.core.exception.MapleDslBindingException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.stringtemplate.v4.AttributeRenderer;
@@ -12,8 +11,8 @@ import java.util.Locale;
 public abstract class MapleDslDialectSelectionRender extends MapleDslDialectBaseRender implements AttributeRenderer<MapleDslDialectSelection> {
     protected abstract String vertexRef(@NotNull String alias);
     protected abstract String edgeRef(@NotNull String alias);
-    protected abstract String inVRef(@Nullable String label, @NotNull String alias);
-    protected abstract String outVRef(@Nullable String label, @NotNull String alias);
+    protected abstract String inVRef(@NotNull String alias);
+    protected abstract String outVRef(@NotNull String alias);
 
     protected abstract String vertex(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias);
     protected abstract String edge(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias);
@@ -35,10 +34,10 @@ public abstract class MapleDslDialectSelectionRender extends MapleDslDialectBase
         if (value.isAllPresent())  {
             if (value.v())    return vertexRef(value.ref());
             if (value.e())    return edgeRef(value.ref());
-            if (value.in())   return inVRef(value.label(context), value.ref());
-            if (value.out())  return outVRef(value.label(context), value.ref());
+            if (value.in())   return inVRef(value.ref());
+            if (value.out())  return outVRef(value.ref());
 
-            throw new MapleDslBindingException(NULL);
+            throw new UnsupportedOperationException();
         }
 
         if (value.v())    return vertex(value.ref(), value.label(context), value.columns(), value.aliases());
@@ -47,7 +46,7 @@ public abstract class MapleDslDialectSelectionRender extends MapleDslDialectBase
         if (value.in())   return inV(value.ref(), value.label(context), value.columns(), value.aliases());
         if (value.out())  return outV(value.ref(), value.label(context), value.columns(), value.aliases());
 
-        throw new MapleDslBindingException(NULL);
+        throw new UnsupportedOperationException();
     }
 
     @Override

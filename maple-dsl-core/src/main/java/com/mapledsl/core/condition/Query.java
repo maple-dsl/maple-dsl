@@ -5,7 +5,12 @@ import com.mapledsl.core.model.Model;
 
 import java.io.Serializable;
 
-public interface Query<M extends Model<?>, Children> {
+public interface Query<M extends Model<?>> {
+    interface Sort<M extends Model<?>> extends Query<M> {
+        Query<M> ascending();
+        Query<M> descending();
+    }
+
     /**
      * It specifies the primary selection in query.
      * <p>
@@ -14,19 +19,19 @@ public interface Query<M extends Model<?>, Children> {
      * @param columns the primary selection in query.
      * @return the current ref of the fetch condition wrapper.
      */
-    Children select(String first, String... columns);
-    Children select(boolean condition, String first, String... columns);
+    Sort<M> select(String first, String... columns);
+    Sort<M> select(boolean condition, String first, String... columns);
 
-    <R extends Serializable> Children select(SerializableFunction<M, R> col);
-    <R extends Serializable> Children select(boolean condition, SerializableFunction<M, R> col);
-    <R extends Serializable> Children select(SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2);
-    <R extends Serializable> Children select(boolean condition, SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2);
-    <R extends Serializable> Children select(SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2, SerializableFunction<M, ?> col3);
-    <R extends Serializable> Children select(boolean condition, SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2, SerializableFunction<M, ?> col3);
+    <R extends Serializable> Sort<M> select(SerializableFunction<M, R> col);
+    <R extends Serializable> Sort<M> select(boolean condition, SerializableFunction<M, R> col);
+    <R extends Serializable> Sort<M> select(SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2);
+    <R extends Serializable> Sort<M> select(boolean condition, SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2);
+    <R extends Serializable> Sort<M> select(SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2, SerializableFunction<M, ?> col3);
+    <R extends Serializable> Sort<M> select(boolean condition, SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2, SerializableFunction<M, ?> col3);
     @SuppressWarnings("unchecked")
-    <R extends Serializable> Children select(SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2, SerializableFunction<M, ?> col3, SerializableFunction<M, ?>... others);
+    <R extends Serializable> Sort<M> select(SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2, SerializableFunction<M, ?> col3, SerializableFunction<M, ?>... others);
     @SuppressWarnings("unchecked")
-    <R extends Serializable> Children select(boolean condition, SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2, SerializableFunction<M, ?> col3, SerializableFunction<M, ?>... others);
+    <R extends Serializable> Sort<M> select(boolean condition, SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2, SerializableFunction<M, ?> col3, SerializableFunction<M, ?>... others);
 
     /**
      * specifies the according to the query column&alias criteria.
@@ -35,18 +40,18 @@ public interface Query<M extends Model<?>, Children> {
      *
      * @return the current ref of the fetch condition wrapper.
      */
-    Children selectAs(String column, String alias);
-    Children selectAs(SerializableFunction<M, ?> column, String alias);
+    Sort<M> selectAs(String column, String alias);
+    Sort<M> selectAs(SerializableFunction<M, ?> column, String alias);
 
-    Children count(String alias);
-    Children count(String column, String alias);
-    <R extends Serializable> Children count(SerializableFunction<M, R> column, String alias);
-    Children sum(String column, String alias);
-    <R extends Serializable> Children sum(SerializableFunction<M, R> column, String alias);
-    Children avg(String column, String alias);
-    <R extends Serializable> Children avg(SerializableFunction<M, R> column, String alias);
-    Children min(String column, String alias);
-    <R extends Serializable> Children min(SerializableFunction<M, R> column, String alias);
-    Children max(String column, String alias);
-    <R extends Serializable> Children max(SerializableFunction<M, R> column, String alias);
+    Sort<M> count(String alias);
+    Sort<M> count(String column, String alias);
+    <R extends Serializable> Sort<M> count(SerializableFunction<M, R> column, String alias);
+    Sort<M> sum(String column, String alias);
+    <R extends Serializable> Sort<M> sum(SerializableFunction<M, R> column, String alias);
+    Sort<M> avg(String column, String alias);
+    <R extends Serializable> Sort<M> avg(SerializableFunction<M, R> column, String alias);
+    Sort<M> min(String column, String alias);
+    <R extends Serializable> Sort<M> min(SerializableFunction<M, R> column, String alias);
+    Sort<M> max(String column, String alias);
+    <R extends Serializable> Sort<M> max(SerializableFunction<M, R> column, String alias);
 }

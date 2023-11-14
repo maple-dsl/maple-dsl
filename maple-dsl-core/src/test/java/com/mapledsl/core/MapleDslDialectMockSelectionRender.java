@@ -18,13 +18,13 @@ public class MapleDslDialectMockSelectionRender extends MapleDslDialectSelection
     }
 
     @Override
-    protected String inVRef(@Nullable String label, @NotNull String alias) {
-        return "IN" + BLANK + "V" + DOT + label + AS + alias;
+    protected String inVRef(@NotNull String alias) {
+        return "IN" + BLANK + "V" + AS + alias;
     }
 
     @Override
-    protected String outVRef(@Nullable String label, @NotNull String alias) {
-        return "OUT" + BLANK + "V" + DOT + label + AS + alias;
+    protected String outVRef(@NotNull String alias) {
+        return "OUT" + BLANK + "V" + AS + alias;
     }
 
     @Override
