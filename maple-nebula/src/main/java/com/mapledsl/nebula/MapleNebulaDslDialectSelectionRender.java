@@ -43,13 +43,13 @@ public class MapleNebulaDslDialectSelectionRender extends MapleDslDialectSelecti
     }
 
     @Override
-    protected String inVRef(@Nullable String label, @NotNull String alias) {
-        return nullLabel(label) ? "$^" + AS + alias : "$^" + DOT + label + AS + alias;
+    protected String inVRef(@NotNull String alias) {
+        return "$^" + AS + alias;
     }
 
     @Override
-    protected String outVRef(@Nullable String label, @NotNull String alias) {
-        return nullLabel(label) ? "$$" + AS + alias : "$$" + DOT + label + AS + alias;
+    protected String outVRef(@NotNull String alias) {
+        return "$$" + AS + alias;
     }
 
     @Override

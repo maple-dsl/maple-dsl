@@ -1,11 +1,7 @@
 package com.mapledsl.nebula;
 
-import com.mapledsl.core.MapleDslConfiguration;
-import com.mapledsl.core.annotation.Label;
 import com.mapledsl.core.exception.MapleDslExecutionException;
 import com.mapledsl.core.model.Model;
-import com.mapledsl.nebula.model.NebulaModel;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -15,12 +11,7 @@ import static com.mapledsl.core.G.vertex;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class NebulaGraphTraversalTest {
-    @BeforeAll
-    public static void init() {
-        MapleDslConfiguration.primaryConfiguration(MapleDslConfiguration.Builder::templatePrettyPrint)
-                .registerBeanDefinition("com.mapledsl.nebula");
-    }
+public class NebulaGraphTraversalTest extends NebulaGraphBaseTest {
 
     @Test
     public void should_fail_when_missing_direction_clause_value() {
@@ -220,25 +211,4 @@ public class NebulaGraphTraversalTest {
         );
     }
 
-    @Label("person")
-    public static class Person extends Model.V {
-        private String name;
-        private Integer age;
-
-        public String getName() {
-            return name;
-        }
-
-        public Integer getAge() {
-            return age;
-        }
-    }
-
-    @Label("impact")
-    public static class Impact extends NebulaModel.E {
-    }
-
-    @Label("follow")
-    public static class Follow extends NebulaModel.E {
-    }
 }
