@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
 
-abstract class DuplexWrapper<M extends Model<?>, Children> implements Query.Sort<M>, Condition<M, Children>, Wrapper {
+abstract class DuplexWrapper<M extends Model<?>, Children> implements Query<M>, Condition<M, Children>, Wrapper {
     protected final SortWrapper<M> selection;
     protected final ConditionWrapper<M> predicate;
 
@@ -478,18 +478,6 @@ abstract class DuplexWrapper<M extends Model<?>, Children> implements Query.Sort
     @Override
     public final SortWrapper<M> selectAs(SerializableFunction<M, ?> column, String alias) {
         this.selection.selectAs(column, alias);
-        return selection;
-    }
-
-    @Override
-    public final QueryWrapper<M> ascending() {
-        selection.ascending();
-        return selection;
-    }
-
-    @Override
-    public final QueryWrapper<M> descending() {
-        selection.descending();
         return selection;
     }
 
