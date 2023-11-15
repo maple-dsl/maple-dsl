@@ -56,7 +56,7 @@ public class FetchWrapper<M extends Model<?>> extends DuplexWrapper<M, FetchWrap
 
     @Override
     public String render(MapleDslConfiguration context) {
-        if (selection.headSelect == null) {
+        if (selection.headSelect == null && selection.headShadowSelect == null) {
             super.selection.next(new MapleDslDialectSelection<>(true));
         }
 
