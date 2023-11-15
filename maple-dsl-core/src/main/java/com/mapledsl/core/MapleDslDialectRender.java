@@ -24,7 +24,7 @@ enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[]
             fmt.add("function", args[5]);
             fmt.add("order_asc", args[6]);
             fmt.add("order_desc", args[7]);
-            fmt.add("skip", args[8]);
+            fmt.add("offset", args[8]);
             fmt.add("limit", args[9]);
             return fmt;
         }
@@ -46,7 +46,7 @@ enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[]
             fmt.add("function", args[5]);
             fmt.add("order_asc", args[6]);
             fmt.add("order_desc", args[7]);
-            fmt.add("skip", args[8]);
+            fmt.add("offset", args[8]);
             fmt.add("limit", args[9]);
             fmt.add("delete", args[10]);
             fmt.add("detach", args[11]);
@@ -65,7 +65,7 @@ enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[]
             fmt.add("function", args[5]);
             fmt.add("order_asc", args[6]);
             fmt.add("order_desc", args[7]);
-            fmt.add("skip", args[8]);
+            fmt.add("offset", args[8]);
             fmt.add("limit", args[9]);
             fmt.add("delete", args[10]);
             return fmt;
@@ -93,7 +93,7 @@ enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[]
             fmt.add("companion", args[16]);
             fmt.add("order_asc", args[17]);
             fmt.add("order_desc", args[18]);
-            fmt.add("skip", args[19]);
+            fmt.add("offset", args[19]);
             fmt.add("limit", args[20]);
             fmt.add("has_next", args[21]);
             fmt.add("next", args[22]);
