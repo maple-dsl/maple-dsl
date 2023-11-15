@@ -158,11 +158,11 @@ public abstract class QueryWrapper<M extends Model<?>> implements Query<M>, Wrap
         tailShadowSelect = tailShadowSelect.next;
     }
 
-    public QueryWrapper<M> limit(int limit) {
+    public Wrapper limit(int limit) {
         return limit(0, limit);
     }
 
-    public QueryWrapper<M> limit(int skip, int limit) {
+    public Wrapper limit(int skip, int limit) {
         this.skip = skip;
         this.limit = limit;
         return this;
