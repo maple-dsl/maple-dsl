@@ -211,4 +211,17 @@ public class NebulaGraphTraversalTest extends NebulaGraphBaseTest {
         );
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"p001\",\"p002\" OVER impact WHERE id($$) IS NOT NULL YIELD $$.person.age AS age,$$.person.name AS name " +
+            "| YIELD SUM($-.age) AS p_sum_page,COUNT($-.name) AS p_cnt_name")
+    public void should_traverse_function_with_shadow_selection_2(String expected) {
+        assertEquals(expected, traverse("p001", "p002")
+                .outE(Impact.class)
+                .outV("p", Person.class, it -> it
+                        .sum(Person::getAge, "p_sum_page")
+                        .count(Person::getName, "p_cnt_name")
+                )
+                .render()
+        );
+    }
 }
