@@ -417,6 +417,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
 
         private void rebaseNextTraversal() {
             // quickly-check selection whether for out vertex.
+            if (selection.headSelect == null) return;
             if (!selection.headSelect.out()) return;
             if (nextTraversalFrom != null) return;
             // check selection chains whether alias contains "ID".
