@@ -8,11 +8,16 @@ import com.mapledsl.core.model.Model;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import static com.mapledsl.core.MapleDslDialectRender.*;
+import static com.mapledsl.core.MapleDslDialectRenderHelper.COMMA;
 
 public final class G {
 
@@ -57,32 +62,48 @@ public final class G {
      */
     @Contract("_ -> new")
     public static <V extends Model.V> @NotNull MatchWrapper<V> vertex(Class<V> tag) {
-        return new MatchVertexWrapper<>(tag, matchV);
+        return new MatchVertexWrapper<>(matchV, tag);
     }
 
     @Contract("_ -> new")
     public static @NotNull MatchWrapper<Model.V> vertex(String tag) {
-        return new MatchVertexWrapper<>(tag, matchV);
+        return new MatchVertexWrapper<>(matchV, tag);
     }
 
     @Contract("_ -> new")
     public static <E extends Model.E> @NotNull MatchWrapper<E> edge(Class<E> tag) {
-        return new MatchEdgeWrapper<>(tag, matchE);
+        return new MatchEdgeWrapper<>(matchE, tag);
     }
 
     @Contract("_ -> new")
     public static <E extends Model.E> @NotNull MatchWrapper<E> edge(String tag) {
-        return new MatchEdgeWrapper<>(tag, matchE);
+        return new MatchEdgeWrapper<>(matchE, tag);
     }
 
     @Contract(value = "_, _ -> new", pure = true)
     public static @NotNull FetchWrapper<Model.V> vertex(String tag, String... vertexIds) {
-        return new FetchVertexWrapper<>(tag, vertexIds, fetchV);
+        return vertex(tag, Arrays.stream(vertexIds));
     }
 
     @Contract(value = "_, _ -> new", pure = true)
     public static @NotNull FetchWrapper<Model.V> vertex(String tag, Number... vertexIds) {
-        return new FetchVertexWrapper<>(tag, vertexIds, fetchV);
+        return vertex(tag, Arrays.stream(vertexIds).mapToLong(Number::longValue));
+    }
+
+    @Contract(value = "_, _ -> new", pure = true)
+    public static @NotNull FetchWrapper<Model.V> vertex(String tag, LongStream vertexIdStream) {
+        return new FetchVertexWrapper<>(fetchV, tag, vertexIdStream
+                .mapToObj(MapleDslDialectRenderHelper::numeric)
+                .collect(Collectors.joining(COMMA))
+        );
+    }
+
+    @Contract(value = "_, _ -> new", pure = true)
+    public static @NotNull FetchWrapper<Model.V> vertex(String tag, Stream<String> vertexIdStream) {
+        return new FetchVertexWrapper<>(fetchV, tag, vertexIdStream
+                .map(MapleDslDialectRenderHelper::escaped)
+                .collect(Collectors.joining(COMMA))
+        );
     }
 
     /**
@@ -95,7 +116,7 @@ public final class G {
      */
     @Contract(value = "_, _ -> new", pure = true)
     public static <V extends Model.V> @NotNull FetchWrapper<V> vertex(Class<V> tag, String... vertexIds) {
-        return new FetchVertexWrapper<>(tag, vertexIds, fetchV);
+        return vertex(tag, Arrays.stream(vertexIds));
     }
 
     /**
@@ -108,7 +129,23 @@ public final class G {
      */
     @Contract("_, _ -> new")
     public static <V extends Model.V> @NotNull FetchWrapper<V> vertex(Class<V> tag, Number... vertexIds) {
-        return new FetchVertexWrapper<>(tag, vertexIds, fetchV);
+        return vertex(tag, Arrays.stream(vertexIds).mapToLong(Number::longValue));
+    }
+
+    @Contract("_, _ -> new")
+    public static <V extends Model.V> @NotNull FetchWrapper<V> vertex(Class<V> tag, LongStream vertexIdStream) {
+        return new FetchVertexWrapper<>(fetchV, tag, vertexIdStream
+                .mapToObj(MapleDslDialectRenderHelper::numeric)
+                .collect(Collectors.joining(COMMA))
+        );
+    }
+
+    @Contract("_, _ -> new")
+    public static <V extends Model.V> @NotNull FetchWrapper<V> vertex(Class<V> tag, Stream<String> vertexIdStream) {
+        return new FetchVertexWrapper<>(fetchV, tag, vertexIdStream
+                .map(MapleDslDialectRenderHelper::escaped)
+                .collect(Collectors.joining(COMMA))
+        );
     }
 
     /**
@@ -120,9 +157,8 @@ public final class G {
      * @return the basic fetching condition wrapper of the specified edges basic props & tag as origin.
      */
     @Contract("_, _ -> new")
-    @SafeVarargs
-    public static <E extends Model.E> @NotNull FetchWrapper<E> edge(Class<E> tag, E... edges) {
-        return new FetchEdgeWrapper<>(tag, edges, fetchE);
+    public static <E extends Model.E> @NotNull FetchWrapper<E> edge(Class<E> tag, Model.E... edges) {
+        return new FetchEdgeWrapper<>(fetchE, tag, edges);
     }
 
     /**
@@ -134,8 +170,8 @@ public final class G {
      * @return the basic fetching condition wrapper of the specified edges basic props & tag as origin.
      */
     @Contract("_, _ -> new")
-    public static <E extends Model.E> @NotNull FetchWrapper<E> edge(Class<E> tag, Collection<E> edges) {
-        return new FetchEdgeWrapper<>(tag, edges, fetchE);
+    public static <E extends Model.E> @NotNull FetchWrapper<E> edge(Class<E> tag, Collection<Model.E> edges) {
+        return new FetchEdgeWrapper<>(fetchE, tag, edges);
     }
 
     /**
@@ -147,9 +183,8 @@ public final class G {
      * @return the basic fetching condition wrapper of the specified edges basic props & tag as origin.
      */
     @Contract("_, _ -> new")
-    @SafeVarargs
-    public static <E extends Model.E> @NotNull FetchWrapper<E> edge(String tag, E... edges) {
-        return new FetchEdgeWrapper<>(tag, edges, fetchE);
+    public static <E extends Model.E> @NotNull FetchWrapper<E> edge(String tag, Model.E... edges) {
+        return new FetchEdgeWrapper<>(fetchE, tag, edges);
     }
 
     /**
@@ -161,12 +196,12 @@ public final class G {
      * @return the basic fetching condition wrapper of the specified edges basic props & tag as origin.
      */
     @Contract("_, _ -> new")
-    public static <E extends Model.E> @NotNull FetchWrapper<E> edge(String tag, Collection<E> edges) {
-        return new FetchEdgeWrapper<>(tag, edges, fetchE);
+    public static <E extends Model.E> @NotNull FetchWrapper<E> edge(String tag, Collection<Model.E> edges) {
+        return new FetchEdgeWrapper<>(fetchE, tag, edges);
     }
 
     static final class FetchVertexWrapper<V extends Model.V> extends FetchWrapper<V> {
-        <R> FetchVertexWrapper(String label, R vertices, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
+        <R> FetchVertexWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, String label, R vertices) {
             super(DEFAULT_VERTEX_ALIAS, label, vertices, renderFunc, it -> it
                     .setV(true)
                     .setInstantiatedLabel(label)
@@ -174,7 +209,7 @@ public final class G {
             ;
         }
 
-        <R> FetchVertexWrapper(Class<V> labelClazz, R vertices, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
+        <R> FetchVertexWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Class<V> labelClazz, R vertices) {
             super(DEFAULT_VERTEX_ALIAS, labelClazz, vertices, renderFunc, it -> it
                     .setV(true)
                     .setInstantiatedLabelClazz(labelClazz)
@@ -184,7 +219,7 @@ public final class G {
     }
 
     static final class FetchEdgeWrapper<E extends Model.E> extends FetchWrapper<E> {
-        <R> FetchEdgeWrapper(String label, R edges, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
+        <R> FetchEdgeWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, String label, R edges) {
             super(DEFAULT_EDGE_ALIAS, label, edges, renderFunc, it -> it
                     .setE(true)
                     .setInstantiatedLabel(label)
@@ -192,7 +227,7 @@ public final class G {
             );
         }
 
-        <R> FetchEdgeWrapper(Class<E> labelClazz, R edges, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
+        <R> FetchEdgeWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Class<E> labelClazz, R edges) {
             super(DEFAULT_EDGE_ALIAS, labelClazz, edges, renderFunc, it -> it
                     .setE(true)
                     .setInstantiatedLabelClazz(labelClazz)
@@ -202,7 +237,7 @@ public final class G {
     }
 
     static final class MatchVertexWrapper<V extends Model.V> extends MatchWrapper<V> {
-        MatchVertexWrapper(String label, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
+        MatchVertexWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, String label) {
             super(DEFAULT_VERTEX_ALIAS, label, renderFunc, it -> it
                     .setV(true)
                     .setInstantiatedLabel(label)
@@ -210,7 +245,7 @@ public final class G {
             );
         }
 
-        MatchVertexWrapper(Class<V> labelClazz, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
+        MatchVertexWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Class<V> labelClazz) {
             super(DEFAULT_VERTEX_ALIAS, labelClazz, renderFunc, it -> it
                     .setV(true)
                     .setInstantiatedLabelClazz(labelClazz)
@@ -231,7 +266,7 @@ public final class G {
     }
 
     static final class MatchEdgeWrapper<E extends Model.E> extends MatchWrapper<E> {
-        MatchEdgeWrapper(String label, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
+        MatchEdgeWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, String label) {
             super(DEFAULT_EDGE_ALIAS, label, renderFunc, it -> it
                     .setE(true)
                     .setInstantiatedLabel(label)
@@ -239,7 +274,7 @@ public final class G {
             );
         }
 
-        MatchEdgeWrapper(Class<E> labelClazz, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
+        MatchEdgeWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Class<E> labelClazz) {
             super(DEFAULT_EDGE_ALIAS, labelClazz, renderFunc, it -> it
                     .setE(true)
                     .setInstantiatedLabelClazz(labelClazz)
