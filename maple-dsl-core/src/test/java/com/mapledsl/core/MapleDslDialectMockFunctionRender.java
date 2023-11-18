@@ -8,7 +8,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 
-public class MapleDslDialectMockFunctionRender extends MapleDslDialectFunctionRender implements MapleDslDialectRenderConstants {
+public class MapleDslDialectMockFunctionRender extends MapleDslDialectFunctionRender implements MapleDslDialectRenderHelper {
 
     @Override
     public String toString(MapleDslDialectFunction value, String formatString, Locale locale) {
