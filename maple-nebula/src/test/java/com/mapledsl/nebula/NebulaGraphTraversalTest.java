@@ -63,7 +63,7 @@ public class NebulaGraphTraversalTest extends NebulaGraphBaseTest {
     @ParameterizedTest
     @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"{{ vid }}\" OVER impact REVERSELY WHERE id($$) IS NOT NULL YIELD id($$) AS dst_id" +
             "| GO 0 TO 1 STEPS FROM $-.dst_id OVER follow WHERE id($$) IS NOT NULL YIELD id($$) AS next_id" +
-            "| GO 0 TO 1 STEPS FROM $-.next_id OVER follow REVERSELY WHERE id($$) IS NOT NULL YIELD id($$) AS dst_id")
+            "| GO 0 TO 1 STEPS FROM $-.next_id OVER follow REVERSELY WHERE id($$) IS NOT NULL YIELD $-.next_id AS next_id,id($$) AS dst_id")
     public void should_traverse_multi_step_v2(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
                 .inE(Impact.class)
@@ -102,7 +102,7 @@ public class NebulaGraphTraversalTest extends NebulaGraphBaseTest {
     @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"{{ vid }}\" OVER follow REVERSELY " +
             "WHERE id($$) IS NOT NULL YIELD id($^) AS prop_id,id($^) AS real_vertex_id,id($$) AS next_traversal_id" +
             "| GO 0 TO 1 STEPS FROM $-.next_traversal_id OVER follow REVERSELY " +
-            "WHERE id($$) IS NOT NULL YIELD $-.prop_id AS prop_id,$-.real_vertex_id AS real_vertex_id,id($$) AS dst_id")
+            "WHERE id($$) IS NOT NULL YIELD $-.prop_id AS prop_id,$-.real_vertex_id AS real_vertex_id,$-.next_traversal_id AS next_traversal_id,id($$) AS dst_id")
     public void should_traverse_then_output_in_vertex_id(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
                 .inE(Follow.class)
@@ -221,6 +221,19 @@ public class NebulaGraphTraversalTest extends NebulaGraphBaseTest {
                         .sum(Person::getAge, "p_sum_page")
                         .count(Person::getName, "p_cnt_name")
                 )
+                .render()
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"p001\",\"p002\" OVER impact WHERE id($$) IS NOT NULL YIELD id($$) AS companion_id" +
+            "| GO 0 TO 1 STEPS FROM $-.companion_id OVER impact WHERE id($$) IS NOT NULL YIELD $-.companion_id AS companion_id,id($$) AS id")
+    public void should_traverse_with_companion(String expected) {
+        assertEquals(expected, traverse("p001", "p002")
+                .outE(Impact.class)
+                .outV("p", Person.class, it -> it.selectAs(Person::id, "companion_id"))
+                .outE(Impact.class)
+                .outV("p2", Person.class, it -> it.select(Person::id))
                 .render()
         );
     }
