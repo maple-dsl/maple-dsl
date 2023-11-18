@@ -30,6 +30,11 @@ public class NebulaGraphBaseTest {
 
     @Label("impact")
     public static class Impact extends NebulaModel.E {
+        private String type;
+
+        public String getType() {
+            return type;
+        }
     }
 
     @Label("follow")
