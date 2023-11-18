@@ -8,7 +8,9 @@ import org.stringtemplate.v4.AttributeRenderer;
 import java.util.Locale;
 
 @SuppressWarnings("rawtypes")
-public abstract class MapleDslDialectSelectionRender extends MapleDslDialectBaseRender implements AttributeRenderer<MapleDslDialectSelection> {
+public abstract class MapleDslDialectSelectionRender implements AttributeRenderer<MapleDslDialectSelection>, MapleDslDialectAware, MapleDslDialectContextAware, MapleDslDialectRenderHelper {
+    protected MapleDslConfiguration context;
+
     protected abstract String vertexRef(@NotNull String alias);
     protected abstract String edgeRef(@NotNull String alias);
     protected abstract String inVRef(@NotNull String alias);
@@ -51,7 +53,7 @@ public abstract class MapleDslDialectSelectionRender extends MapleDslDialectBase
 
     @Override
     public MapleDslDialectSelectionRender bind(MapleDslConfiguration context) {
-        super.bind(context);
+        this.context = context;
         return this;
     }
 }

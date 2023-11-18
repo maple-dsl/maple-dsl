@@ -9,7 +9,7 @@ import org.stringtemplate.v4.misc.STNoSuchPropertyException;
 import java.util.Map;
 import java.util.Set;
 
-class MapleDslModelAdaptor implements ModelAdaptor<Object> {
+class MapleDslModelAdaptor implements ModelAdaptor<Object>, MapleDslDialectRenderHelper {
     private final MapleDslConfiguration context;
 
     MapleDslModelAdaptor(MapleDslConfiguration context) {
@@ -26,7 +26,7 @@ class MapleDslModelAdaptor implements ModelAdaptor<Object> {
         }
 
         final BeanDefinition definition = context.beanDefinition(o.getClass());
-        if (definition == null) return null;
+        if (definition == null) return NULL;
 
         if ("KEYS".equalsIgnoreCase(propertyName)) {
             return definition.propertyKeys(o);

@@ -8,7 +8,8 @@ import org.stringtemplate.v4.AttributeRenderer;
 
 import java.util.Locale;
 
-public abstract class MapleDslDialectPredicateRender extends MapleDslDialectBaseRender implements AttributeRenderer<MapleDslDialectPredicate> {
+public abstract class MapleDslDialectPredicateRender implements AttributeRenderer<MapleDslDialectPredicate>, MapleDslDialectContextAware, MapleDslDialectAware, MapleDslDialectRenderHelper {
+    protected MapleDslConfiguration context;
     protected abstract String vertex(@NotNull String ref, @Nullable String label, String column);
     protected abstract String edge(@NotNull String ref, @Nullable String label, String column);
     protected abstract String inV(@NotNull String ref, @Nullable String label, String column);
@@ -49,7 +50,7 @@ public abstract class MapleDslDialectPredicateRender extends MapleDslDialectBase
 
     @Override
     public MapleDslDialectPredicateRender bind(MapleDslConfiguration context) {
-        super.bind(context);
+        this.context = context;
         return this;
     }
 }

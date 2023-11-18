@@ -1,6 +1,7 @@
 package com.mapledsl.core.module;
 
 import com.mapledsl.core.MapleDslConfiguration;
+import com.mapledsl.core.MapleDslDialectRenderHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
@@ -17,10 +18,10 @@ public interface MapleDslParameterHandler extends BiFunction<Object, MapleDslCon
     }
 
     static MapleDslParameterHandler identity() {
-        return (parameter, ctx) -> parameter + "";
+        return (parameter, ctx) -> MapleDslDialectRenderHelper.identify(parameter);
     }
 
     static MapleDslParameterHandler escaped() {
-        return (parameter, ctx) -> "\"" + parameter + "\"";
+        return (parameter, ctx) -> MapleDslDialectRenderHelper.escaped(parameter);
     }
 }

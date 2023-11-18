@@ -6,8 +6,8 @@ import org.stringtemplate.v4.AttributeRenderer;
 import java.util.Locale;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class MapleDslClazzRender extends MapleDslDialectBaseRender implements AttributeRenderer<Class> {
-
+public class MapleDslClazzRender implements AttributeRenderer<Class>, MapleDslDialectContextAware, MapleDslDialectRenderHelper {
+    private MapleDslConfiguration context;
     @Override
     public String toString(Class value, String formatString, Locale locale) {
         if (Model.class.isAssignableFrom(value)) {
@@ -18,13 +18,8 @@ public class MapleDslClazzRender extends MapleDslDialectBaseRender implements At
     }
 
     @Override
-    public String dialect() {
-        return NULL;
-    }
-
-    @Override
     public MapleDslClazzRender bind(MapleDslConfiguration context) {
-        super.bind(context);
+        this.context = context;
         return this;
     }
 }
