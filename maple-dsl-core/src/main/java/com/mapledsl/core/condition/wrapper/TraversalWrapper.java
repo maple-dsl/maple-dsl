@@ -361,12 +361,11 @@ public abstract class TraversalWrapper implements Traversal, Wrapper {
         arguments = new Object[LENGTH];
         // specific for nebula, e.g. | GO FROM $-.dst_id
         arguments[FROM_PREV_INDEX] = nextTraversalFrom;
-        // $-.dst_id or the others(next_traversal_variable) should be removed from the companion set
-        curTraversalCompanionSet.remove(nextTraversalFrom);
-        nextTraversalCompanionSet.addAll(curTraversalCompanionSet);
-        curTraversalCompanionSet.clear();
         // clear dst_id var for next filling.
         nextTraversalFrom = null;
+
+        nextTraversalCompanionSet.addAll(curTraversalCompanionSet);
+        curTraversalCompanionSet.clear();
         arguments[COMPANION_INDEX] = nextTraversalCompanionSet.isEmpty() ? null : new LinkedHashSet<>(nextTraversalCompanionSet);
     }
 }
