@@ -11,6 +11,7 @@
     <modules>
         <module>maple-dsl-core</module>
         <module>maple-nebula</module>
+        <module>maple-cypher-dsl</module>
     </modules>
 
     <properties>
