@@ -70,6 +70,16 @@ public class FetchWrapper<M extends Model<?>> implements Wrapper, Query<M> {
         return renderFunc.apply(context, arguments);
     }
 
+    public Wrapper limit(int limit) {
+        return limit(0, limit);
+    }
+
+    public Wrapper limit(int skip, int limit) {
+        selection.skip = skip;
+        selection.limit = limit;
+        return this;
+    }
+
     @Override
     public SortWrapper<M> select(String first, String... columns) {
         return selection.select(first, columns);

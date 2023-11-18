@@ -1,6 +1,7 @@
 package com.mapledsl.core.condition.wrapper;
 
 import com.mapledsl.core.MapleDslConfiguration;
+import com.mapledsl.core.condition.Wrapper;
 import com.mapledsl.core.model.Model;
 
 import java.util.function.BiFunction;
@@ -70,6 +71,16 @@ public class MatchWrapper<M extends Model<?>> extends DuplexWrapper<M, MatchWrap
 
     @Override
     protected MatchWrapper<M> instance() {
+        return this;
+    }
+
+    public Wrapper limit(int limit) {
+        return limit(0, limit);
+    }
+
+    public Wrapper limit(int skip, int limit) {
+        selection.skip = skip;
+        selection.limit = limit;
         return this;
     }
 }
