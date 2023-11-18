@@ -88,112 +88,12 @@ public interface NebulaModel {
 
         public static final String RANK = "rank";
 
-        public static NebulaModel.E of(ID id, ID src, ID dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
+        public static NebulaModel.E of(String src, String dst) {
+            return new NebulaModel.E().setSrc(src).setDst(dst);
         }
 
-        public static NebulaModel.E of(ID id, ID src, String dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(ID id, ID src, Number dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(ID id, String src, ID dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(ID id, String src, String dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(ID id, String src, Number dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(ID id, Number src, ID dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(ID id, Number src, String dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(ID id, Number src, Number dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(String id, ID src, ID dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(String id, ID src, String dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(String id, ID src, Number dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(String id, String src, ID dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(String id, String src, String dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(String id, String src, Number dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(String id, Number src, ID dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(String id, Number src, String dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(String id, Number src, Number dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(Number id, ID src, ID dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(Number id, ID src, String dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(Number id, ID src, Number dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(Number id, String src, ID dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(Number id, String src, String dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(Number id, String src, Number dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(Number id, Number src, ID dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(Number id, Number src, String dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
-        }
-
-        public static NebulaModel.E of(Number id, Number src, Number dst, long rank) {
-            return new NebulaModel.E().setId(id).setSrc(src).setDst(dst).setRank(rank);
+        public static NebulaModel.E of(Number src, Number dst) {
+            return new NebulaModel.E().setSrc(src).setDst(dst);
         }
     }
 }
