@@ -2,6 +2,7 @@ package com.mapledsl.core.session;
 
 import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.exception.MapleDslException;
+import com.mapledsl.core.model.Model;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -20,6 +21,26 @@ public class MapleDslSessionTemplate implements MapleDslSession, MapleDslSession
 
     public static MapleDslSessionTemplate newInstance(MapleDslSessionFactory sessionFactory) {
         return new MapleDslSessionTemplate(sessionFactory);
+    }
+
+    @Override
+    public Model.V selectVertex(String stmt) {
+        return null;
+    }
+
+    @Override
+    public List<Model.V> selectVertexList(String stmt) {
+        return null;
+    }
+
+    @Override
+    public Model.E selectEdge(String stmt) {
+        return null;
+    }
+
+    @Override
+    public List<Model.E> selectEdgeList(String stmt) {
+        return null;
     }
 
     @Override

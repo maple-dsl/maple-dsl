@@ -3,6 +3,7 @@ package com.mapledsl.core.session;
 import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.condition.Wrapper;
 import com.mapledsl.core.exception.MapleDslException;
+import com.mapledsl.core.model.Model;
 
 import java.io.Closeable;
 import java.util.List;
@@ -14,6 +15,30 @@ import java.util.Objects;
  * @since 2023/08/22
  */
 public interface MapleDslSession extends Closeable {
+    Model.V selectVertex(String stmt);
+
+    default Model.V selectVertex(Wrapper stmtWrapper) {
+        return selectVertex(stmtWrapper.render());
+    }
+
+    List<Model.V> selectVertexList(String stmt);
+
+    default List<Model.V> selectVertexList(Wrapper stmtWrapper) {
+        return selectVertexList(stmtWrapper.render());
+    }
+
+    Model.E selectEdge(String stmt);
+
+    default Model.E selectEdge(Wrapper stmtWrapper) {
+        return selectEdge(stmtWrapper.render());
+    }
+
+    List<Model.E> selectEdgeList(String stmt);
+
+    default List<Model.E> selectEdgeList(Wrapper stmtWrapper) {
+        return selectEdgeList(stmtWrapper.render());
+    }
+
     /**
      * Retrieve a single row mapped from the statement key and parameter.
      *
@@ -23,7 +48,7 @@ public interface MapleDslSession extends Closeable {
      */
     <T> T selectOne(String stmt, Class<T> mappedEntityType);
 
-    default <T> T selectOne(Wrapper<?> stmtWrapper, Class<T> mappedEntityType) {
+    default <T> T selectOne(Wrapper stmtWrapper, Class<T> mappedEntityType) {
         return selectOne(Objects.requireNonNull(stmtWrapper).render(configuration()), mappedEntityType);
     }
 
@@ -36,7 +61,7 @@ public interface MapleDslSession extends Closeable {
      */
     <T> List<T> selectList(String stmt, Class<T> mappedEntityType);
 
-    default <T> List<T> selectList(Wrapper<?> stmtWrapper, Class<T> mappedEntityType) {
+    default <T> List<T> selectList(Wrapper stmtWrapper, Class<T> mappedEntityType) {
         return selectList(Objects.requireNonNull(stmtWrapper).render(configuration()), mappedEntityType);
     }
 
@@ -50,7 +75,7 @@ public interface MapleDslSession extends Closeable {
      */
     Map<String, Object> selectMap(String stmt);
 
-    default Map<String, Object> selectMap(Wrapper<?> stmtWrapper) {
+    default Map<String, Object> selectMap(Wrapper stmtWrapper) {
         return selectMap(Objects.requireNonNull(stmtWrapper).render(configuration()));
     }
 
@@ -64,7 +89,7 @@ public interface MapleDslSession extends Closeable {
      */
     List<Map<String, Object>> selectMaps(String stmt);
 
-    default List<Map<String, Object>> selectMaps(Wrapper<?> stmtWrapper) {
+    default List<Map<String, Object>> selectMaps(Wrapper stmtWrapper) {
         return selectMaps(Objects.requireNonNull(stmtWrapper).render(configuration()));
     }
 
@@ -76,7 +101,7 @@ public interface MapleDslSession extends Closeable {
      */
     boolean execute(String stmt) throws MapleDslException;
 
-    default boolean execute(Wrapper<?> stmtWrapper) {
+    default boolean execute(Wrapper stmtWrapper) {
         return execute(Objects.requireNonNull(stmtWrapper).render(configuration()));
     }
 
