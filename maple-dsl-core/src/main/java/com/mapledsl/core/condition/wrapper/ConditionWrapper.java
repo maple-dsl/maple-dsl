@@ -81,51 +81,51 @@ public class ConditionWrapper<M extends Model<?>> implements Condition.Unary<M>,
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> eq(SerializableFunction<M, R> column, R value) {
+    public ConditionWrapper<M> eq(SerializableFunction<M, Serializable> column, Serializable value) {
         requireNonNull(column);
         return eq(column.asText(), value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> eq(boolean condition, SerializableFunction<M, R> column, R value) {
+    public ConditionWrapper<M> eq(boolean condition, SerializableFunction<M, Serializable> column, Serializable value) {
         if (!condition) return this;
         return eq(column, value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> eq(boolean condition, String column, R value) {
+    public ConditionWrapper<M> eq(boolean condition, String column, Serializable value) {
         if (!condition) return this;
         return eq(column, value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> eq(String column, R value) {
+    public ConditionWrapper<M> eq(String column, Serializable value) {
         requireNonNull(column);
         next(new MapleDslDialectPredicate<>(column, OP.EQ, value));
         return this;
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> ne(SerializableFunction<M, R> column, R value) {
+    public ConditionWrapper<M> ne(SerializableFunction<M, Serializable> column, Serializable value) {
         requireNonNull(column);
         return ne(column.asText(), value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> ne(boolean condition, SerializableFunction<M, R> column, R value) {
+    public ConditionWrapper<M> ne(boolean condition, SerializableFunction<M, Serializable> column, Serializable value) {
         if (!condition) return this;
         return ne(column, value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> ne(String column, R value) {
+    public ConditionWrapper<M> ne(String column, Serializable value) {
         requireNonNull(column);
         next(new MapleDslDialectPredicate<>(column, OP.NE, value));
         return this;
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> ne(boolean condition, String column, R value) {
+    public ConditionWrapper<M> ne(boolean condition, String column, Serializable value) {
         if (!condition) return this;
         return ne(column, value);
     }
@@ -231,26 +231,26 @@ public class ConditionWrapper<M extends Model<?>> implements Condition.Unary<M>,
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> in(SerializableFunction<M, R> column, Collection<R> value) {
+    public ConditionWrapper<M> in(SerializableFunction<M, Serializable> column, Collection<Serializable> value) {
         requireNonNull(column);
         return in(column.asText(), value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> in(boolean condition, SerializableFunction<M, R> column, Collection<R> value) {
+    public ConditionWrapper<M> in(boolean condition, SerializableFunction<M, Serializable> column, Collection<Serializable> value) {
         if (!condition) return this;
         return in(column, value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> in(String column, Collection<R> value) {
+    public ConditionWrapper<M> in(String column, Collection<Serializable> value) {
         requireNonNull(column);
         next(new MapleDslDialectPredicate<>(column, OP.IN, value));
         return this;
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> in(boolean condition, String column, Collection<R> value) {
+    public ConditionWrapper<M> in(boolean condition, String column, Collection<Serializable> value) {
         if (!condition) return this;
         return in(column, value);
     }
@@ -394,13 +394,13 @@ public class ConditionWrapper<M extends Model<?>> implements Condition.Unary<M>,
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> isNull(SerializableFunction<M, R> column) {
+    public ConditionWrapper<M> isNull(SerializableFunction<M, ?> column) {
         requireNonNull(column);
         return isNull(column.asText());
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> isNull(boolean condition, SerializableFunction<M, R> column) {
+    public ConditionWrapper<M> isNull(boolean condition, SerializableFunction<M, ?> column) {
         if (!condition) return this;
         return isNull(column);
     }
@@ -419,13 +419,13 @@ public class ConditionWrapper<M extends Model<?>> implements Condition.Unary<M>,
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> notNull(SerializableFunction<M, R> column) {
+    public ConditionWrapper<M> notNull(SerializableFunction<M, ?> column) {
         requireNonNull(column);
         return notNull(column.asText());
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> notNull(boolean condition, SerializableFunction<M, R> column) {
+    public ConditionWrapper<M> notNull(boolean condition, SerializableFunction<M, ?> column) {
         if (!condition) return this;
         return notNull(column);
     }

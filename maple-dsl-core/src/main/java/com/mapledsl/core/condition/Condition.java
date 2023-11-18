@@ -17,15 +17,30 @@ public interface Condition<M extends Model<?>, Children> {
     Children xor(Consumer<Condition.Unary<M>> operator);
     Children and(Consumer<Condition.Unary<M>> operator);
 
-    <R extends Serializable> Children eq(SerializableFunction<M, R> column, R value);
-    <R extends Serializable> Children eq(boolean condition, SerializableFunction<M, R> column, R value);
-    <R extends Serializable> Children eq(String column, R value);
-    <R extends Serializable> Children eq(boolean condition, String column, R value);
+    Children isNull(String column);
+    Children isNull(boolean condition, String column);
+    Children isNull(SerializableFunction<M, ?> column);
+    Children isNull(boolean condition, SerializableFunction<M, ?> column);
 
-    <R extends Serializable> Children ne(SerializableFunction<M, R> column, R value);
-    <R extends Serializable> Children ne(boolean condition, SerializableFunction<M, R> column, R value);
-    <R extends Serializable> Children ne(String column, R value);
-    <R extends Serializable> Children ne(boolean condition, String column, R value);
+    Children notNull(String column);
+    Children notNull(boolean condition, String column);
+    Children notNull(SerializableFunction<M, ?> column);
+    Children notNull(boolean condition, SerializableFunction<M, ?> column);
+
+    Children eq(SerializableFunction<M, Serializable> column, Serializable value);
+    Children eq(boolean condition, SerializableFunction<M, Serializable> column, Serializable value);
+    Children eq(String column, Serializable value);
+    Children eq(boolean condition, String column, Serializable value);
+
+    Children ne(SerializableFunction<M, Serializable> column, Serializable value);
+    Children ne(boolean condition, SerializableFunction<M, Serializable> column, Serializable value);
+    Children ne(String column, Serializable value);
+    Children ne(boolean condition, String column, Serializable value);
+
+    Children in(SerializableFunction<M, Serializable> column, Collection<Serializable> value);
+    Children in(boolean condition, SerializableFunction<M, Serializable> column, Collection<Serializable> value);
+    Children in(String column, Collection<Serializable> value);
+    Children in(boolean condition, String column, Collection<Serializable> value);
 
     <R extends Number> Children gt(SerializableFunction<M, R> column, R value);
     <R extends Number> Children gt(boolean condition, SerializableFunction<M, R> column, R value);
@@ -46,11 +61,6 @@ public interface Condition<M extends Model<?>, Children> {
     <R extends Number> Children le(boolean condition, SerializableFunction<M, R> column, R value);
     <R extends Number> Children le(String column, R value);
     <R extends Number> Children le(boolean condition, String column, R value);
-
-    <R extends Serializable> Children in(SerializableFunction<M, R> column, Collection<R> value);
-    <R extends Serializable> Children in(boolean condition, SerializableFunction<M, R> column, Collection<R> value);
-    <R extends Serializable> Children in(String column, Collection<R> value);
-    <R extends Serializable> Children in(boolean condition, String column, Collection<R> value);
 
     <R extends String> Children contains(SerializableFunction<M, R> column, R value);
     <R extends String> Children contains(boolean condition, SerializableFunction<M, R> column, R value);
@@ -76,14 +86,4 @@ public interface Condition<M extends Model<?>, Children> {
     <R extends String> Children notEndsWith(boolean condition, SerializableFunction<M, R> column, R value);
     <R extends String> Children notEndsWith(String column, R value);
     <R extends String> Children notEndsWith(boolean condition, String column, R value);
-
-    Children isNull(String column);
-    Children isNull(boolean condition, String column);
-    <R extends Serializable> Children isNull(SerializableFunction<M, R> column);
-    <R extends Serializable> Children isNull(boolean condition, SerializableFunction<M, R> column);
-
-    Children notNull(String column);
-    Children notNull(boolean condition, String column);
-    <R extends Serializable> Children notNull(SerializableFunction<M, R> column);
-    <R extends Serializable> Children notNull(boolean condition, SerializableFunction<M, R> column);
 }

@@ -72,49 +72,49 @@ abstract class DuplexWrapper<M extends Model<?>, Children> implements Query<M>, 
     }
 
     @Override
-    public final <R extends Serializable> Children eq(SerializableFunction<M, R> column, R value) {
+    public final Children eq(SerializableFunction<M, Serializable> column, Serializable value) {
         this.predicate.eq(column, value);
         return instance();
     }
 
     @Override
-    public final <R extends Serializable> Children eq(boolean condition, SerializableFunction<M, R> column, R value) {
+    public final Children eq(boolean condition, SerializableFunction<M, Serializable> column, Serializable value) {
         if (!condition) return instance();
         return eq(column, value);
     }
 
     @Override
-    public final <R extends Serializable> Children eq(String column, R value) {
+    public final Children eq(String column, Serializable value) {
         this.predicate.eq(column, value);
         return instance();
     }
 
     @Override
-    public final <R extends Serializable> Children eq(boolean condition, String column, R value) {
+    public final Children eq(boolean condition, String column, Serializable value) {
         if (!condition) return instance();
         return eq(column, value);
     }
 
     @Override
-    public final <R extends Serializable> Children ne(SerializableFunction<M, R> column, R value) {
+    public final Children ne(SerializableFunction<M, Serializable> column, Serializable value) {
         this.predicate.ne(column, value);
         return instance();
     }
 
     @Override
-    public final <R extends Serializable> Children ne(boolean condition, SerializableFunction<M, R> column, R value) {
+    public final Children ne(boolean condition, SerializableFunction<M, Serializable> column, Serializable value) {
         if (!condition) return instance();
         return ne(column, value);
     }
 
     @Override
-    public final <R extends Serializable> Children ne(String column, R value) {
+    public final Children ne(String column, Serializable value) {
         this.predicate.ne(column, value);
         return instance();
     }
 
     @Override
-    public final <R extends Serializable> Children ne(boolean condition, String column, R value) {
+    public final Children ne(boolean condition, String column, Serializable value) {
         if (!condition) return instance();
         return ne(column, value);
     }
@@ -216,25 +216,25 @@ abstract class DuplexWrapper<M extends Model<?>, Children> implements Query<M>, 
     }
 
     @Override
-    public final <R extends Serializable> Children in(SerializableFunction<M, R> column, Collection<R> value) {
+    public final Children in(SerializableFunction<M, Serializable> column, Collection<Serializable> value) {
         this.predicate.in(column, value);
         return instance();
     }
 
     @Override
-    public final <R extends Serializable> Children in(boolean condition, SerializableFunction<M, R> column, Collection<R> value) {
+    public final Children in(boolean condition, SerializableFunction<M, Serializable> column, Collection<Serializable> value) {
         if (!condition) return instance();
         return in(column, value);
     }
 
     @Override
-    public final <R extends Serializable> Children in(String column, Collection<R> value) {
+    public final Children in(String column, Collection<Serializable> value) {
         this.predicate.in(column, value);
         return instance();
     }
 
     @Override
-    public final <R extends Serializable> Children in(boolean condition, String column, Collection<R> value) {
+    public final Children in(boolean condition, String column, Collection<Serializable> value) {
         if (!condition) return instance();
         return in(column, value);
     }
@@ -372,13 +372,13 @@ abstract class DuplexWrapper<M extends Model<?>, Children> implements Query<M>, 
     }
 
     @Override
-    public final <R extends Serializable> Children isNull(SerializableFunction<M, R> column) {
+    public final Children isNull(SerializableFunction<M, ?> column) {
         this.predicate.isNull(column);
         return instance();
     }
 
     @Override
-    public final <R extends Serializable> Children isNull(boolean condition, SerializableFunction<M, R> column) {
+    public final Children isNull(boolean condition, SerializableFunction<M, ?> column) {
         if (!condition) return instance();
         return isNull(column);
     }
@@ -396,13 +396,13 @@ abstract class DuplexWrapper<M extends Model<?>, Children> implements Query<M>, 
     }
 
     @Override
-    public final <R extends Serializable> Children notNull(SerializableFunction<M, R> column) {
+    public final Children notNull(SerializableFunction<M, ?> column) {
         this.predicate.notNull(column);
         return instance();
     }
 
     @Override
-    public final <R extends Serializable> Children notNull(boolean condition, SerializableFunction<M, R> column) {
+    public final Children notNull(boolean condition, SerializableFunction<M, ?> column) {
         if (!condition) return instance();
         return notNull(column);
     }
