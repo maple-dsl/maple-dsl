@@ -53,7 +53,7 @@ public class MatchWrapper<M extends Model<?>> extends DuplexWrapper<M, MatchWrap
     @Override
     public String render(MapleDslConfiguration context) {
         if (selection.headSelect == null && selection.headShadowSelect == null) {
-            super.selection.next(new MapleDslDialectSelection<>(true));
+            selection.shadow(new MapleDslDialectSelection<>(true));
         }
 
         this.arguments[PREDICATE_INDEX] = predicate.head;
