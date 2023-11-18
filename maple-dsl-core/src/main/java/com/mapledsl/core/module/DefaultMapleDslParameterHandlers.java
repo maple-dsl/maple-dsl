@@ -18,9 +18,18 @@ enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
         }
     },
     _ID(ID.class, (it, configuration) -> {
-        final ID id = (ID) it;
-        if (id.getNumberValue() != null) return MapleDslDialectRenderHelper.numeric(id.getNumberValue());
-        return MapleDslDialectRenderHelper.escaped(id.getTextValue());
+        if (it instanceof ID) {
+            final ID id = (ID) it;
+            if (id.getNumberValue() != null) return MapleDslDialectRenderHelper.numeric(id.getNumberValue());
+            return MapleDslDialectRenderHelper.escaped(id.getTextValue());
+        }
+        if (it instanceof String) {
+            return MapleDslDialectRenderHelper.escaped(it);
+        }
+        if (it instanceof Number) {
+            return MapleDslDialectRenderHelper.identify(it);
+        }
+        return NULL.apply(it, configuration);
     }),
     Boolean(boolean.class, MapleDslParameterHandler.identity()),
     BOOLEAN(Boolean.class, MapleDslParameterHandler.identity()),
