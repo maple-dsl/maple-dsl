@@ -120,97 +120,97 @@ abstract class DuplexWrapper<M extends Model<?>, Children> implements Query<M>, 
     }
 
     @Override
-    public final <R extends Serializable> Children gt(SerializableFunction<M, R> column, R value) {
+    public final <R extends Number> Children gt(SerializableFunction<M, R> column, R value) {
         this.predicate.gt(column, value);
         return instance();
     }
 
     @Override
-    public final <R extends Serializable> Children gt(boolean condition, SerializableFunction<M, R> column, R value) {
+    public final <R extends Number> Children gt(boolean condition, SerializableFunction<M, R> column, R value) {
         if (!condition) return instance();
         return gt(column, value);
     }
 
     @Override
-    public final <R extends Serializable> Children gt(String column, R value) {
+    public final <R extends Number> Children gt(String column, R value) {
         this.predicate.gt(column, value);
         return instance();
     }
 
     @Override
-    public final <R extends Serializable> Children gt(boolean condition, String column, R value) {
+    public final <R extends Number> Children gt(boolean condition, String column, R value) {
         if (!condition) return instance();
         return gt(column, value);
     }
 
     @Override
-    public final <R extends Serializable> Children ge(SerializableFunction<M, R> column, R value) {
+    public final <R extends Number> Children ge(SerializableFunction<M, R> column, R value) {
         this.predicate.ge(column, value);
         return instance();
     }
 
     @Override
-    public final <R extends Serializable> Children ge(boolean condition, SerializableFunction<M, R> column, R value) {
+    public final <R extends Number> Children ge(boolean condition, SerializableFunction<M, R> column, R value) {
         if (!condition) return instance();
         return ge(column, value);
     }
 
     @Override
-    public final <R extends Serializable> Children ge(String column, R value) {
+    public final <R extends Number> Children ge(String column, R value) {
         this.predicate.ge(column, value);
         return instance();
     }
 
     @Override
-    public final <R extends Serializable> Children ge(boolean condition, String column, R value) {
+    public final <R extends Number> Children ge(boolean condition, String column, R value) {
         if (!condition) return instance();
         return ge(column, value);
     }
 
     @Override
-    public final <R extends Serializable> Children lt(SerializableFunction<M, R> column, R value) {
+    public final <R extends Number> Children lt(SerializableFunction<M, R> column, R value) {
         this.predicate.lt(column, value);
         return instance();
     }
 
     @Override
-    public final <R extends Serializable> Children lt(boolean condition, SerializableFunction<M, R> column, R value) {
+    public final <R extends Number> Children lt(boolean condition, SerializableFunction<M, R> column, R value) {
         if (!condition) return instance();
         return lt(column, value);
     }
 
     @Override
-    public final <R extends Serializable> Children lt(String column, R value) {
+    public final <R extends Number> Children lt(String column, R value) {
         this.predicate.lt(column, value);
         return instance();
     }
 
     @Override
-    public final <R extends Serializable> Children lt(boolean condition, String column, R value) {
+    public final <R extends Number> Children lt(boolean condition, String column, R value) {
         if (!condition) return instance();
         return lt(column, value);
     }
 
     @Override
-    public final <R extends Serializable> Children le(SerializableFunction<M, R> column, R value) {
+    public final <R extends Number> Children le(SerializableFunction<M, R> column, R value) {
         this.predicate.le(column, value);
         return instance();
     }
 
     @Override
-    public final <R extends Serializable> Children le(boolean condition, SerializableFunction<M, R> column, R value) {
+    public final <R extends Number> Children le(boolean condition, SerializableFunction<M, R> column, R value) {
         if (!condition) return instance();
         return le(column, value);
     }
 
     @Override
-    public final <R extends Serializable> Children le(String column, R value) {
+    public final <R extends Number> Children le(String column, R value) {
         this.predicate.le(column, value);
         return instance();
     }
 
     @Override
-    public final <R extends Serializable> Children le(boolean condition, String column, R value) {
+    public final <R extends Number> Children le(boolean condition, String column, R value) {
         if (!condition) return instance();
         return le(column, value);
     }

@@ -131,101 +131,101 @@ public class ConditionWrapper<M extends Model<?>> implements Condition.Unary<M>,
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> gt(SerializableFunction<M, R> column, R value) {
+    public <R extends Number> ConditionWrapper<M> gt(SerializableFunction<M, R> column, R value) {
         requireNonNull(column);
         return gt(column.asText(), value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> gt(boolean condition, SerializableFunction<M, R> column, R value) {
+    public <R extends Number> ConditionWrapper<M> gt(boolean condition, SerializableFunction<M, R> column, R value) {
         if (!condition) return this;
         return gt(column, value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> gt(String column, R value) {
+    public <R extends Number> ConditionWrapper<M> gt(String column, R value) {
         requireNonNull(column);
         next(new MapleDslDialectPredicate<>(column, OP.GT, value));
         return this;
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> gt(boolean condition, String column, R value) {
+    public <R extends Number> ConditionWrapper<M> gt(boolean condition, String column, R value) {
         if (!condition) return this;
         return gt(column, value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> ge(SerializableFunction<M, R> column, R value) {
+    public <R extends Number> ConditionWrapper<M> ge(SerializableFunction<M, R> column, R value) {
         requireNonNull(column);
         return ge(column.asText(), value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> ge(boolean condition, SerializableFunction<M, R> column, R value) {
+    public <R extends Number> ConditionWrapper<M> ge(boolean condition, SerializableFunction<M, R> column, R value) {
         if (!condition) return this;
         return ge(column, value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> ge(String column, R value) {
+    public <R extends Number> ConditionWrapper<M> ge(String column, R value) {
         requireNonNull(column);
         next(new MapleDslDialectPredicate<>(column, OP.GE, value));
         return this;
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> ge(boolean condition, String column, R value) {
+    public <R extends Number> ConditionWrapper<M> ge(boolean condition, String column, R value) {
         if (!condition) return this;
         return ge(column, value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> lt(SerializableFunction<M, R> column, R value) {
+    public <R extends Number> ConditionWrapper<M> lt(SerializableFunction<M, R> column, R value) {
         requireNonNull(column);
         return lt(column.asText(), value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> lt(boolean condition, SerializableFunction<M, R> column, R value) {
+    public <R extends Number> ConditionWrapper<M> lt(boolean condition, SerializableFunction<M, R> column, R value) {
         if (!condition) return this;
         return lt(column, value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> lt(String column, R value) {
+    public <R extends Number> ConditionWrapper<M> lt(String column, R value) {
         requireNonNull(column);
         next(new MapleDslDialectPredicate<>(column, OP.LT, value));
         return this;
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> lt(boolean condition, String column, R value) {
+    public <R extends Number> ConditionWrapper<M> lt(boolean condition, String column, R value) {
         if (!condition) return this;
         return lt(column, value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> le(SerializableFunction<M, R> column, R value) {
+    public <R extends Number> ConditionWrapper<M> le(SerializableFunction<M, R> column, R value) {
         requireNonNull(column);
         return le(column.asText(), value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> le(boolean condition, SerializableFunction<M, R> column, R value) {
+    public <R extends Number> ConditionWrapper<M> le(boolean condition, SerializableFunction<M, R> column, R value) {
         if (!condition) return this;
         return le(column, value);
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> le(String column, R value) {
+    public <R extends Number> ConditionWrapper<M> le(String column, R value) {
         requireNonNull(column);
         next(new MapleDslDialectPredicate<>(column, OP.LE, value));
         return this;
     }
 
     @Override
-    public <R extends Serializable> ConditionWrapper<M> le(boolean condition, String column, R value) {
+    public <R extends Number> ConditionWrapper<M> le(boolean condition, String column, R value) {
         if (!condition) return this;
         return le(column, value);
     }

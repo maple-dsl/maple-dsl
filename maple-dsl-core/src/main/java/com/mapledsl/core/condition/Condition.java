@@ -6,7 +6,6 @@ import com.mapledsl.core.model.Model;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.function.Consumer;
-import java.util.function.UnaryOperator;
 
 public interface Condition<M extends Model<?>, Children> {
     interface Unary<M extends Model<?>> extends Condition<M, Unary<M>> {}
@@ -28,25 +27,25 @@ public interface Condition<M extends Model<?>, Children> {
     <R extends Serializable> Children ne(String column, R value);
     <R extends Serializable> Children ne(boolean condition, String column, R value);
 
-    <R extends Serializable> Children gt(SerializableFunction<M, R> column, R value);
-    <R extends Serializable> Children gt(boolean condition, SerializableFunction<M, R> column, R value);
-    <R extends Serializable> Children gt(String column, R value);
-    <R extends Serializable> Children gt(boolean condition, String column, R value);
+    <R extends Number> Children gt(SerializableFunction<M, R> column, R value);
+    <R extends Number> Children gt(boolean condition, SerializableFunction<M, R> column, R value);
+    <R extends Number> Children gt(String column, R value);
+    <R extends Number> Children gt(boolean condition, String column, R value);
 
-    <R extends Serializable> Children ge(SerializableFunction<M, R> column, R value);
-    <R extends Serializable> Children ge(boolean condition, SerializableFunction<M, R> column, R value);
-    <R extends Serializable> Children ge(String column, R value);
-    <R extends Serializable> Children ge(boolean condition, String column, R value);
+    <R extends Number> Children ge(SerializableFunction<M, R> column, R value);
+    <R extends Number> Children ge(boolean condition, SerializableFunction<M, R> column, R value);
+    <R extends Number> Children ge(String column, R value);
+    <R extends Number> Children ge(boolean condition, String column, R value);
 
-    <R extends Serializable> Children lt(SerializableFunction<M, R> column, R value);
-    <R extends Serializable> Children lt(boolean condition, SerializableFunction<M, R> column, R value);
-    <R extends Serializable> Children lt(String column, R value);
-    <R extends Serializable> Children lt(boolean condition, String column, R value);
+    <R extends Number> Children lt(SerializableFunction<M, R> column, R value);
+    <R extends Number> Children lt(boolean condition, SerializableFunction<M, R> column, R value);
+    <R extends Number> Children lt(String column, R value);
+    <R extends Number> Children lt(boolean condition, String column, R value);
 
-    <R extends Serializable> Children le(SerializableFunction<M, R> column, R value);
-    <R extends Serializable> Children le(boolean condition, SerializableFunction<M, R> column, R value);
-    <R extends Serializable> Children le(String column, R value);
-    <R extends Serializable> Children le(boolean condition, String column, R value);
+    <R extends Number> Children le(SerializableFunction<M, R> column, R value);
+    <R extends Number> Children le(boolean condition, SerializableFunction<M, R> column, R value);
+    <R extends Number> Children le(String column, R value);
+    <R extends Number> Children le(boolean condition, String column, R value);
 
     <R extends Serializable> Children in(SerializableFunction<M, R> column, Collection<R> value);
     <R extends Serializable> Children in(boolean condition, SerializableFunction<M, R> column, Collection<R> value);
