@@ -50,6 +50,7 @@ enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
     Class(Class.class, MapleDslParameterHandler.escaped()) {
         @Override
         public Object compose(@NotNull Object parameter, MapleDslConfiguration ctx) {
+            if (!(parameter instanceof Class)) throw new IllegalArgumentException(String.format("parameter:%s, cast as CLASS error.", parameter));
             Class<?> it = (Class<?>) parameter;
             final String label = ctx.label(it.asSubclass(Model.class));
             return label == null ? it.getSimpleName().toLowerCase(ctx.globalLocale()) : label;
@@ -58,6 +59,7 @@ enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
     STRING(String.class, MapleDslParameterHandler.escaped()) {
         @Override
         public Object compose(@NotNull Object parameter, MapleDslConfiguration ctx) {
+            if (!(parameter instanceof String)) throw new IllegalArgumentException(String.format("parameter:%s, cast as STRING error.", parameter));
             String it = (String) parameter;
             it = it.replaceAll("\\\\", "\\\\\\\\");
             return it;
@@ -66,18 +68,21 @@ enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
     DATE(java.util.Date.class, MapleDslParameterHandler.identity()) {
         @Override
         public Object compose(@NotNull Object parameter, MapleDslConfiguration ctx) {
+            if (!(parameter instanceof java.util.Date)) throw new IllegalArgumentException(String.format("parameter:%s, cast as DATE error.", parameter));
             return ((java.util.Date) parameter).toInstant().toEpochMilli();
         }
     },
     SQL_DATE(java.sql.Date.class, MapleDslParameterHandler.identity()) {
         @Override
         public Object compose(@NotNull Object parameter, MapleDslConfiguration ctx) {
+            if (!(parameter instanceof java.sql.Date)) throw new IllegalArgumentException(String.format("parameter:%s, cast as DATE error.", parameter));
             return ((java.sql.Date) parameter).toInstant().toEpochMilli();
         }
     },
     LOCAL_DATE_TIME(LocalDateTime.class, MapleDslParameterHandler.identity()) {
         @Override
         public Object compose(@NotNull Object parameter, MapleDslConfiguration ctx) {
+            if (!(parameter instanceof LocalDateTime)) throw new IllegalArgumentException(String.format("parameter:%s, cast as LOCAL_DATE_TIME error.", parameter));
             return ((LocalDateTime) parameter)
                     .atZone(ctx.globalZoneId())
                     .toInstant()
@@ -87,6 +92,7 @@ enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
     LOCAL_DATE(LocalDate.class, MapleDslParameterHandler.identity()) {
         @Override
         public Object compose(@NotNull Object parameter, MapleDslConfiguration ctx) {
+            if (!(parameter instanceof LocalDate)) throw new IllegalArgumentException(String.format("parameter:%s, cast as LOCAL_DATE error.", parameter));
             return ((LocalDate) parameter)
                     .atTime(0, 0)
                     .atZone(ctx.globalZoneId())
@@ -97,6 +103,7 @@ enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
     LOCAL_TIME(LocalTime.class, MapleDslParameterHandler.identity()) {
         @Override
         public Object compose(@NotNull Object parameter, MapleDslConfiguration ctx) {
+            if (!(parameter instanceof LocalTime)) throw new IllegalArgumentException(String.format("parameter:%s, cast as LOCAL_TIME error.", parameter));
             return ((LocalTime) parameter)
                     .atDate(LocalDate.now())
                     .atZone(ctx.globalZoneId())
@@ -107,6 +114,7 @@ enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
     OFFSET_DATE_TIME(OffsetDateTime.class, MapleDslParameterHandler.identity()) {
         @Override
         public Object compose(@NotNull Object parameter, MapleDslConfiguration ctx) {
+            if (!(parameter instanceof OffsetDateTime)) throw new IllegalArgumentException(String.format("parameter:%s, cast as OFFSET_DATE_TIME error.", parameter));
             return ((OffsetDateTime) parameter)
                     .toInstant()
                     .toEpochMilli();
@@ -115,6 +123,7 @@ enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
     OFFSET_TIME(OffsetTime.class, MapleDslParameterHandler.identity()) {
         @Override
         public Object compose(@NotNull Object parameter, MapleDslConfiguration ctx) {
+            if (!(parameter instanceof OffsetTime)) throw new IllegalArgumentException(String.format("parameter:%s, cast as OFFSET_TIME error.", parameter));
             return ((OffsetTime) parameter)
                     .atDate(LocalDate.now())
                     .toInstant()
@@ -124,6 +133,7 @@ enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
     ZONED_DATE_TIME(ZonedDateTime.class, MapleDslParameterHandler.identity()) {
         @Override
         public Object compose(@NotNull Object parameter, MapleDslConfiguration ctx) {
+            if (!(parameter instanceof ZonedDateTime)) throw new IllegalArgumentException(String.format("parameter:%s, cast as ZONED_DATE_TIME error.", parameter));
             return ((ZonedDateTime) parameter)
                     .toInstant()
                     .toEpochMilli();
