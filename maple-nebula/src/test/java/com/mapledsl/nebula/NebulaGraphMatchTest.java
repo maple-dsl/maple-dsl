@@ -49,7 +49,7 @@ public class NebulaGraphMatchTest extends NebulaGraphBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "LOOKUP ON person YIELD vertex AS v | YIELD $-.v AS v,COUNT(*) AS cnt")
+    @ValueSource(strings = "LOOKUP ON person YIELD vertex AS v | YIELD COUNT(*) AS cnt")
     public void should_match_vertex_with_shadow_selection(String expected) {
         assertEquals(expected, vertex(Person.class)
                 .count("cnt")

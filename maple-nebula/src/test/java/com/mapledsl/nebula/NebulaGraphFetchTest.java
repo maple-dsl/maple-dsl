@@ -122,101 +122,90 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
         );
     }
 
-
     @ParameterizedTest
-    @ValueSource(strings = "FETCH PROP ON person \"p001\",\"p002\" WHERE person.name == \"bofa\" YIELD vertex AS v")
-    public void should_match_vertex_with_predicate(String expected) {
+    @ValueSource(strings = "FETCH PROP ON person \"p001\",\"p002\" YIELD person.name AS p_name")
+    public void should_fetch_vertex_with_selection_complicit_alias(String expected) {
         assertEquals(expected, vertex(Person.class, "p001", "p002")
-                .eq(Person::getName, "bofa")
+                .selectAs(Person::getName, "p_name")
                 .render());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "LOOKUP ON person WHERE person.name == \"bofa\" YIELD person.name AS v")
-    public void should_match_vertex_with_selection_complicit_alias(String expected) {
-        assertEquals(expected, vertex(Person.class)
-                .eq(Person::getName, "bofa")
-                .selectAs(Person::getName, "v")
-                .render());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = "LOOKUP ON person WHERE person.name == \"bofa\" YIELD person.name AS v,person.age AS age | ORDER BY $-.v ASC,$-.age DESC")
-    public void should_match_vertex_with_selection_ordering(String expected) {
-        assertEquals(expected, vertex(Person.class)
-                .eq(Person::getName, "bofa")
-                .selectAs(Person::getName, "v").ascending()
+    @ValueSource(strings = "FETCH PROP ON person \"p001\",\"p002\" YIELD person.name AS p_name,person.age AS age | ORDER BY $-.p_name ASC,$-.age DESC")
+    public void should_fetch_vertex_with_selection_ordering(String expected) {
+        assertEquals(expected, vertex(Person.class, "p001", "p002")
+                .selectAs(Person::getName, "p_name").ascending()
                 .select(Person::getAge).descending()
                 .render());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "LOOKUP ON person YIELD vertex AS v | YIELD $-.v AS v,COUNT(*) AS cnt")
-    public void should_match_vertex_with_shadow_selection(String expected) {
-        assertEquals(expected, vertex(Person.class)
+    @ValueSource(strings = "FETCH PROP ON person \"p001\",\"p002\" YIELD vertex AS v | YIELD COUNT(*) AS cnt")
+    public void should_fetch_vertex_with_shadow_selection(String expected) {
+        assertEquals(expected, vertex(Person.class, "p001", "p002")
                 .count("cnt")
                 .render());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "LOOKUP ON person YIELD person.name AS name | YIELD COUNT($-.name) AS name_cnt")
-    public void should_match_vertex_with_shadow_selection_2(String expected) {
-        assertEquals(expected, vertex(Person.class)
+    @ValueSource(strings = "FETCH PROP ON person \"p001\",\"p002\" YIELD person.name AS name | YIELD COUNT($-.name) AS name_cnt")
+    public void should_fetch_vertex_with_shadow_selection_2(String expected) {
+        assertEquals(expected, vertex(Person.class, "p001", "p002")
                 .count(Person::getName, "name_cnt")
                 .render());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "LOOKUP ON person YIELD person.name AS name | YIELD COUNT(*) AS cnt,COUNT($-.name) AS name_cnt")
-    public void should_match_vertex_with_selection_count(String expected) {
-        assertEquals(expected, vertex(Person.class)
+    @ValueSource(strings = "FETCH PROP ON person \"p001\",\"p002\" YIELD person.name AS name | YIELD COUNT(*) AS cnt,COUNT($-.name) AS name_cnt")
+    public void should_fetch_vertex_with_selection_count(String expected) {
+        assertEquals(expected, vertex(Person.class, "p001", "p002")
                 .count("cnt")
                 .count(Person::getName, "name_cnt")
                 .render());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "LOOKUP ON person YIELD person.age AS age | YIELD SUM($-.age) AS sum_age,SUM($-.age) AS sum_age2")
-    public void should_match_vertex_with_selection_sum(String expected) {
-        assertEquals(expected, vertex(Person.class)
+    @ValueSource(strings = "FETCH PROP ON person \"p001\",\"p002\" YIELD person.age AS age | YIELD SUM($-.age) AS sum_age,SUM($-.age) AS sum_age2")
+    public void should_fetch_vertex_with_selection_sum(String expected) {
+        assertEquals(expected, vertex(Person.class, "p001", "p002")
                 .sum(Person::getAge, "sum_age")
                 .sum("age", "sum_age2")
                 .render());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "LOOKUP ON person YIELD person.age AS age | YIELD MAX($-.age) AS max_age,MAX($-.age) AS max_age2")
-    public void should_match_vertex_with_selection_max(String expected) {
-        assertEquals(expected, vertex(Person.class)
+    @ValueSource(strings = "FETCH PROP ON person \"p001\",\"p002\" YIELD person.age AS age | YIELD MAX($-.age) AS max_age,MAX($-.age) AS max_age2")
+    public void should_fetch_vertex_with_selection_max(String expected) {
+        assertEquals(expected, vertex(Person.class, "p001", "p002")
                 .max(Person::getAge, "max_age")
                 .max("age", "max_age2")
                 .render());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "LOOKUP ON person YIELD person.age AS age | YIELD MIN($-.age) AS min_age,MIN($-.age) AS min_age2")
-    public void should_match_vertex_with_selection_min(String expected) {
-        assertEquals(expected, vertex(Person.class)
+    @ValueSource(strings = "FETCH PROP ON person \"p001\",\"p002\" YIELD person.age AS age | YIELD MIN($-.age) AS min_age,MIN($-.age) AS min_age2")
+    public void should_fetch_vertex_with_selection_min(String expected) {
+        assertEquals(expected, vertex(Person.class, "p001", "p002")
                 .min(Person::getAge, "min_age")
                 .min("age", "min_age2")
                 .render());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "LOOKUP ON person YIELD person.age AS age | YIELD AVG($-.age) AS avg_age,AVG($-.age) AS avg_age2")
-    public void should_match_vertex_with_selection_avg(String expected) {
-        assertEquals(expected, vertex(Person.class)
+    @ValueSource(strings = "FETCH PROP ON person \"p001\",\"p002\" YIELD person.age AS age | YIELD AVG($-.age) AS avg_age,AVG($-.age) AS avg_age2")
+    public void should_fetch_vertex_with_selection_avg(String expected) {
+        assertEquals(expected, vertex(Person.class, "p001", "p002")
                 .avg(Person::getAge, "avg_age")
                 .avg("age", "avg_age2")
                 .render());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "LOOKUP ON person YIELD person.name AS name | OFFSET 5 LIMIT 10")
+    @ValueSource(strings = "FETCH PROP ON person \"p001\",\"p002\",\"p003\" YIELD person.name AS name | OFFSET 1 LIMIT 2")
     public void should_match_vertex_with_selection_limit(String expected) {
-        assertEquals(expected, vertex(Person.class)
+        assertEquals(expected, vertex(Person.class, "p001", "p002", "p003")
                 .select(Person::getName)
-                .limit(5, 10)
+                .limit(1, 2)
                 .render());
     }
 }
