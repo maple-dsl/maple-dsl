@@ -1,16 +1,13 @@
 package com.mapledsl.core.module;
 
 import com.mapledsl.core.MapleDslConfiguration;
+import com.mapledsl.core.MapleDslDialectRenderHelper;
+import com.mapledsl.core.model.ID;
 import com.mapledsl.core.model.Model;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.*;
 
 enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
@@ -20,6 +17,11 @@ enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
             return "NULL";
         }
     },
+    _ID(ID.class, (it, configuration) -> {
+        final ID id = (ID) it;
+        if (id.getNumberValue() != null) return MapleDslDialectRenderHelper.numeric(id.getNumberValue());
+        return MapleDslDialectRenderHelper.escaped(id.getTextValue());
+    }),
     Boolean(boolean.class, MapleDslParameterHandler.identity()),
     BOOLEAN(Boolean.class, MapleDslParameterHandler.identity()),
     Char(char.class, MapleDslParameterHandler.identity()),
