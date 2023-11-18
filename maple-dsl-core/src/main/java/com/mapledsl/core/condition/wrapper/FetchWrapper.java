@@ -14,23 +14,25 @@ public class FetchWrapper<M extends Model<?>> extends DuplexWrapper<M, FetchWrap
     static final int FROM_INDEX = 2;
     static final int SELECTION_INDEX = 3;
     static final int SHADOW_SELECTION_INDEX = 4;
-    static final int FUNCTION_INDEX = 5;
-    static final int ORDER_ASC_INDEX = 6;
-    static final int ORDER_DESC_INDEX = 7;
-    static final int SKIP_INDEX = 8;
-    static final int LIMIT_INDEX = 9;
+    static final int PREDICATE_INDEX = 5;
+    static final int FUNCTION_INDEX = 6;
+    static final int ORDER_ASC_INDEX = 7;
+    static final int ORDER_DESC_INDEX = 8;
+    static final int SKIP_INDEX = 9;
+    static final int LIMIT_INDEX = 10;
     /**
      * Arguments position:
      * <pre>
      * [0] ref         [1] label
      * [2] from
      * [3] selection   [4] shadow_selection
+     * [4] predicate
      * [5] function
-     * [6] orderAsc    [7] orderDsc
+     * [6] orderAsc    [7] orderDesc
      * [8] skip        [9] limit
      * </pre>
      */
-    final Object[] arguments = new Object[10];
+    final Object[] arguments = new Object[11];
     final BiFunction<MapleDslConfiguration, Object[], String> renderFunc;
 
     protected <R> FetchWrapper(@NotNull String reference, @NotNull String label, R vertices, BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Consumer<MapleDslDialectBase<M>> renderModelDecorator) {
@@ -60,6 +62,7 @@ public class FetchWrapper<M extends Model<?>> extends DuplexWrapper<M, FetchWrap
             super.selection.next(new MapleDslDialectSelection<>(true));
         }
 
+        this.arguments[PREDICATE_INDEX] = predicate.head;
         this.arguments[SELECTION_INDEX] = selection.headSelect;
         this.arguments[SHADOW_SELECTION_INDEX] = selection.headShadowSelect;
         this.arguments[FUNCTION_INDEX] = selection.headFunc;
