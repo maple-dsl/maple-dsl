@@ -145,8 +145,11 @@ public abstract class QueryWrapper<M extends Model<?>> implements Query<M>, Wrap
 
     protected synchronized void shadow(@NotNull MapleDslDialectSelection<M> shadow) {
         dialectBaseConsumer.accept(shadow);
-        Collections.addAll(selectionAliaSet, shadow.aliases());
-        Collections.addAll(selectionColumnSet, shadow.columns());
+
+        if (!shadow.isAllPresent()) {
+            Collections.addAll(selectionAliaSet, shadow.aliases());
+            Collections.addAll(selectionColumnSet, shadow.columns());
+        }
 
         if (headShadowSelect == null) {
             headShadowSelect = shadow;
