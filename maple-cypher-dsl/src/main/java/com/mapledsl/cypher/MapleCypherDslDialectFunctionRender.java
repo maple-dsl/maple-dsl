@@ -6,39 +6,29 @@ import com.mapledsl.core.condition.wrapper.MapleDslDialectFunction;
 import com.mapledsl.cypher.module.MapleCypherDslModule;
 
 import java.util.EnumMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.function.UnaryOperator;
+import java.util.function.BinaryOperator;
 
 public class MapleCypherDslDialectFunctionRender extends MapleDslDialectFunctionRender {
+    @Override
+    protected String toFunction(MapleDslDialectFunction<?> value) {
+        if (value == null) return NULL;
+        if (!functionRenderMap.containsKey(value.func())) throw new UnsupportedOperationException("Unsupported Func: " + value.func().name());
+        return functionRenderMap.get(value.func()).apply(value.ref(), value.column()) + AS + value.alias();
+    }
+
     @Override
     public String dialect() {
         return MapleCypherDslModule.DIALECT;
     }
 
-    @Override
-    public String toString(MapleDslDialectFunction value, String formatString, Locale locale) {
-        if (value == null)  return NULL;
-
-        if (!value.hasNext()) return toFunction(value);
-        final String nextFunction = toString(value.next, formatString, locale);
-        if (nextFunction.trim().isEmpty()) return toFunction(value);
-        return toFunction(value) + COMMA + nextFunction;
-    }
-
-    private String toFunction(MapleDslDialectFunction<?> value) {
-        if (value == null) return NULL;
-        if (functionRenderMap.containsKey(value.func())) throw new UnsupportedOperationException("Unsupported Func: " + value.func().name());
-        return functionRenderMap.get(value.func()).apply(value.ref() + DOT + value.column()) + AS + value.alias();
-    }
-
-    private final Map<Func, UnaryOperator<String>> functionRenderMap = new EnumMap<Func, UnaryOperator<String>>(Func.class) {
+    private final Map<Func, BinaryOperator<String>> functionRenderMap = new EnumMap<Func, BinaryOperator<String>>(Func.class) {
         {
-            put(Func.SUM, column -> "SUM(" + column + ")");
-            put(Func.AVG, column -> "AVG(" + column + ")");
-            put(Func.MAX, column -> "MAX(" + column + ")");
-            put(Func.MIN, column -> "MIN(" + column + ")");
-            put(Func.CNT, column -> column == null || column.trim().isEmpty() ? "COUNT(*)" : "COUNT(" + column + ")");
+            put(Func.SUM, (ref, column) -> "SUM(" + ref + DOT + column + ")");
+            put(Func.AVG, (ref, column) -> "AVG(" + ref + DOT + column + ")");
+            put(Func.MAX, (ref, column) -> "MAX(" + ref + DOT + column + ")");
+            put(Func.MIN, (ref, column) -> "MIN(" + ref + DOT + column + ")");
+            put(Func.CNT, (ref, column) -> column == null || column.trim().isEmpty() ? "COUNT(*)" : "COUNT(" + ref + DOT + column + ")");
         }
     };
 }
