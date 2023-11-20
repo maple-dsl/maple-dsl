@@ -2,7 +2,6 @@ package com.mapledsl.nebula.module;
 
 import com.mapledsl.core.exception.MapleDslBindingException;
 import com.mapledsl.core.module.MapleDslDuplexModule;
-import com.mapledsl.core.module.MapleDslModule;
 import com.mapledsl.core.module.MapleDslResultHandler;
 import com.vesoft.nebula.Value;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +14,7 @@ import java.util.function.Predicate;
 import static java.util.Objects.requireNonNull;
 
 public class MapleNebulaDslModule extends MapleDslDuplexModule {
-    public static final String VERSION = "0.1.0";
+    public static final String VERSION = "0.1.0-release";
     public static final String DIALECT = "nebula";
 
     @Override
