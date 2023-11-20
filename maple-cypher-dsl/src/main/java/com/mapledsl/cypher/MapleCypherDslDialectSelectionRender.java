@@ -38,7 +38,6 @@ public class MapleCypherDslDialectSelectionRender extends MapleDslDialectSelecti
     @Override
     protected String vertex(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias) {
         if (notEquals(columns, alias)) return NULL;
-        final String prefix = nullLabel(label) ? refAlias + DOT + label : refAlias;
         final StringJoiner joiner = new StringJoiner(COMMA);
         for (int i = 0; i < columns.length; i++) {
             if (Model.ID.equals(columns[i])) {
@@ -50,7 +49,7 @@ public class MapleCypherDslDialectSelectionRender extends MapleDslDialectSelecti
                 continue;
             }
 
-            joiner.add(prefix + DOT + columns[i] + AS + alias[i]);
+            joiner.add(refAlias + DOT + columns[i] + AS + alias[i]);
         }
 
         return joiner.toString();
@@ -59,7 +58,6 @@ public class MapleCypherDslDialectSelectionRender extends MapleDslDialectSelecti
     @Override
     protected String edge(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias) {
         if (notEquals(columns, alias)) return NULL;
-        final String prefix = nullLabel(label) ? refAlias + DOT + label : refAlias;
         final StringJoiner joiner = new StringJoiner(COMMA);
         for (int i = 0; i < columns.length; i++) {
             if (Model.E.ID.equals(columns[i])) {
@@ -79,7 +77,7 @@ public class MapleCypherDslDialectSelectionRender extends MapleDslDialectSelecti
                 continue;
             }
 
-            joiner.add(prefix + DOT + columns[i] + AS + alias[i]);
+            joiner.add(refAlias + DOT + columns[i] + AS + alias[i]);
         }
 
         return joiner.toString();
@@ -93,10 +91,6 @@ public class MapleCypherDslDialectSelectionRender extends MapleDslDialectSelecti
     @Override
     protected String outV(@NotNull String refAlias, @Nullable String label, String[] columns, String[] alias) {
         return vertex(refAlias, label, columns, alias);
-    }
-
-    private boolean nullLabel(String label) {
-        return label == null || label.trim().isEmpty();
     }
 
     private boolean notEquals(String[] columns, String[] alias) {
