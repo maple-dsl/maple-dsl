@@ -24,7 +24,6 @@
         <jetbrains-annotations.version>23.0.0</jetbrains-annotations.version>
         <guava.version>31.1-jre</guava.version>
         <junit-jupiter.version>5.9.0</junit-jupiter.version>
-        <mockito.version>4.7.0</mockito.version>
         <logback.version>1.2.9</logback.version>
 
         <maven.compiler.source>8</maven.compiler.source>
@@ -91,16 +90,6 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>${mockito.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-junit-jupiter</artifactId>
-                <version>${mockito.version}</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
