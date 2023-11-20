@@ -55,15 +55,15 @@ public class NebulaGraphTraversalTest extends NebulaGraphBaseTest {
 
     @ParameterizedTest
     @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"{{ vid }}\" OVER impact REVERSELY WHERE id($$) IS NOT NULL YIELD id($$) AS dst_id" +
-            "| GO 0 TO 1 STEPS FROM $-.dst_id OVER follow WHERE id($$) IS NOT NULL YIELD id($$) AS dst_id")
+            " | GO 0 TO 1 STEPS FROM $-.dst_id OVER follow WHERE id($$) IS NOT NULL YIELD id($$) AS dst_id")
     public void should_traverse_multi_step(String expected) {
         assertEquals(expected, traverse("{{ vid }}").inE(Impact.class).outE(Follow.class).render());
     }
 
     @ParameterizedTest
     @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"{{ vid }}\" OVER impact REVERSELY WHERE id($$) IS NOT NULL YIELD id($$) AS dst_id" +
-            "| GO 0 TO 1 STEPS FROM $-.dst_id OVER follow WHERE id($$) IS NOT NULL YIELD id($$) AS next_id" +
-            "| GO 0 TO 1 STEPS FROM $-.next_id OVER follow REVERSELY WHERE id($$) IS NOT NULL YIELD $-.next_id AS next_id,id($$) AS dst_id")
+            " | GO 0 TO 1 STEPS FROM $-.dst_id OVER follow WHERE id($$) IS NOT NULL YIELD id($$) AS next_id" +
+            " | GO 0 TO 1 STEPS FROM $-.next_id OVER follow REVERSELY WHERE id($$) IS NOT NULL YIELD $-.next_id AS next_id,id($$) AS dst_id")
     public void should_traverse_multi_step_v2(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
                 .inE(Impact.class)
@@ -101,7 +101,7 @@ public class NebulaGraphTraversalTest extends NebulaGraphBaseTest {
     @ParameterizedTest
     @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"{{ vid }}\" OVER follow REVERSELY " +
             "WHERE id($$) IS NOT NULL YIELD id($^) AS prop_id,id($^) AS real_vertex_id,id($$) AS next_traversal_id" +
-            "| GO 0 TO 1 STEPS FROM $-.next_traversal_id OVER follow REVERSELY " +
+            " | GO 0 TO 1 STEPS FROM $-.next_traversal_id OVER follow REVERSELY " +
             "WHERE id($$) IS NOT NULL YIELD $-.prop_id AS prop_id,$-.real_vertex_id AS real_vertex_id,$-.next_traversal_id AS next_traversal_id,id($$) AS dst_id")
     public void should_traverse_then_output_in_vertex_id(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
@@ -170,7 +170,7 @@ public class NebulaGraphTraversalTest extends NebulaGraphBaseTest {
 
     @ParameterizedTest
     @ValueSource(strings = "LOOKUP ON person WHERE person.name == \"bofa\" YIELD id(vertex) as dst" +
-            "| GO 0 TO 1 STEPS FROM $-.dst OVER impact WHERE id($$) IS NOT NULL YIELD id($$) AS dst_id")
+            " | GO 0 TO 1 STEPS FROM $-.dst OVER impact WHERE id($$) IS NOT NULL YIELD id($$) AS dst_id")
     public void should_traverse_via_match(String expected) {
         assertEquals(expected, traverse(vertex(Person.class)
                 .eq(Person::getName, "bofa"))
@@ -227,7 +227,7 @@ public class NebulaGraphTraversalTest extends NebulaGraphBaseTest {
 
     @ParameterizedTest
     @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"p001\",\"p002\" OVER impact WHERE id($$) IS NOT NULL YIELD id($$) AS companion_id" +
-            "| GO 0 TO 1 STEPS FROM $-.companion_id OVER impact WHERE id($$) IS NOT NULL YIELD $-.companion_id AS companion_id,id($$) AS id")
+            " | GO 0 TO 1 STEPS FROM $-.companion_id OVER impact WHERE id($$) IS NOT NULL YIELD $-.companion_id AS companion_id,id($$) AS id")
     public void should_traverse_with_companion(String expected) {
         assertEquals(expected, traverse("p001", "p002")
                 .outE(Impact.class)
