@@ -27,12 +27,12 @@ public class MapleCypherDslDialectSelectionRender extends MapleDslDialectSelecti
 
     @Override
     protected String inVRef(@NotNull String alias) {
-        return null;
+        return alias;
     }
 
     @Override
     protected String outVRef(@NotNull String alias) {
-        return null;
+        return alias;
     }
 
     @Override
