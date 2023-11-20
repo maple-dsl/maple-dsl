@@ -312,14 +312,14 @@ public abstract class TraversalWrapper implements Traversal, Wrapper {
         if (nextTraversalFrom == null) {
             if (terminate && curTraversalCompanionSet.isEmpty()) {
                 nextTraversalFrom = DEFAULT_NEXT_TRAVERSAL_FROM_ALIAS;
-                selectionList.add(new MapleDslDialectSelection<Model.V>(Model.ID, nextTraversalFrom)
+                shadowSelectionList.add(new MapleDslDialectSelection<Model.V>(Model.ID, nextTraversalFrom)
                         .setOut(true)
                         .setInstantiatedAlias(DEFAULT_OUT_ALIAS)
                 );
             }
             if (!terminate) {
                 nextTraversalFrom = DEFAULT_NEXT_TRAVERSAL_FROM_ALIAS;
-                selectionList.add(new MapleDslDialectSelection<Model.V>(Model.ID, nextTraversalFrom)
+                shadowSelectionList.add(new MapleDslDialectSelection<Model.V>(Model.ID, nextTraversalFrom)
                         .setOut(true)
                         .setInstantiatedAlias(DEFAULT_OUT_ALIAS)
                 );
