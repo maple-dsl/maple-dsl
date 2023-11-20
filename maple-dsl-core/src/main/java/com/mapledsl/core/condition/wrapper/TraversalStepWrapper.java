@@ -12,12 +12,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class TraversalStepWrapper extends TraversalWrapper implements TraversalStep {
-    protected <R> TraversalStepWrapper(R from, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
-        super(from, renderFunc);
+    protected TraversalStepWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
+        super(renderFunc);
     }
 
-    protected TraversalStepWrapper(String fromMatch, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
-        super(fromMatch, renderFunc);
+    public TraversalStepWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, String fromFragment) {
+        super(renderFunc, fromFragment);
     }
 
     @Override

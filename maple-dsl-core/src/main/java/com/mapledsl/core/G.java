@@ -17,6 +17,7 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import static com.mapledsl.core.MapleDslDialectRender.*;
+import static com.mapledsl.core.MapleDslDialectRenderHelper.BLANK;
 import static com.mapledsl.core.MapleDslDialectRenderHelper.COMMA;
 
 public final class G {
@@ -25,27 +26,31 @@ public final class G {
      * A domain specific condition wrapper for traversing a graph using "graph concepts" (e.g. vertices, edges).
      * Represents a directed walk over a graph {@code Graph}.
      *
-     * @param vertexId specific the id of vertex {@code Vertex}.
+     * @param vertexIds specific the id of vertex {@code Vertex}.
      * @return the basic traversing condition wrapper of the specific id of vertex as origin.
      */
     @Contract("_ -> new")
-    public static @NotNull TraversalWrapper traverse(String vertexId) {
-        return new TraversalWrapperFacade(vertexId);
-    }
-
-    @Contract("_ -> new")
-    public static @NotNull TraversalWrapper traverse(Number vertexId) {
-        return new TraversalWrapperFacade(vertexId);
-    }
-
-    @Contract("_ -> new")
     public static @NotNull TraversalWrapper traverse(String... vertexIds) {
-        return new TraversalWrapperFacade(vertexIds);
+        return traverse(Arrays.stream(vertexIds));
     }
 
     @Contract("_ -> new")
     public static @NotNull TraversalWrapper traverse(Number... vertexIds) {
-        return new TraversalWrapperFacade(vertexIds);
+        return traverse(Arrays.stream(vertexIds).mapToLong(Number::longValue));
+    }
+
+    @Contract("_ -> new")
+    public static @NotNull TraversalWrapper traverse(Stream<String> vertexIdStream) {
+        return new TraversalWrapperFacade(vertexIdStream
+                .map(MapleDslDialectRenderHelper::escaped)
+                .collect(Collectors.joining(COMMA)));
+    }
+
+    @Contract("_ -> new")
+    public static @NotNull TraversalWrapper traverse(LongStream vertexIdStream) {
+        return new TraversalWrapperFacade(vertexIdStream
+                .mapToObj(MapleDslDialectRenderHelper::numeric)
+                .collect(Collectors.joining(COMMA)));
     }
 
     @Contract("_ -> new")
@@ -291,19 +296,18 @@ public final class G {
     static final class TraversalWrapperFacade extends TraversalStepWrapper {
         MatchVertexWrapper<?> match;
 
-        <R> TraversalWrapperFacade(R from) {
-            super(from, traversal);
+        TraversalWrapperFacade(String fromFragment) {
+            super(traversal, fromFragment);
         }
 
         TraversalWrapperFacade(MatchVertexWrapper<? extends Model.V> match) {
-            super(DEFAULT_VERTEX_ALIAS, traversal);
+            super(traversal);
             this.match = match.asTraversal();
         }
 
         @Override
         public String render(MapleDslConfiguration configuration) {
-            return Objects.isNull(match) ? super.render(configuration)
-                    : match.render(configuration) + super.render(configuration);
+            return Objects.isNull(match) ? super.render(configuration) : match.render(configuration) + BLANK + super.render(configuration);
         }
     }
 }

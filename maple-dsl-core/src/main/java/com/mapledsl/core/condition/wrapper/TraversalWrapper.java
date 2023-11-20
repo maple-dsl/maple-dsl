@@ -1,6 +1,7 @@
 package com.mapledsl.core.condition.wrapper;
 
 import com.mapledsl.core.MapleDslConfiguration;
+import com.mapledsl.core.MapleDslDialectRenderHelper;
 import com.mapledsl.core.condition.Traversal;
 import com.mapledsl.core.condition.Wrapper;
 import com.mapledsl.core.exception.MapleDslExecutionException;
@@ -72,26 +73,21 @@ public abstract class TraversalWrapper implements Traversal, Wrapper {
     List<MapleDslDialectSelection<?>> shadowSelectionList = new LinkedList<>();
     List<MapleDslDialectFunction<?>> functionList = new LinkedList<>();
 
-    /**
-     * Traversal the vertices#ID of the graph.
-     *
-     * @param from {@link Model.V#id()}
-     */
-    protected <R> TraversalWrapper(R from, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
+    protected TraversalWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
         this.renderFunc = renderFunc;
-        this.arguments[FROM_INDEX] = from;
+        this.arguments[FROM_MATCH_INDEX] = DEFAULT_VERTEX_ALIAS;
     }
 
-    protected TraversalWrapper(String fromMatchReference, BiFunction<MapleDslConfiguration, Object[], String> renderFunc) {
+    protected TraversalWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, String fromFragment) {
         this.renderFunc = renderFunc;
-        this.arguments[FROM_MATCH_INDEX] = fromMatchReference;
+        this.arguments[FROM_INDEX] = fromFragment;
     }
 
     @Override
     public String render(MapleDslConfiguration configuration) {
         nextTraversal(true);
 
-        final StringBuilder builder = new StringBuilder();
+        final StringJoiner builder = new StringJoiner(MapleDslDialectRenderHelper.BLANK);
         for (int i = 0; i < argumentsList.size(); i++) {
             final Object[] arguments = argumentsList.get(i);
             if (i == argumentsList.size() - 1) {
@@ -100,7 +96,7 @@ public abstract class TraversalWrapper implements Traversal, Wrapper {
             }
 
             final String sql = renderFunc.apply(configuration, arguments);
-            builder.append(sql);
+            builder.add(sql);
         }
 
         return builder.toString();
