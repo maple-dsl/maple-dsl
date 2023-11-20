@@ -11,7 +11,7 @@ import java.util.Properties;
 import static java.util.Objects.requireNonNull;
 
 public class MapleCypherDslModule extends MapleDslModule {
-    public static final String VERSION = "0.1.0";
+    public static final String VERSION = "0.1.0-release";
     public static final String DIALECT = "cypher";
 
     @Override
