@@ -17,10 +17,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,7 +25,7 @@ import static java.util.Objects.requireNonNull;
  * @author bofa1ex
  * @since 2023/08/22
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings("unchecked")
 public class BeanDefinition<BEAN> {
     static final Logger LOG = LoggerFactory.getLogger(BeanDefinition.class);
     private final MapleDslConfiguration context;
@@ -38,20 +35,22 @@ public class BeanDefinition<BEAN> {
     @NotNull private final Class<BEAN> beanClazz;
     @Nullable private final String label;
 
+    @SuppressWarnings("rawtypes")
     private final BeanPropertyCustomizer propertyCustomizer;
     /** key: property name, value: property accessor */
     private final Map<String, BeanPropertyAccessor> propertyAccessorMap = new HashMap<>();
     /** key: property name, value: property writer */
     private final Map<String, BeanPropertyWriter> propertyWriterMap = new HashMap<>();
     /** item: property name, exclude the fields which annotated with @Property(defined=false) */
-    private final Set<String> propertyKeys = new HashSet<>();
+    private final Set<String> excludeNonDefinedPropertyKeySet = new HashSet<>();
+    /** key: getter_method_name, value: property_name */
+    private final Map<String, String> propertyGetterImplMethodNameMap = new LinkedHashMap<>();
 
     public BeanDefinition(MapleDslConfiguration context, Class<BEAN> beanClazz, @Nullable String label) {
         this.context = context;
         this.label = label;
         this.beanClazz = beanClazz;
-        this.propertyCustomizer = beanClazz.isAssignableFrom(Model.class) ?
-                context.modelPropertyCustomizer() : context.beanPropertyCustomizer(beanClazz);
+        this.propertyCustomizer = beanClazz.isAssignableFrom(Model.class) ? context.modelPropertyCustomizer() : context.beanPropertyCustomizer(beanClazz);
         this.lookup = LookupSettings.privateLookupIn(beanClazz);
         this.creator = new BeanCreator<>(lookup, beanClazz);
     }
@@ -65,10 +64,14 @@ public class BeanDefinition<BEAN> {
     }
 
     public Set<String> propertyKeys(@NotNull BEAN bean) {
-        if (propertyCustomizer == null) return propertyKeys;
-        final Set<String> propertyKeys = new HashSet<>(this.propertyKeys);
+        if (propertyCustomizer == null) return excludeNonDefinedPropertyKeySet;
+        final Set<String> propertyKeys = new HashSet<>(this.excludeNonDefinedPropertyKeySet);
         propertyKeys.addAll(propertyCustomizer.propertyKeys(bean, context));
         return propertyKeys;
+    }
+
+    public String property(String getterImplMethodName) {
+        return propertyGetterImplMethodNameMap.get(getterImplMethodName);
     }
 
     /**
@@ -141,8 +144,8 @@ public class BeanDefinition<BEAN> {
         if (propertyCustomizer != null) propertyCustomizer.setter(target, propertyName, propertyValue, context);
     }
 
-    void putBeanProperty(String propertyKey) {
-        propertyKeys.add(propertyKey);
+    void putDefinedPropertyKey(String propertyKey) {
+        excludeNonDefinedPropertyKeySet.add(propertyKey);
     }
 
     void putBeanPropertyAccessor(String propertyName, Class<?> propertyType, Method getterMethod) {
@@ -157,6 +160,7 @@ public class BeanDefinition<BEAN> {
                 beanPropertyAccessor.override(context.keyPolicyStrategy());
         }
 
+        propertyGetterImplMethodNameMap.put(getterMethod.getName(), propertyName);
         propertyAccessorMap.put(propertyName, beanPropertyAccessor);
     }
 

@@ -2,7 +2,6 @@ package com.mapledsl.core.extension.introspect;
 
 import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.annotation.*;
-import com.mapledsl.core.extension.func.SerializableFunction;
 import com.mapledsl.core.model.Model;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -49,13 +48,10 @@ public class BeanDefinitionIntrospector {
 
             final String candidateFieldName = candidateField.getName();
             final String propertyName = findProperty(candidateField);
-            final boolean isPropertyDefined = isPropertyDefined(candidateField);
+            if (isPropertyDefined(candidateField)) beanDefinition.putDefinedPropertyKey(propertyName);
 
             final Method getter = findGetter(candidateFieldName, propertyName, candidateMethods);
             final Method setter = findSetter(candidateFieldName, propertyName, candidateMethods);
-
-            if (isPropertyDefined) beanDefinition.putBeanProperty(propertyName);
-            if (getter != null) SerializableFunction.attr(beanClazz, getter.getName(), propertyName);
 
             beanDefinition.putBeanPropertyAccessor(propertyName, candidateFieldType, getter);
             beanDefinition.putBeanPropertyWriter(propertyName, candidateFieldType, setter);
