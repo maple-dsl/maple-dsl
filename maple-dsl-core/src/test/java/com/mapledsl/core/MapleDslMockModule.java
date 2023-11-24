@@ -2,7 +2,6 @@ package com.mapledsl.core;
 
 import com.mapledsl.core.exception.MapleDslBindingException;
 import com.mapledsl.core.module.MapleDslModule;
-import com.mapledsl.core.module.MapleDslResultHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -12,7 +11,7 @@ import java.util.Properties;
 import static java.util.Objects.requireNonNull;
 
 public class MapleDslMockModule extends MapleDslModule {
-    public static final String VERSION = "0.1.0";
+    public static final String VERSION = "mock:0.1.0";
     public static final String DIALECT = "mock";
 
     @Override
