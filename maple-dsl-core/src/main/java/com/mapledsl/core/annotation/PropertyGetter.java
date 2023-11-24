@@ -12,12 +12,10 @@ import java.lang.annotation.Target;
  * It can be used as an alternative to more general
  * {@link Property} annotation (which is the recommended choice in
  * general case).
- *<p>
  * Getter means that when serializing Object instance of class that has
  * this method (possibly inherited from a super class), a call is made
  * through the method, and return value will be serialized as value of
  * the property.
- <p>
  <pre>
  class Person extends Model.V {
      String name;

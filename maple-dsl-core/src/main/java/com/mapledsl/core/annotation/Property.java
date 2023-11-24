@@ -14,7 +14,6 @@ import static java.lang.annotation.ElementType.FIELD;
  * (depending on its signature),
  * or non-static object field to be used (serialized, deserialized) as
  * a logical property.
- <p>
  <pre>
  class Person extends Model.V {
     {@literal @Property}("person_name") String name;

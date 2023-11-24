@@ -31,7 +31,7 @@ public interface BeanPropertyCustomizer<T> {
     Object getter(@NotNull T bean, @NotNull String propertyKey, MapleDslConfiguration context);
 
     /**
-     * Customize the injection of extension property key&value.
+     * Customize the injection of extension property key and value.
      * @param bean the target bean.
      * @param propertyKey the property key which exclude the basic properties.
      * @param propertyValue the property value.
@@ -40,7 +40,7 @@ public interface BeanPropertyCustomizer<T> {
     void setter(@NotNull T bean, @NotNull String propertyKey, @NotNull Object propertyValue, MapleDslConfiguration context);
 
     /**
-     * Customize the injection of extension property key&value
+     * Customize the injection of extension property key and value
      * @param bean the target bean.
      * @param propertyKey the property key which exclude the basic properties.
      * @param context the context include(feature,namingStrategy,etc).
@@ -49,7 +49,7 @@ public interface BeanPropertyCustomizer<T> {
     boolean hasSetter(@NotNull T bean, @NotNull String propertyKey, MapleDslConfiguration context);
 
     /**
-     * Customize the injection of extension property key&value
+     * Customize the injection of extension property key and value
      * @param bean the target bean.
      * @param propertyKey the property key which exclude the basic properties.
      * @param context the context include(feature,namingStrategy,etc).

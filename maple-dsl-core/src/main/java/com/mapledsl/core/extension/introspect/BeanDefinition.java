@@ -176,7 +176,6 @@ public class BeanDefinition<BEAN> {
      * <p>
      * This entire class can be replaced by a direct call to JDK 9+
      * {@link MethodHandles}{@code .privateLookupIn}
-     * once Jackson targets Java >= 9.
      */
     public static class LookupSettings {
         public static MethodHandles.Lookup privateLookupIn(Class<?> lookupFor) {

@@ -44,6 +44,7 @@ public interface MapleDslSession extends Closeable {
      *
      * @param <T>  the returned model(vertex/edge) type.
      * @param stmt complete sql statement
+     * @param mappedEntityType mapped entity type
      * @return optional of mapped object
      */
     <T> T selectOne(String stmt, Class<T> mappedEntityType);
@@ -57,6 +58,7 @@ public interface MapleDslSession extends Closeable {
      *
      * @param <T>  the returned model(vertex/edge) type.
      * @param stmt complete sql statement
+     * @param mappedEntityType mapped entity type
      * @return List of mapped object
      */
     <T> List<T> selectList(String stmt, Class<T> mappedEntityType);

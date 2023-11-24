@@ -17,7 +17,6 @@ import java.lang.annotation.Target;
  * this method (possibly inherited from a super class), a call is made
  * through the method, and return value will be serialized as value of
  * the property.
- <p>
  <pre>
  class Person extends Model.V {
      String name;
@@ -39,6 +38,7 @@ public @interface PropertySetter {
      * Optional default argument that defines logical property this
      * method is used to modify ("set"); this is the property
      * name used in JSON content.
+     * @return property name
      */
     String value() default "";
 }

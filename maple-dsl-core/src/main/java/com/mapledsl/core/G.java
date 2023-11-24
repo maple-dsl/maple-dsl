@@ -59,11 +59,11 @@ public final class G {
     }
 
     /**
-     * A domain specific condition wrapper for fetch vertex by the related VID & TAG.
+     * A domain specific condition wrapper for fetch vertex by the related VID and TAG.
      *
      * @param tag specific the tag of the vertex entity {@code Model.V}.
      * @param <V> specific the type of the vertex entity {@code Model.V}.
-     * @return the basic fetching condition wrapper of the specified id of vertex & tag as origin.
+     * @return the basic fetching condition wrapper of the specified id of vertex and tag as origin.
      */
     @Contract("_ -> new")
     public static <V extends Model.V> @NotNull MatchWrapper<V> vertex(Class<V> tag) {
@@ -112,12 +112,12 @@ public final class G {
     }
 
     /**
-     * A domain specific condition wrapper for fetch vertex by the related VID & TAG.
+     * A domain specific condition wrapper for fetch vertex by the related VID and TAG.
      *
      * @param tag       specific the tag of the vertex entity {@code Model.V}.
      * @param vertexIds specific the id of the vertex {@code Vertex}.
      * @param <V>       specific the type of the vertex entity {@code Model.V}.
-     * @return the basic fetching condition wrapper of the specified id of vertex & tag as origin.
+     * @return the basic fetching condition wrapper of the specified id of vertex and tag as origin.
      */
     @Contract(value = "_, _ -> new", pure = true)
     public static <V extends Model.V> @NotNull FetchWrapper<V> vertex(Class<V> tag, String... vertexIds) {
@@ -125,12 +125,12 @@ public final class G {
     }
 
     /**
-     * A domain specific condition wrapper for fetch vertex by the related VID & TAG.
+     * A domain specific condition wrapper for fetch vertex by the related VID and TAG.
      *
      * @param tag       specific the tag of the vertex entity {@code Model.V}.
      * @param vertexIds specific the id of vertices {@code Vertex}.
      * @param <V>       specific the type of the vertex entity {@code Model.V}.
-     * @return the basic fetching condition wrapper of the specified id of vertices & tag as origin.
+     * @return the basic fetching condition wrapper of the specified id of vertices and tag as origin.
      */
     @Contract("_, _ -> new")
     public static <V extends Model.V> @NotNull FetchWrapper<V> vertex(Class<V> tag, Number... vertexIds) {
@@ -154,12 +154,12 @@ public final class G {
     }
 
     /**
-     * A domain specific condition wrapper for fetch edge by the related ELEMENTS & TAG.
+     * A domain specific condition wrapper for fetch edge by the related ELEMENTS and TAG.
      *
      * @param tag   specific the type of the edge entity {@code Model.E}.
      * @param edges specific the edges entity{@code Edge#src, Edge#dst, Edge#id, Edge#type}.
      * @param <E>   specific the type of the edge entity {@code Model.E}.
-     * @return the basic fetching condition wrapper of the specified edges basic props & tag as origin.
+     * @return the basic fetching condition wrapper of the specified edges basic props and tag as origin.
      */
     @Contract("_, _ -> new")
     public static <E extends Model.E> @NotNull FetchWrapper<E> edge(Class<E> tag, Model.E... edges) {
@@ -167,12 +167,12 @@ public final class G {
     }
 
     /**
-     * A domain specific condition wrapper for fetch edge by the related ELEMENTS & TAG.
+     * A domain specific condition wrapper for fetch edge by the related ELEMENTS and TAG.
      *
      * @param tag   specific the type of the edge entity {@code Model.E}.
      * @param edges specific the edges entity{@code Edge#src, Edge#dst, Edge#id, Edge#type}.
      * @param <E>   specific the type of the edge entity {@code Model.E}.
-     * @return the basic fetching condition wrapper of the specified edges basic props & tag as origin.
+     * @return the basic fetching condition wrapper of the specified edges basic props and tag as origin.
      */
     @Contract("_, _ -> new")
     public static <E extends Model.E> @NotNull FetchWrapper<E> edge(Class<E> tag, Collection<Model.E> edges) {
@@ -180,12 +180,12 @@ public final class G {
     }
 
     /**
-     * A domain specific condition wrapper for fetch edge by the related ELEMENTS & TAG.
+     * A domain specific condition wrapper for fetch edge by the related ELEMENTS and TAG.
      *
      * @param tag   specific the type of the edge entity {@code Model.E}.
      * @param edges specific the edges entity{@code Edge#src, Edge#dst, Edge#id, Edge#type}.
      * @param <E>   specific the type of the edge entity {@code Model.E}.
-     * @return the basic fetching condition wrapper of the specified edges basic props & tag as origin.
+     * @return the basic fetching condition wrapper of the specified edges basic props and tag as origin.
      */
     @Contract("_, _ -> new")
     public static <E extends Model.E> @NotNull FetchWrapper<E> edge(String tag, Model.E... edges) {
@@ -193,12 +193,12 @@ public final class G {
     }
 
     /**
-     * A domain specific condition wrapper for fetch edge by the related ELEMENTS & TAG.
+     * A domain specific condition wrapper for fetch edge by the related ELEMENTS and TAG.
      *
      * @param tag   specific the type of the edge entity {@code Model.E}.
      * @param edges specific the edges entity{@code Edge#src, Edge#dst, Edge#id, Edge#type}.
      * @param <E>   specific the type of the edge entity {@code Model.E}.
-     * @return the basic fetching condition wrapper of the specified edges basic props & tag as origin.
+     * @return the basic fetching condition wrapper of the specified edges basic props and tag as origin.
      */
     @Contract("_, _ -> new")
     public static <E extends Model.E> @NotNull FetchWrapper<E> edge(String tag, Collection<Model.E> edges) {

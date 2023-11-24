@@ -16,6 +16,7 @@ public interface Query<M extends Model<?>> {
      * <p>
      * [note] return the whole vertex/edge as default.
      *
+     * @param first the first selection in query.
      * @param columns the primary selection in query.
      * @return the current ref of the fetch condition wrapper.
      */
@@ -34,10 +35,12 @@ public interface Query<M extends Model<?>> {
     <R extends Serializable> Sort<M> select(boolean condition, SerializableFunction<M, R> col1, SerializableFunction<M, ?> col2, SerializableFunction<M, ?> col3, SerializableFunction<M, ?>... others);
 
     /**
-     * specifies the according to the query column&alias criteria.
+     * specifies the according to the query column and alias criteria.
      * <p>
      * [note] If the query columns criteria is not specified, then it will return all columns as default.
      *
+     * @param column column
+     * @param alias alias
      * @return the current ref of the fetch condition wrapper.
      */
     Sort<M> selectAs(String column, String alias);

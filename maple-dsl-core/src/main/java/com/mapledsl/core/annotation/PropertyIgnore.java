@@ -12,7 +12,6 @@ import static java.lang.annotation.ElementType.FIELD;
  * the accessor (field)
  * is to be ignored by introspection-based
  * serialization and deserialization functionality.
- <p>
  <pre>
  class Person extends Model.V {
     {@literal @Property}("name") String name;
