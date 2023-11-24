@@ -8,13 +8,14 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.maple</groupId>
-    <artifactId>maple-spring-boot-starter</artifactId>
+    <groupId>io.github.maple-dsl</groupId>
+    <artifactId>maple-dsl-spring-boot-starter</artifactId>
     <version>0.1.0</version>
     <packaging>jar</packaging>
 
+    <description>The best graph language DSL spring boot starter</description>
+    <url>https://maple-dsl.github.io/maple-dsl/maple-dsl-spring-boot-starter</url>
     <name>maple-spring-boot-starter</name>
-    <url>http://maven.apache.org</url>
 
     <properties>
         <mapledsl.version>0.1.0</mapledsl.version>
