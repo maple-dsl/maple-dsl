@@ -1,0 +1,169 @@
+{
+  "groups": [
+    {
+      "sourceType": "com.mapledsl.spring.autoconfigure.MapleDslProperties",
+      "name": "maple-dsl",
+      "type": "com.mapledsl.spring.autoconfigure.MapleDslProperties"
+    },
+    {
+      "sourceType": "com.mapledsl.spring.autoconfigure.MapleDslProperties",
+      "sourceMethod": "getTemplateConfig()",
+      "name": "maple-dsl.template",
+      "type": "com.mapledsl.spring.autoconfigure.MapleDslProperties$TemplateObjectPoolConfig"
+    },
+    {
+      "sourceType": "com.mapledsl.spring.autoconfigure.MapleDslProperties",
+      "sourceMethod": "getSessionFactoryConfig()",
+      "name": "maple-dsl.session",
+      "type": "com.mapledsl.spring.autoconfigure.MapleDslProperties$SessionFactoryConfig"
+    },
+    {
+      "sourceType": "com.mapledsl.spring.autoconfigure.MapleDslProperties",
+      "sourceMethod": "getNebulaDataSourceConfig()",
+      "name": "maple-dsl.datasource.nebula",
+      "type": "com.mapledsl.spring.autoconfigure.MapleDslProperties$NebulaDataSourceConfig"
+    }
+  ],
+  "properties": [
+    {
+      "name": "maple-dsl.is-primary",
+      "type": "java.lang.Boolean",
+      "description": "Mark configuration primary.",
+      "sourceType": "com.mapledsl.spring.autoconfigure.MapleDslProperties",
+      "defaultValue": "true"
+    },
+    {
+      "name": "maple-dsl.locale",
+      "type": "java.util.Locale",
+      "description": "Locale used for formatting.",
+      "sourceType": "com.mapledsl.spring.autoconfigure.MapleDslProperties"
+    },
+    {
+      "name": "maple-dsl.time-zone",
+      "type": "java.util.TimeZone",
+      "description": "Time zone used when formatting dates. For instance, \"America\/Los_Angeles\" or \"GMT+10\".",
+      "sourceType": "com.mapledsl.spring.autoconfigure.MapleDslProperties"
+    },
+    {
+      "name": "maple-dsl.date-format",
+      "type": "java.lang.String",
+      "description": "Date format to place in log file name.",
+      "sourceType": "com.mapledsl.spring.autoconfigure.MapleDslProperties"
+    },
+    {
+      "name": "maple-dsl.time-format",
+      "type": "java.lang.String",
+      "description": "Time format to place in log file name.",
+      "sourceType": "com.mapledsl.spring.autoconfigure.MapleDslProperties"
+    },
+    {
+      "name": "maple-dsl.date-time-format",
+      "type": "java.lang.String",
+      "description": "DateTime format to place in log file name.",
+      "sourceType": "com.mapledsl.spring.autoconfigure.MapleDslProperties"
+    },
+    {
+      "name": "maple-dsl.naming-strategy",
+      "description": "Strategy to naming constructor, and in particular behavior with single-argument constructors.",
+      "sourceType": "com.mapledsl.spring.autoconfigure.MapleDslProperties",
+      "type": "com.mapledsl.core.extension.NamingStrategies",
+      "defaultValue": "snake_case"
+    },
+    {
+      "name": "maple-dsl.key-policy-strategy",
+      "description": "Strategy to keyPolicy constructor, and in particular behavior with single-argument constructors.",
+      "sourceType": "com.mapledsl.spring.autoconfigure.MapleDslProperties",
+      "type": "com.mapledsl.core.extension.KeyPolicyStrategies",
+      "defaultValue": "manual"
+    },
+    {
+      "sourceType": "com.mapledsl.spring.autoconfigure.MapleDslProperties$TemplateObjectPoolConfig",
+      "name": "maple-dsl.template.max-total",
+      "type": "java.lang.Integer",
+      "defaultValue": "20",
+      "description": "Template fmt object-pool `MaxTotal`."
+    },
+    {
+      "sourceType": "com.mapledsl.spring.autoconfigure.MapleDslProperties$TemplateObjectPoolConfig",
+      "name": "maple-dsl.template.max-idle",
+      "type": "java.lang.Integer",
+      "defaultValue": "10",
+      "description": "Template fmt object-pool `MaxIdle`."
+    },
+    {
+      "sourceType": "com.mapledsl.spring.autoconfigure.MapleDslProperties$TemplateObjectPoolConfig",
+      "name": "maple-dsl.template.min-idle",
+      "type": "java.lang.Integer",
+      "defaultValue": "5",
+      "description": "Template fmt object-pool `MinIdle`."
+    }
+  ],
+  "hints": [
+    {
+      "name": "maple-dsl.date-format",
+      "values": [
+        {
+          "value": "yyyy-MM-dd",
+          "description": "Example date format. Any format supported by DateTimeFormatter.parse can be used."
+        },
+        {
+          "value": "dd\/MM\/yyyy",
+          "description": "Example date format. Any format supported by DateTimeFormatter.parse can be used."
+        },
+        {
+          "value": "iso",
+          "description": "ISO-8601 extended local date format."
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "maple-dsl.date-time-format",
+      "values": [
+        {
+          "value": "yyyy-MM-dd HH:mm:ss",
+          "description": "Example date-time format. Any format supported by DateTimeFormatter.parse can be used."
+        },
+        {
+          "value": "iso",
+          "description": "ISO-8601 extended local date-time format."
+        },
+        {
+          "value": "iso-offset",
+          "description": "ISO offset date-time format."
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "maple-dsl.time-format",
+      "values": [
+        {
+          "value": "HH:mm:ss",
+          "description": "Example time format. Any format supported by DateTimeFormatter.parse can be used."
+        },
+        {
+          "value": "iso",
+          "description": "ISO-8601 extended local time format."
+        },
+        {
+          "value": "iso-offset",
+          "description": "ISO offset time format."
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    }
+  ]
+}
