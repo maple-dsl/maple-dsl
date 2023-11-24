@@ -10,8 +10,8 @@ jobs:
       - name: Maven Library build and publish
         uses: MathieuSoysal/Java-maven-library-publisher@v1.0.3
         with:
-          gpg_private_key: ${{ secrets.GPG_SECRET }}
-          gpg_passphrase: ${{ secrets.GPG_PASSWORD }}
-          nexus_username: ${{ secrets.OSSRH_USER }}
-          nexus_password: ${{ secrets.OSSRH_PASSWORD }}
+          gpg-private-key: ${{ secrets.GPG_SECRET }}
+          gpg-passphrase: ${{ secrets.GPG_PASSWORD }}
+          nexus-username: ${{ secrets.OSSRH_USER }}
+          nexus-password: ${{ secrets.OSSRH_PASSWORD }}
           java-version: 8
