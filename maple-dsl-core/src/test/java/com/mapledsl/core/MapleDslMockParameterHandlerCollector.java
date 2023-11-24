@@ -25,6 +25,11 @@ public class MapleDslMockParameterHandlerCollector implements MapleDslParameterH
         public String apply(Object o, MapleDslConfiguration configuration) {
             return null;
         }
+
+        @Override
+        public Class<?> parameterType() {
+            return void.class;
+        }
     }
 
 }

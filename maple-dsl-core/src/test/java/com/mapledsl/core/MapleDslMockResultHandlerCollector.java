@@ -25,5 +25,10 @@ public class MapleDslMockResultHandlerCollector implements MapleDslResultHandler
         public Object apply(Object o, MapleDslConfiguration configuration) {
             return null;
         }
+
+        @Override
+        public Class<Object> resultType() {
+            return Object.class;
+        }
     }
 }
