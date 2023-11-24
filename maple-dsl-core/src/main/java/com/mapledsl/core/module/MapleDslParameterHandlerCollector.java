@@ -15,6 +15,6 @@ public interface MapleDslParameterHandlerCollector extends Supplier<Map<Class<?>
 
     static Map<Class<?>, MapleDslParameterHandler> defaultParameterHandlers() {
         return Arrays.stream(DefaultMapleDslParameterHandlers.values())
-                .collect(Collectors.toMap(it -> it.parameterType, Function.identity()));
+                .collect(Collectors.toMap(MapleDslParameterHandler::parameterType, Function.identity()));
     }
 }

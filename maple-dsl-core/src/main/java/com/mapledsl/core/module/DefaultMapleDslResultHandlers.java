@@ -4,17 +4,16 @@ import com.mapledsl.core.MapleDslConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
+import java.util.Date;
 
-enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Object> {
-    Bool(boolean.class){
+enum DefaultMapleDslResultHandlers {
+    BOOLEAN(new MapleDslResultHandler<Object, Boolean>() {
+        @Override
+        public Class<Boolean> resultType() {
+            return Boolean.class;
+        }
+
         @Override
         public Boolean apply(Object source, MapleDslConfiguration configuration) {
             if (source == null) return false;
@@ -24,14 +23,10 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for Boolean expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    BOOLEAN(Boolean.class){
-        @Override
-        public Object apply(Object source, MapleDslConfiguration configuration) {
-            return Bool.apply(source, configuration);
-        }
-    },
-    Char(char.class){
+    }),
+    _BOOLEAN(boolean.class, BOOLEAN),
+
+    CHAR(new MapleDslResultHandler<Object, Character>() {
         @Override
         public Character apply(Object source, MapleDslConfiguration configuration) {
             if (source == null) return null;
@@ -40,16 +35,22 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for Character expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    CHAR(Character.class){
+
         @Override
-        public Object apply(Object source, MapleDslConfiguration ctx) {
-            return Char.apply(source, ctx);
+        public Class<Character> resultType() {
+            return Character.class;
         }
-    },
-    Byte(byte.class){
+    }),
+    _CHAR(char.class, CHAR),
+
+    BYTE(new MapleDslResultHandler<Object, Byte>() {
         @Override
-        public Byte apply(Object source, MapleDslConfiguration ctx) {
+        public Class<java.lang.Byte> resultType() {
+            return java.lang.Byte.class;
+        }
+
+        @Override
+        public java.lang.Byte apply(Object source, MapleDslConfiguration ctx) {
             if (source == null) return null;
             if (source instanceof Boolean) return (Boolean) source ? (byte) 0 : 1;
             if (source instanceof Number) return ((Number) source).byteValue();
@@ -72,14 +73,15 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for Byte expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    BYTE(Byte.class){
+    }),
+    _BYTE(byte.class, BYTE),
+
+    SHORT(new MapleDslResultHandler<Object, Short>() {
         @Override
-        public Object apply(Object source, MapleDslConfiguration ctx) {
-            return Byte.apply(source, ctx);
+        public Class<Short> resultType() {
+            return Short.class;
         }
-    },
-    Short(short.class){
+
         @Override
         public Short apply(Object source, MapleDslConfiguration ctx) {
             if (source == null) return null;
@@ -104,14 +106,15 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for Short expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    SHORT(Short.class){
+    }),
+    _SHORT(short.class, SHORT),
+
+    INT(new MapleDslResultHandler<Object, Integer>() {
         @Override
-        public Object apply(Object source, MapleDslConfiguration ctx) {
-            return Short.apply(source, ctx);
+        public Class<Integer> resultType() {
+            return Integer.class;
         }
-    },
-    Int(int.class){
+
         @Override
         public Integer apply(Object source, MapleDslConfiguration ctx) {
             if (source == null) return null;
@@ -136,16 +139,17 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for Int expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    INT(Integer.class) {
+    }),
+    _INT(int.class, INT),
+
+    LONG(new MapleDslResultHandler<Object, Long>() {
         @Override
-        public Object apply(Object source, MapleDslConfiguration ctx) {
-            return Int.apply(source, ctx);
+        public Class<java.lang.Long> resultType() {
+            return Long.class;
         }
-    },
-    Long(long.class){
+
         @Override
-        public Long apply(Object source, MapleDslConfiguration ctx) {
+        public java.lang.Long apply(Object source, MapleDslConfiguration ctx) {
             if (source == null) return null;
             if (source instanceof Boolean) return (Boolean) source ? 0L : 1L;
             if (source instanceof Number) return ((Number) source).longValue();
@@ -168,16 +172,17 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for Long expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    LONG(Long.class){
+    }),
+    _LONG(long.class, LONG),
+
+    FLOAT(new MapleDslResultHandler<Object, Float>() {
         @Override
-        public Object apply(Object source, MapleDslConfiguration ctx) {
-            return LONG.apply(source, ctx);
+        public Class<java.lang.Float> resultType() {
+            return Float.class;
         }
-    },
-    Float(float.class){
+
         @Override
-        public Float apply(Object source, MapleDslConfiguration ctx) {
+        public java.lang.Float apply(Object source, MapleDslConfiguration ctx) {
             if (source == null) return null;
             if (source instanceof Boolean) return (Boolean) source ? 0f : 1f;
             if (source instanceof Number) return ((Number) source).floatValue();
@@ -200,16 +205,17 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for Float expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    FLOAT(Float.class){
+    }),
+    _FLOAT(float.class, FLOAT),
+
+    DOUBLE(new MapleDslResultHandler<Object, Double>() {
         @Override
-        public Object apply(Object source, MapleDslConfiguration ctx) {
-            return Float.apply(source, ctx);
+        public Class<java.lang.Double> resultType() {
+            return Double.class;
         }
-    },
-    Double(double.class){
+
         @Override
-        public Double apply(Object source, MapleDslConfiguration ctx) {
+        public java.lang.Double apply(Object source, MapleDslConfiguration ctx) {
             if (source == null) return null;
             if (source instanceof Boolean) return (Boolean) source ? 0.0d : 1.0d;
             if (source instanceof Number) return ((Number) source).doubleValue();
@@ -232,14 +238,15 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for Double expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    DOUBLE(Double.class){
+    }),
+    _DOUBLE(double.class, DOUBLE),
+
+    STRING(new MapleDslResultHandler<Object, String>() {
         @Override
-        public Object apply(Object source, MapleDslConfiguration ctx) {
-            return Double.apply(source, ctx);
+        public Class<String> resultType() {
+            return String.class;
         }
-    },
-    STRING(String.class) {
+
         @Override
         public String apply(Object source, MapleDslConfiguration ctx) {
             if (source == null) return null;
@@ -251,10 +258,15 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for String expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    DATE(java.util.Date.class){
+    }),
+    DATE(new MapleDslResultHandler<Object, Date>() {
         @Override
-        public java.util.Date apply(Object source, MapleDslConfiguration ctx) {
+        public Class<Date> resultType() {
+            return java.util.Date.class;
+        }
+
+        @Override
+        public Date apply(Object source, MapleDslConfiguration ctx) {
             if (source == null) return null;
             if (source instanceof Number) return new java.util.Date(((Number) source).longValue());
             if (source instanceof String) return new java.util.Date(LocalDateTime.parse(((String) source))
@@ -282,8 +294,13 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for java.util.Date expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    SQL_DATE(java.sql.Date.class){
+    }),
+    SQL_DATE(new MapleDslResultHandler<Object, java.sql.Date>() {
+        @Override
+        public Class<java.sql.Date> resultType() {
+            return java.sql.Date.class;
+        }
+
         @Override
         public java.sql.Date apply(Object source, MapleDslConfiguration ctx) {
             if (source == null) return null;
@@ -313,8 +330,13 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for java.sql.Date expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    LOCAL_DATE_TIME(LocalDateTime.class){
+    }),
+    LOCAL_DATE_TIME(new MapleDslResultHandler<Object, LocalDateTime>() {
+        @Override
+        public Class<LocalDateTime> resultType() {
+            return LocalDateTime.class;
+        }
+
         @Override
         public LocalDateTime apply(Object source, MapleDslConfiguration ctx) {
             if (source == null) return null;
@@ -326,8 +348,13 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for LocalDateTime expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    LOCAL_DATE(LocalDate.class){
+    }),
+    LOCAL_DATE(new MapleDslResultHandler<Object, LocalDate>() {
+        @Override
+        public Class<LocalDate> resultType() {
+            return LocalDate.class;
+        }
+
         @Override
         public LocalDate apply(Object source, MapleDslConfiguration ctx) {
             if (source == null) return null;
@@ -338,8 +365,13 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for LocalDate expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    LOCAL_TIME(LocalTime.class){
+    }),
+    LOCAL_TIME(new MapleDslResultHandler<Object, LocalTime>() {
+        @Override
+        public Class<LocalTime> resultType() {
+            return LocalTime.class;
+        }
+
         @Override
         public LocalTime apply(Object source, MapleDslConfiguration ctx) {
             if (source == null) return null;
@@ -350,8 +382,13 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for LocalTime expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    OFFSET_DATE_TIME(OffsetDateTime.class){
+    }),
+    OFFSET_DATE_TIME(new MapleDslResultHandler<Object, OffsetDateTime>() {
+        @Override
+        public Class<OffsetDateTime> resultType() {
+            return OffsetDateTime.class;
+        }
+
         @Override
         public OffsetDateTime apply(Object source, MapleDslConfiguration ctx) {
             if (source == null) return null;
@@ -364,8 +401,8 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for OffsetDateTime expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    OFFSET_TIME(OffsetTime.class){
+    }),
+    OFFSET_TIME(new MapleDslResultHandler<Object, OffsetTime>() {
         @Override
         public OffsetTime apply(Object source, MapleDslConfiguration ctx) {
             if (source == null) return null;
@@ -377,8 +414,18 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for OffsetTime expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    ZONED_DATE_TIME(ZonedDateTime.class) {
+
+        @Override
+        public Class<OffsetTime> resultType() {
+            return OffsetTime.class;
+        }
+    }),
+    ZONED_DATE_TIME(new MapleDslResultHandler<Object, ZonedDateTime>() {
+        @Override
+        public Class<ZonedDateTime> resultType() {
+            return ZonedDateTime.class;
+        }
+
         @Override
         public ZonedDateTime apply(Object source, MapleDslConfiguration ctx) {
             if (source == null) return null;
@@ -391,19 +438,39 @@ enum DefaultMapleDslResultHandlers implements MapleDslResultHandler<Object, Obje
             if (LOG.isWarnEnabled()) LOG.warn("Illegal type for ZonedDateTime expected conversation: {}, it will be deprecated.", source);
             return null;
         }
-    },
-    ANY(Object.class){
+    }),
+    ANY(new MapleDslResultHandler<Object, Object>() {
         @Override
-        public Object apply(Object source, MapleDslConfiguration ctx) {
+        public Class<Object> resultType() {
+            return Object.class;
+        }
+
+        @Override
+        public Object apply(Object source, MapleDslConfiguration configuration) {
             return source;
         }
-    };
+    });
 
+    final MapleDslResultHandler<?, ?> resultHandler;
     final Class<?> resultType;
 
     static final Logger LOG = LoggerFactory.getLogger(DefaultMapleDslResultHandlers.class);
 
-    DefaultMapleDslResultHandlers(Class<?> resultType) {
+    <R> DefaultMapleDslResultHandlers(MapleDslResultHandler<?, R> resultHandler) {
+        this.resultHandler = resultHandler;
+        this.resultType = resultHandler.resultType();
+    }
+
+    <R> DefaultMapleDslResultHandlers(Class<R> resultType, DefaultMapleDslResultHandlers delegate) {
         this.resultType = resultType;
+        this.resultHandler = delegate.resultHandler;
+    }
+
+    public Class<?> getResultType() {
+        return resultType;
+    }
+
+    public MapleDslResultHandler<?, ?> getResultHandler() {
+        return resultHandler;
     }
 }

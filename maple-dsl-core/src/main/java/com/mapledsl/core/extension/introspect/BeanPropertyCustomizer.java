@@ -12,6 +12,7 @@ import java.util.Set;
  */
 @API(status = API.Status.STABLE)
 public interface BeanPropertyCustomizer<T> {
+    Class<T> beanClazz();
     /**
      * Exposed the extension property keys.
      * @param bean the target bean.

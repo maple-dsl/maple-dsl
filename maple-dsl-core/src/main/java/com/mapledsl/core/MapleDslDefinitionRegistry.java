@@ -17,19 +17,19 @@ import static java.util.Objects.requireNonNull;
  * @author bofa1ex
  * @since 2023/08/22
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"unchecked", "rawtypes"})
 final class MapleDslDefinitionRegistry {
     final MapleDslConfiguration configuration;
    /**
      * key: model class, value: bean definition.
      */
-    final Map<Class, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
+    final Map<Class<?>, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
     /**
      * key: model class, value: bean property customizer.
      */
-    final Map<Class, BeanPropertyCustomizer> beanPropertyCustomizerMap = new HashMap<>();
+    final Map<Class<?>, BeanPropertyCustomizer> beanPropertyCustomizerMap = new HashMap<>();
     final BeanDefinitionIntrospector beanDefinitionIntrospector;
-    BeanPropertyCustomizer<Model<?>> defaultModelPropertyCustomizer = new DefaultModelPropertyCustomizer();
+    BeanPropertyCustomizer defaultModelPropertyCustomizer = new DefaultModelPropertyCustomizer();
 
     MapleDslDefinitionRegistry(MapleDslConfiguration configuration) {
         this.configuration = configuration;
@@ -46,11 +46,11 @@ final class MapleDslDefinitionRegistry {
         return beanPropertyCustomizerMap.get(beanClazz);
     }
 
-    BeanPropertyCustomizer<Model<?>> getModelPropertyCustomizer() {
+    <MODEL extends Model<?>> BeanPropertyCustomizer<MODEL> getModelPropertyCustomizer() {
         return defaultModelPropertyCustomizer;
     }
 
-    void registerModelPropertyCustomizer(BeanPropertyCustomizer<Model<?>> customizer) {
+    <MODEL extends Model<?>> void registerModelPropertyCustomizer(BeanPropertyCustomizer<MODEL> customizer) {
         requireNonNull(customizer, "customizer must not be null.");
         defaultModelPropertyCustomizer = customizer;
     }
@@ -60,11 +60,12 @@ final class MapleDslDefinitionRegistry {
         beanDefinitionMap.putIfAbsent(beanClazz, beanDefinitionIntrospector.resolve(beanClazz));
     }
 
-    <BEAM> void registerBeanPropertyCustomizer(Class<BEAM> beanClazz, BeanPropertyCustomizer<BEAM> customizer) {
-        requireNonNull(beanClazz, "bean type must not be null.");
+    <BEAM> void registerBeanPropertyCustomizer(BeanPropertyCustomizer<BEAM> customizer) {
         requireNonNull(customizer, "customizer must not be null.");
-        if (beanPropertyCustomizerMap.containsKey(beanClazz)) throw new MapleDslBindingException("BeanPropertyCustomizer:" + beanClazz + " PropertyCustomizer is already registered.");
+        requireNonNull(customizer.beanClazz(), "bean type must not be null.");
+        if (beanPropertyCustomizerMap.containsKey(customizer.beanClazz()))
+            throw new MapleDslBindingException("BeanPropertyCustomizer:" + customizer.beanClazz() + " PropertyCustomizer is already registered.");
 
-        beanPropertyCustomizerMap.put(beanClazz, customizer);
+        beanPropertyCustomizerMap.put(customizer.beanClazz(), customizer);
     }
 }

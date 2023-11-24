@@ -1,6 +1,5 @@
 package com.mapledsl.core;
 
-import com.mapledsl.core.annotation.Label;
 import com.mapledsl.core.exception.MapleDslBindingException;
 import com.mapledsl.core.extension.KeyPolicyStrategies;
 import com.mapledsl.core.extension.KeyPolicyStrategy;
@@ -9,13 +8,12 @@ import com.mapledsl.core.extension.NamingStrategy;
 import com.mapledsl.core.extension.introspect.BeanDefinition;
 import com.mapledsl.core.extension.introspect.BeanPropertyCustomizer;
 import com.mapledsl.core.model.Model;
+import com.mapledsl.core.module.MapleDslModule;
 import com.mapledsl.core.module.MapleDslParameterHandler;
 import com.mapledsl.core.module.MapleDslResultHandler;
-import com.mapledsl.core.module.MapleDslModule;
+import org.apiguardian.api.API;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.reflections.Reflections;
-import org.reflections.util.ClasspathHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +40,7 @@ public final class MapleDslConfiguration {
 
     MapleDslConfiguration(@NotNull MapleDslModule module, @NotNull RegionConfig regionConfig,
                           @NotNull NamingStrategy namingStrategy, @NotNull KeyPolicyStrategy keyPolicyStrategy,
-                          @Nullable Integer templatePoolConfigMaxTotal, @Nullable Integer templatePoolConfigMaxIdle, @Nullable Integer templatePoolConfigMinIdle, boolean templatePrettyPrint) {
+                          @Nullable Integer templatePoolConfigMaxTotal, @Nullable Integer templatePoolConfigMaxIdle, @Nullable Integer templatePoolConfigMinIdle) {
         this.module = module;
         this.regionConfig = regionConfig;
         this.namingStrategy = namingStrategy;
@@ -50,11 +48,11 @@ public final class MapleDslConfiguration {
 
         this.mapperRegistry = new MapleDslDefinitionRegistry(this);
         this.handlerRegistry = new MapleDslHandlerRegistry(this);
-        this.templateRegistry = new MapleDslTemplateRegistry(this, templatePoolConfigMaxTotal, templatePoolConfigMaxIdle, templatePoolConfigMinIdle, templatePrettyPrint);
+        this.templateRegistry = new MapleDslTemplateRegistry(this, templatePoolConfigMaxTotal, templatePoolConfigMaxIdle, templatePoolConfigMinIdle);
     }
 
-    public <BEAM> MapleDslConfiguration registerBeanPropertyCustomizer(Class<BEAM> clazz, BeanPropertyCustomizer<BEAM> customizer) {
-        mapperRegistry.registerBeanPropertyCustomizer(clazz, customizer);
+    public <BEAN> MapleDslConfiguration registerBeanPropertyCustomizer(BeanPropertyCustomizer<BEAN> customizer) {
+        mapperRegistry.registerBeanPropertyCustomizer(customizer);
         return this;
     }
 
@@ -63,30 +61,13 @@ public final class MapleDslConfiguration {
         return this;
     }
 
-    public MapleDslConfiguration registerParameterHandler(Class<?> parameterType, MapleDslParameterHandler parameterHandler) {
-        handlerRegistry.registerParameterHandler(parameterType, parameterHandler);
+    public MapleDslConfiguration registerParameterHandler(MapleDslParameterHandler parameterHandler) {
+        handlerRegistry.registerParameterHandler(parameterHandler);
         return this;
     }
 
-    public <IN, OUT> MapleDslConfiguration registerResultHandler(Class<OUT> resultType, MapleDslResultHandler<IN, OUT> resultHandler) {
-        handlerRegistry.registerResultHandler(resultType, resultHandler);
-        return this;
-    }
-
-    public <BEAN> MapleDslConfiguration registerBeanDefinition(Class<BEAN> clazz) {
-        mapperRegistry.registerBeanDefinition(clazz);
-        return this;
-    }
-
-    public MapleDslConfiguration registerBeanDefinition(String scanPackage) {
-        final Reflections reflections = new Reflections(ClasspathHelper.forPackage(scanPackage));
-        final Set<Class<?>> beanClazzSet = reflections.getTypesAnnotatedWith(Label.class);
-        if (beanClazzSet == null || beanClazzSet.isEmpty()) return this;
-
-        for (Class<?> beanClazz : beanClazzSet) {
-            mapperRegistry.registerBeanDefinition(beanClazz);
-        }
-
+    public <IN, OUT> MapleDslConfiguration registerResultHandler(MapleDslResultHandler<IN, OUT> resultHandler) {
+        handlerRegistry.registerResultHandler(resultHandler);
         return this;
     }
 
@@ -107,7 +88,7 @@ public final class MapleDslConfiguration {
         return mapperRegistry.getBeanPropertyCustomizer(clazz);
     }
 
-    public BeanPropertyCustomizer<Model<?>> modelPropertyCustomizer() {
+    public <MODEL extends Model<?>> BeanPropertyCustomizer<MODEL> modelPropertyCustomizer() {
         return mapperRegistry.getModelPropertyCustomizer();
     }
 
@@ -175,7 +156,7 @@ public final class MapleDslConfiguration {
         return regionConfig.timeZone;
     }
 
-    protected static class RegionConfig {
+    public static class RegionConfig {
         ZoneId zoneId = ZoneId.systemDefault();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
@@ -185,7 +166,7 @@ public final class MapleDslConfiguration {
     }
 
     public static class Builder {
-        boolean primary, templatePrettyPrint;
+        boolean primary;
         Integer templatePoolConfigMaxTotal, templatePoolConfigMaxIdle, templatePoolConfigMinIdle;
         Class<? extends MapleDslModule> moduleClazz;
         MapleDslModule module;
@@ -274,26 +255,21 @@ public final class MapleDslConfiguration {
             return this;
         }
 
-        public Builder templatePoolConfig(int maxTotal) {
+        public Builder templatePoolConfig(Integer maxTotal) {
             this.templatePoolConfigMaxTotal = maxTotal;
             return this;
         }
 
-        public Builder templatePoolConfig(int maxTotal, int maxIdle) {
+        public Builder templatePoolConfig(Integer maxTotal, Integer maxIdle) {
             this.templatePoolConfigMaxTotal = maxTotal;
             this.templatePoolConfigMaxIdle = maxIdle;
             return this;
         }
 
-        public Builder templatePoolConfig(int maxTotal, int maxIdle, int minIdle) {
+        public Builder templatePoolConfig(Integer maxTotal, Integer maxIdle, Integer minIdle) {
             this.templatePoolConfigMaxTotal = maxTotal;
             this.templatePoolConfigMaxIdle = maxIdle;
             this.templatePoolConfigMinIdle = minIdle;
-            return this;
-        }
-
-        public Builder templatePrettyPrint() {
-            this.templatePrettyPrint = true;
             return this;
         }
 
@@ -314,19 +290,26 @@ public final class MapleDslConfiguration {
 
             final MapleDslConfiguration configuration = new MapleDslConfiguration(
                     module, regionConfig, namingStrategy, keyPolicyStrategy,
-                    templatePoolConfigMaxTotal, templatePoolConfigMaxIdle, templatePoolConfigMinIdle, templatePrettyPrint
+                    templatePoolConfigMaxTotal, templatePoolConfigMaxIdle, templatePoolConfigMinIdle
             );
 
-            if (primary) PRIMARY_CONFIGURATION.set(configuration);
-            else PRIMARY_CONFIGURATION.compareAndSet(null, configuration);
+            if (primary) {
+                final MapleDslConfiguration previousConfiguration = PRIMARY_CONFIGURATION.getAndSet(configuration);
+                if (previousConfiguration != null) LOG.warn("{} Previous configuration has been override.", previousConfiguration.module());
+            } else {
+                PRIMARY_CONFIGURATION.compareAndSet(null, configuration);
+            }
+
             return configuration;
         }
     }
 
+    @API(status = API.Status.STABLE)
     public static MapleDslConfiguration primaryConfiguration() {
         return primaryConfiguration(UnaryOperator.identity());
     }
 
+    @API(status = API.Status.STABLE)
     public static MapleDslConfiguration primaryConfiguration(UnaryOperator<Builder> configurationBuilderUnary) {
         return PRIMARY_CONFIGURATION.updateAndGet(primaryConfiguration -> {
             if (primaryConfiguration == null) {

@@ -1,7 +1,10 @@
 package com.mapledsl.core;
 
 import com.mapledsl.core.exception.MapleDslBindingException;
-import com.mapledsl.core.module.*;
+import com.mapledsl.core.module.MapleDslParameterHandler;
+import com.mapledsl.core.module.MapleDslParameterHandlerCollector;
+import com.mapledsl.core.module.MapleDslResultHandler;
+import com.mapledsl.core.module.MapleDslResultHandlerCollector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -64,18 +67,18 @@ final class MapleDslHandlerRegistry {
         this.defaultResultHandler = resultHandlerMap.get(Object.class);
     }
 
-    void registerParameterHandler(Class<?> parameterType, MapleDslParameterHandler parameterHandler) {
-        requireNonNull(parameterType, "parameterType must not be null");
+    void registerParameterHandler(MapleDslParameterHandler parameterHandler) {
+        requireNonNull(parameterHandler.parameterType(), "parameterType must not be null");
         requireNonNull(parameterHandler, "parameterHandler must not be null");
-        parameterHandlerMap.put(parameterType, parameterHandler);
+        parameterHandlerMap.put(parameterHandler.parameterType(), parameterHandler);
     }
 
-    <IN, OUT> void registerResultHandler(Class<OUT> resultType, MapleDslResultHandler<IN, OUT> resultHandler) {
-        requireNonNull(resultType, "resultType must not be null");
+    <IN, OUT> void registerResultHandler(MapleDslResultHandler<IN, OUT> resultHandler) {
+        requireNonNull(resultHandler.resultType(), "resultType must not be null");
         requireNonNull(resultHandler, "resultHandler must not be null");
         if (!context.module.<IN, OUT>resultHandlerPredicate().test(resultHandler)) throw new MapleDslBindingException("ResultHandler predicate does not passed, please keep the related-module specification.");
 
-        resultHandlerMap.put(resultType, resultHandler);
+        resultHandlerMap.put(resultHandler.resultType(), resultHandler);
     }
 
     MapleDslParameterHandler getParameterHandler(Class<?> parameterType) {
