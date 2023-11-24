@@ -1,18 +1,10 @@
 package com.mapledsl.nebula;
 
-import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.annotation.Label;
 import com.mapledsl.core.model.Model;
 import com.mapledsl.nebula.model.NebulaModel;
-import org.junit.jupiter.api.BeforeAll;
 
 public class NebulaGraphBaseTest {
-
-    @BeforeAll
-    public static void init() {
-        MapleDslConfiguration.primaryConfiguration(MapleDslConfiguration.Builder::templatePrettyPrint)
-                .registerBeanDefinition("com.mapledsl.nebula");
-    }
 
     @Label("person")
     public static class Person extends Model.V {
