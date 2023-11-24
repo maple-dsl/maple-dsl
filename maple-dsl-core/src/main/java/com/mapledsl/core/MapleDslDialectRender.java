@@ -11,7 +11,6 @@ import java.util.function.BiFunction;
  * @author bofa1ex
  * @since 2023/08/23
  */
-@SuppressWarnings("DuplicatedCode")
 enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[], String> {
     fetchV {
         @Override
@@ -111,10 +110,13 @@ enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[]
         final @NotNull String templateName = name();
         final @NotNull ST fmt = context.templateRegistry.borrowTemplate(templateName);
         try {
-            final String statement = fill(fmt, args).render();
-            return context.templateRegistry.prettyPrint ? statement.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",") : statement;
+            return prettyPrint(fill(fmt, args).render());
         } finally {
             context.templateRegistry.returnTemplate(fmt);
         }
+    }
+
+    private String prettyPrint(String stmt) {
+        return stmt.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",");
     }
 }

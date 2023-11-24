@@ -39,12 +39,11 @@ final class MapleDslTemplateRegistry {
     final MapleDslDialectSelectionRender selectionRender;
     final MapleDslDialectFunctionRender functionRender;
     final MapleDslDialectPredicateRender predicateRender;
-    final Boolean prettyPrint;
     final MapleDslConfiguration context;
     final GenericObjectPool<STGroup> templateGroup;
     final Properties templateProperties;
 
-    MapleDslTemplateRegistry(MapleDslConfiguration context, Integer maxTotal, Integer maxIdle, Integer minIdle, Boolean prettyPrint) {
+    MapleDslTemplateRegistry(MapleDslConfiguration context, Integer maxTotal, Integer maxIdle, Integer minIdle) {
         if (minIdle == null) minIdle = DEFAULT_TEMPLATE_GROUP_POOL_MIN_IDLE;
         if (minIdle < DEFAULT_TEMPLATE_GROUP_POOL_MIN_IDLE) {
             throw new IllegalArgumentException("TemplatePoolConfig#minIdle must not be negative.");
@@ -71,7 +70,6 @@ final class MapleDslTemplateRegistry {
         genericObjectPoolConfig.setMinIdle(minIdle);
 
         this.context = context;
-        this.prettyPrint = prettyPrint;
         this.templateProperties = context.module().dialectProperties();
         this.templateGroup = new GenericObjectPool<>(templateGroupPooledObjectFactory, genericObjectPoolConfig);
 
