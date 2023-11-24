@@ -33,15 +33,27 @@ Inclusion of the Nebula-DSL in a Maven project
 ### How to use
 ```java
 // i.e. List all Tom Hanks movies released in the 1990s
-var statement = G.traverse(G.vertex("Person").eq("name", "Tom Hanks"))
-    .outE("ACTED_IN")
-    .outV("tomHanksMovies", "Movie", it -> it
-      .gte("released", 1990)
-      .lt("released", 2000)
-      .selectAs("released", "movie_released")
-      .selectAs("name", "movie_name"))
+var match = G.vertex(Actor.class).eq(Actor::getName, "Tom Hanks");
+var statement = G.traverse(match)
+    .outE(ActedIn.class)
+    .outV("tomHanksMovies", Movie.class, it -> it
+      .gte(Movie::getReleased, 1990)
+      .lt(Movie::getReleased, 2000)
+      .selectAs(Movie::getReleased, "movie_released")
+      .selectAs(Movie::getName, "movie_name"))
     .render();
 
-var result = sessionTemplate.selectMaps(statement);
+// i.e. List all the actors that acted with Tom Hanks movies released in the 1990s together
+statement = G.traverse(match)
+    .outE(ActedIn.class)
+    .outV("tomHanksMovies", Movie.class, it -> it
+      .gte(Movie::getReleased, 1990)
+      .lt(Movie::getReleased, 2000)
+      .selectAs(Movie::getReleased, "movie_released")
+      .selectAs(Movie::getName, "movie_name"))
+    .inE(ActedIn.class)
+    .outV("otherActors", Actor.class, TraversalStep.Step::selectAll)
+    .render();
+
 ```
 More on [Wiki](https://maple-dsl.github.io/maple-dsl/).
