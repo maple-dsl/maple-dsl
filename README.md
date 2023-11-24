@@ -15,18 +15,18 @@
 Inclusion of the Cypher-DSL in a Maven project
 ```xml
 <dependency>
-  <groupId>com.maple</groupId>
-  <artifactId>maple-cypher-dsl</artifactId>
-  <version>0.1.0</version>
+  <groupId>io.github.maple-dsl</groupId>
+  <artifactId>maple-dsl-cypher</artifactId>
+  <version>1.0.0</version>
 </dependency>
 ```
 
 Inclusion of the Nebula-DSL in a Maven project
 ```xml
 <dependency>
-  <groupId>com.maple</groupId>
-  <artifactId>maple-nebula</artifactId>
-  <version>0.1.0</version>
+  <groupId>io.github.maple-dsl</groupId>
+  <artifactId>maple-dsl-nebula</artifactId>
+  <version>1.0.0</version>
 </dependency>
 ```
 
