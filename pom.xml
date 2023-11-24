@@ -56,12 +56,12 @@
             </dependency>
             <dependency>
                 <groupId>com.maple</groupId>
-                <artifactId>maple-cypher-dsl</artifactId>
+                <artifactId>maple-dsl-cypher</artifactId>
                 <version>${mapledsl-cypher.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.maple</groupId>
-                <artifactId>maple-nebula</artifactId>
+                <artifactId>maple-dsl-nebula</artifactId>
                 <version>${mapledsl-nebula.version}</version>
             </dependency>
             <dependency>
