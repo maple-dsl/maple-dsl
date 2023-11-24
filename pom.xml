@@ -16,6 +16,8 @@
 
     <properties>
         <mapledsl-core.version>0.1.0</mapledsl-core.version>
+        <mapledsl-nebula.version>0.1.0</mapledsl-nebula.version>
+        <mapledsl-cypher.version>0.1.0</mapledsl-cypher.version>
         <apiguardian.version>1.1.2</apiguardian.version>
         <codec.version>1.15</codec.version>
         <st4.version>4.3.3</st4.version>
@@ -45,6 +47,16 @@
                 <groupId>com.maple</groupId>
                 <artifactId>maple-dsl-core</artifactId>
                 <version>${mapledsl-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.maple</groupId>
+                <artifactId>maple-cypher-dsl</artifactId>
+                <version>${mapledsl-cypher.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.maple</groupId>
+                <artifactId>maple-nebula</artifactId>
+                <version>${mapledsl-nebula.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apiguardian</groupId>
