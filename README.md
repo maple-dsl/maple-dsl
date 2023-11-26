@@ -6,7 +6,7 @@
 ## Features
 - Support popular graph query language (e.g. Cypher, nGQL, etc)
 - Out-of-the-box dsl interfaces for operate graph database.
-- Powerful and flexible predicate/selection/traversal condition wrapper.
+- Powerful and flexible predicate/selection/traversal/mutation conditional wrapper.
 - Lambda-style API Lambda
 
 ## Getting started
