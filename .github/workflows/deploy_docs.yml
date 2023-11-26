@@ -35,5 +35,5 @@ jobs:
           # mike delete master -p
           git fetch origin gh-pages --depth=1 # fix mike's CI update
           mike list
-          mike deploy master -p --rebase
+          mike deploy master -p
           mike list
