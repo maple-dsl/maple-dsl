@@ -38,9 +38,9 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.maple</groupId>
+                <groupId>io.github.maple-dsl</groupId>
                 <artifactId>maple-dsl</artifactId>
-                <version>${mapledsl.version}</version>
+                <version>1.0.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -49,17 +49,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.maple</groupId>
+            <groupId>io.github.maple-dsl</groupId>
             <artifactId>maple-dsl-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.maple</groupId>
-            <artifactId>maple-nebula</artifactId>
+            <groupId>io.github.maple-dsl</groupId>
+            <artifactId>maple-dsl-nebula</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.maple</groupId>
-            <artifactId>maple-cypher-dsl</artifactId>
+            <groupId>io.github.maple-dsl</groupId>
+            <artifactId>maple-dsl-cypher</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
