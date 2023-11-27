@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="200px" height="100" src="https://maple-dsl.github.io/maple-dsl/icon/logo_dark.svg"/>
+  <img width="200px" height="100" src="https://maple-dsl.github.io/maple-dsl/master/icon/logo_dark.svg"/>
   <br>A powerful, flexible, lightning-fast graph query DSL<br>
 </p>
 
