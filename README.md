@@ -61,7 +61,7 @@ var statement = G.traverse(match)
     .outV("tomHanksMovies", Movie.class, it -> it
       .gte(Movie::getReleased, 1990)
       .lt(Movie::getReleased, 2000)
-      .selectAs(Movie::getReleased, "movie_released")
+      .select(Movie::getReleased)
       .selectAs(Movie::getName, "movie_name"))
     .render();
 ```
@@ -73,7 +73,7 @@ statement = G.traverse(match)
     .outV("tomHanksMovies", Movie.class, it -> it
       .gte(Movie::getReleased, 1990)
       .lt(Movie::getReleased, 2000)
-      .selectAs(Movie::getReleased, "movie_released")
+      .select(Movie::getReleased)
       .selectAs(Movie::getName, "movie_name"))
     .inE(ActedIn.class)
     .outV("otherActors", Actor.class, TraversalStep.Step::selectAll)
