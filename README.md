@@ -35,15 +35,20 @@ Inclusion of the Nebula-DSL in a Maven project
 
 #### Set up domain entities(vertex&edge)
 ```java
+@Label("actor")
 class Actor extends Model.V {
   private String name;
 }
 
+@Label("movie")
 class Movie extends Model.V {
+  @Property("movie_name")
   private String name;
+  @Property("movie_released")
   private Integer released;
 }
 
+@Label("acted_in")
 class ActedIn extends Model.E {
 
 }
