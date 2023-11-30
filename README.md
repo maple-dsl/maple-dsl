@@ -30,9 +30,26 @@ Inclusion of the Nebula-DSL in a Maven project
 </dependency>
 ```
 
+
 ### How to use
+
+#### Set up domain entities(vertex&edge)
 ```java
-// i.e. List all Tom Hanks movies released in the 1990s
+class Actor extends Model.V {
+  private String name;
+}
+
+class Movie extends Model.V {
+  private String name;
+  private Integer released;
+}
+
+class ActedIn extends Model.E {
+
+}
+```
+#### List all Tom Hanks movies released in the 1990s
+```java
 var match = G.vertex(Actor.class).eq(Actor::getName, "Tom Hanks");
 var statement = G.traverse(match)
     .outE(ActedIn.class)
@@ -42,8 +59,10 @@ var statement = G.traverse(match)
       .selectAs(Movie::getReleased, "movie_released")
       .selectAs(Movie::getName, "movie_name"))
     .render();
+```
 
-// i.e. List all the actors that acted with Tom Hanks movies released in the 1990s together
+#### or List all the actors that acted with Tom Hanks movies released in the 1990s
+```java
 statement = G.traverse(match)
     .outE(ActedIn.class)
     .outV("tomHanksMovies", Movie.class, it -> it
