@@ -87,4 +87,3 @@ statement = G.traverse(match)
     .render();
 
 ```
-More on [Wiki](https://maple-dsl.github.io/maple-dsl/).
