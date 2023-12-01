@@ -1,5 +1,14 @@
 <p align="center">
   <img width="200px" height="100" src="https://maple-dsl.github.io/maple-dsl/master/icon/logo_dark.svg"/>
+</p>
+<p align="center">
+  <a href="https://central.sonatype.com/search?q=g:io.github.maple-dsl%20%20a:maple-dsl&smo=true">
+    <img alt="maven" src="https://img.shields.io/maven-metadata/v.svg?label=maven-central&metadataUrl=https%3A%2F%2Frepo1.maven.org%2Fmaven2%2Fio%2Fgithub%2Fmaple-dsl%2Fmaple-dsl%2Fmaven-metadata.xml&style=flat-square">
+  </a>
+
+  <a href="https://www.apache.org/licenses/LICENSE-2.0">
+    <img alt="code style" src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square">
+  </a>
   <br>A powerful, flexible, lightning-fast graph query DSL<br>
 </p>
 
