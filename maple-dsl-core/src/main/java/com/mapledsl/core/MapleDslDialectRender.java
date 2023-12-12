@@ -6,10 +6,8 @@ import org.stringtemplate.v4.ST;
 import java.util.function.BiFunction;
 
 /**
- * A collection represents a group of graph (basic(CURD) & traverse & path & subgraph) dialect renderers.
- *
- * @author bofa1ex
- * @since 2023/08/23
+ * Enumeration class for rendering MapleDsl Dialect. Used as a BiFunction to fill
+ * in a StringTemplate (ST) template with the given arguments.
  */
 enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[], String> {
     fetchV {
@@ -105,6 +103,13 @@ enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[]
 
     abstract ST fill(ST fmt, Object[] args);
 
+    /**
+     * Apply a template using the given context and arguments.
+     *
+     * @param context the MapleDslConfiguration context
+     * @param args the arguments to be passed to the template
+     * @return the result of applying the template
+     */
     @Override
     public final String apply(MapleDslConfiguration context, Object[] args) {
         final @NotNull String templateName = name();
@@ -116,6 +121,12 @@ enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[]
         }
     }
 
+    /**
+     * This method takes a string statement and performs a pretty printing operation on it.
+     *
+     * @param stmt the string statement to be pretty printed
+     * @return the pretty printed string statement
+     */
     private String prettyPrint(String stmt) {
         return stmt.trim().replaceAll("\\s{2,}", " ").replaceAll("\\s?,\\s?", ",");
     }

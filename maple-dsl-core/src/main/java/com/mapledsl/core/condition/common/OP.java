@@ -1,8 +1,7 @@
 package com.mapledsl.core.condition.common;
 
 /**
- * @author bofa1ex
- * @since 2023/8/14
+ * Enum representing different types of operations that can be used in conditions.
  */
 public enum OP {
     AND, OR, XOR,

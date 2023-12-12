@@ -4,39 +4,68 @@ import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.condition.Wrapper;
 import com.mapledsl.core.exception.MapleDslException;
 import com.mapledsl.core.model.Model;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 /**
- * @author bofa1ex
- * @since 2023/08/22
+ * The MapleDslSession interface represents a session for executing Maple DSL queries.
+ * This session is responsible for maintaining the connection to the database and executing the queries.
+ *
+ * @see Closeable
  */
 public interface MapleDslSession extends Closeable {
-    Model.V selectVertex(String stmt);
-
-    default Model.V selectVertex(Wrapper stmtWrapper) {
-        return selectVertex(stmtWrapper.render());
+    /**
+     * Select a vertex from the model using the provided SQL statement.
+     *
+     * @param stmt the SQL statement used to select the vertex
+     * @param <ID> the type of the identifier for the vertex
+     * @return the selected vertex of type `Model.V<ID>`
+     */
+    @Nullable <ID> Model.V<ID> selectVertex(@NotNull String stmt);
+    default @Nullable <ID> Model.V<ID> selectVertex(@NotNull Wrapper<? extends Model.V<?>> stmtWrapper) {
+        return selectVertex(stmtWrapper.render(configuration()));
     }
 
-    List<Model.V> selectVertexList(String stmt);
-
-    default List<Model.V> selectVertexList(Wrapper stmtWrapper) {
-        return selectVertexList(stmtWrapper.render());
+    /**
+     * Selects a list of vertices from the model using the provided SQL statement.
+     *
+     * @param stmt the SQL statement used to select the vertices
+     * @param <ID> the type of the identifier for the vertices
+     * @return a list of selected vertices of type `Model.V<ID>`
+     */
+    @NotNull <ID> List<Model.V<ID>> selectVertexList(@NotNull String stmt);
+    default @NotNull <ID> List<Model.V<ID>> selectVertexList(@NotNull Wrapper<? extends Model.V<?>> stmtWrapper) {
+        return selectVertexList(requireNonNull(stmtWrapper).render(configuration()));
     }
 
-    Model.E selectEdge(String stmt);
-
-    default Model.E selectEdge(Wrapper stmtWrapper) {
-        return selectEdge(stmtWrapper.render());
+    /**
+     * Selects an edge from the model using the provided SQL statement.
+     *
+     * @param stmt the SQL statement used to select the edge
+     * @param <ID> the type of the identifier for the edge
+     * @return the selected edge of type Model.E<ID>
+     */
+    @Nullable <ID> Model.E<ID> selectEdge(@NotNull String stmt);
+    default @Nullable <ID> Model.E<ID> selectEdge(@NotNull Wrapper<? extends Model.E<?>> stmtWrapper) {
+        return selectEdge(requireNonNull(stmtWrapper).render(configuration()));
     }
 
-    List<Model.E> selectEdgeList(String stmt);
-
-    default List<Model.E> selectEdgeList(Wrapper stmtWrapper) {
-        return selectEdgeList(stmtWrapper.render());
+    /**
+     * Selects a list of edges from the model using the provided SQL statement.
+     *
+     * @param stmt the SQL statement used to select the edges
+     * @param <ID> the type of the identifier for the edges
+     * @return a list of selected edges of type `Model.E<ID>`
+     */
+    @NotNull <ID> List<Model.E<ID>> selectEdgeList(@NotNull String stmt);
+    default @NotNull <ID> List<Model.E<ID>> selectEdgeList(@NotNull Wrapper<? extends Model.E<?>> stmtWrapper) {
+        return selectEdgeList(requireNonNull(stmtWrapper).render(configuration()));
     }
 
     /**
@@ -47,10 +76,10 @@ public interface MapleDslSession extends Closeable {
      * @param mappedEntityType mapped entity type
      * @return optional of mapped object
      */
-    <T> T selectOne(String stmt, Class<T> mappedEntityType);
+    @Nullable <T> T selectOne(String stmt, Class<T> mappedEntityType);
 
-    default <T> T selectOne(Wrapper stmtWrapper, Class<T> mappedEntityType) {
-        return selectOne(Objects.requireNonNull(stmtWrapper).render(configuration()), mappedEntityType);
+    default @Nullable <T> T selectOne(Wrapper stmtWrapper, Class<T> mappedEntityType) {
+        return selectOne(requireNonNull(stmtWrapper).render(configuration()), mappedEntityType);
     }
 
     /**
@@ -61,10 +90,10 @@ public interface MapleDslSession extends Closeable {
      * @param mappedEntityType mapped entity type
      * @return List of mapped object
      */
-    <T> List<T> selectList(String stmt, Class<T> mappedEntityType);
+    @NotNull <T> List<T> selectList(String stmt, Class<T> mappedEntityType);
 
-    default <T> List<T> selectList(Wrapper stmtWrapper, Class<T> mappedEntityType) {
-        return selectList(Objects.requireNonNull(stmtWrapper).render(configuration()), mappedEntityType);
+    default @NotNull <T> List<T> selectList(Wrapper<?> stmtWrapper, Class<T> mappedEntityType) {
+        return selectList(requireNonNull(stmtWrapper).render(configuration()), mappedEntityType);
     }
 
     /**
@@ -75,10 +104,10 @@ public interface MapleDslSession extends Closeable {
      * @param stmt complete sql statement
      * @return Map containing key pair data.
      */
-    Map<String, Object> selectMap(String stmt);
+    @NotNull Map<String, Object> selectMap(@NotNull String stmt);
 
-    default Map<String, Object> selectMap(Wrapper stmtWrapper) {
-        return selectMap(Objects.requireNonNull(stmtWrapper).render(configuration()));
+    default @NotNull Map<String, Object> selectMap(@NotNull Wrapper stmtWrapper) {
+        return selectMap(requireNonNull(stmtWrapper).render(configuration()));
     }
 
     /**
@@ -89,10 +118,10 @@ public interface MapleDslSession extends Closeable {
      * @param stmt complete sql statement
      * @return Map containing key pair data.
      */
-    List<Map<String, Object>> selectMaps(String stmt);
+    @NotNull List<Map<String, Object>> selectMaps(@NotNull String stmt);
 
-    default List<Map<String, Object>> selectMaps(Wrapper stmtWrapper) {
-        return selectMaps(Objects.requireNonNull(stmtWrapper).render(configuration()));
+    default @NotNull List<Map<String, Object>> selectMaps(@NotNull Wrapper stmtWrapper) {
+        return selectMaps(requireNonNull(stmtWrapper).render(configuration()));
     }
 
     /**
@@ -101,10 +130,10 @@ public interface MapleDslSession extends Closeable {
      * @param stmt complete sql statement
      * @return boolean the execution of results affected by the execution.
      */
-    boolean execute(String stmt) throws MapleDslException;
+    boolean execute(@NotNull String stmt) throws MapleDslException;
 
     default boolean execute(Wrapper stmtWrapper) {
-        return execute(Objects.requireNonNull(stmtWrapper).render(configuration()));
+        return execute(requireNonNull(stmtWrapper).render(configuration()));
     }
 
     /**
@@ -117,5 +146,5 @@ public interface MapleDslSession extends Closeable {
      *
      * @return configuration
      */
-    MapleDslConfiguration configuration();
+    @NotNull MapleDslConfiguration configuration();
 }

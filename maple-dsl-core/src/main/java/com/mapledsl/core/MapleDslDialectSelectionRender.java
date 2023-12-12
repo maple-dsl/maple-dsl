@@ -7,6 +7,11 @@ import org.stringtemplate.v4.AttributeRenderer;
 
 import java.util.Locale;
 
+/**
+ * This class is an abstract base class for rendering a {@link MapleDslDialectSelection} into a string representation.
+ * It provides methods for rendering various types of elements like vertices, edges, in-vertices, and out-vertices.
+ * Implementations of this class should provide the specific rendering logic for the target dialect.
+ */
 @SuppressWarnings("rawtypes")
 public abstract class MapleDslDialectSelectionRender implements AttributeRenderer<MapleDslDialectSelection>, MapleDslDialectAware, MapleDslDialectContextAware, MapleDslDialectRenderHelper {
     protected MapleDslConfiguration context;

@@ -12,6 +12,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Locale;
 import java.util.StringJoiner;
 
+/**
+ * This class extends the abstract base class MapleDslDialectSelectionRender
+ * and provides specific rendering logic for the Maple Nebula DSL dialect.
+ * It overrides methods for rendering vertices, edges, in-vertices, and out-vertices.
+ */
 public class MapleNebulaDslDialectSelectionRender extends MapleDslDialectSelectionRender {
 
     @Override

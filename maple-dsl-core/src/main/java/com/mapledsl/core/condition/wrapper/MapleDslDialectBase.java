@@ -2,7 +2,9 @@ package com.mapledsl.core.condition.wrapper;
 
 import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.model.Model;
+import org.apiguardian.api.API;
 
+@API(status = API.Status.INTERNAL)
 public class MapleDslDialectBase<M extends Model<?>> {
     protected String instantiatedLabel;
     protected Class<M> instantiatedLabelClazz;

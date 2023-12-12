@@ -10,12 +10,21 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 /**
- * @author bofa1ex
- * @since 2023/8/14
+ * The LambdaMeta interface represents metadata about a lambda function.
  */
 public interface LambdaMeta {
+    /**
+     * Retrieves the name of the implementation method for the LambdaMeta when serialized as text.
+     *
+     * @return The name of the implementation method as a String.
+     */
     String getImplMethodName();
 
+    /**
+     * Retrieves the class that was instantiated for the lambda function.
+     *
+     * @return The instantiated class as a Class object.
+     */
     Class<?> getInstantiatedClass();
 
     static <T extends AccessibleObject> T setAccessible(T object) {
@@ -25,6 +34,12 @@ public interface LambdaMeta {
         });
     }
 
+    /**
+     * Extracts metadata about a lambda function.
+     *
+     * @param func The lambda function to extract metadata from.
+     * @return An instance of LambdaMeta that contains the extracted metadata.
+     */
     static LambdaMeta extract(SerializableFunction<?, ?> func) {
         // idea evaluate mode using proxy
         if (func instanceof Proxy) {

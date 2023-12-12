@@ -38,4 +38,9 @@ public @interface PropertyGetter {
      * if available)
      */
     String value() default "";
+
+    /**
+     * @return property getter order.
+     */
+    int order() default -1;
 }

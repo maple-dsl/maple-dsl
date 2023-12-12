@@ -11,6 +11,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.EnumMap;
 import java.util.Map;
 
+/**
+ * Represents a predicate renderer for the MapleNebula DSL dialect.
+ * This class extends the MapleDslDialectPredicateRender class and overrides its methods
+ * to provide custom rendering logic for the MapleNebula DSL dialect.
+ */
 public class MapleNebulaDslDialectPredicateRender extends MapleDslDialectPredicateRender {
 
     @Override

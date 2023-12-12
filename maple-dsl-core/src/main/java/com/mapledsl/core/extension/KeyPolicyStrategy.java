@@ -1,8 +1,7 @@
 package com.mapledsl.core.extension;
 
 /**
- * @author bofa1ex
- * @since 2023/08/22
+ * Represents a strategy for generating key policies.
  */
 @FunctionalInterface
 public interface KeyPolicyStrategy {

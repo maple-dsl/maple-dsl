@@ -9,6 +9,11 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.BinaryOperator;
 
+/**
+ * The class {@code MapleCypherDslDialectFunctionRender} is a subclass of {@code MapleDslDialectFunctionRender} that provides functionality
+ * to render Maple DSL functions in the Cypher dialect. It overrides the {@code toFunction} method to convert a {@code MapleDslDialectFunction}
+ * object to a string representation specific to the Cypher dialect.
+ */
 public class MapleCypherDslDialectFunctionRender extends MapleDslDialectFunctionRender {
     @Override
     protected String toFunction(MapleDslDialectFunction<?> value) {

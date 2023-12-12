@@ -1,99 +1,100 @@
 package com.mapledsl.core;
 
-import com.mapledsl.core.exception.MapleDslBindingException;
-import com.mapledsl.core.module.MapleDslParameterHandler;
-import com.mapledsl.core.module.MapleDslParameterHandlerCollector;
-import com.mapledsl.core.module.MapleDslResultHandler;
-import com.mapledsl.core.module.MapleDslResultHandlerCollector;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
+import com.mapledsl.core.module.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.ServiceLoader;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.Objects.requireNonNull;
 
 /**
- * @author bofa1ex
- * @since 2023/08/22
+ * The {@code MapleDslHandlerRegistry} class is responsible for handling the registration of parameter handlers and result handlers in the Maple DSL framework.
  */
 final class MapleDslHandlerRegistry {
-    final MapleDslConfiguration context;
     /**
      * key: field type, value: parameter handler.
      */
-    final Map<Class<?>, MapleDslParameterHandler> parameterHandlerMap;
+    final Map<Class<?>, MapleDslParameterHandler<?>> parameterHandlerMap;
     /**
-     * key: field type, value: result handler.
+     * row: inbound field type, column: value: result handler.
      */
-    final Map<Class<?>, MapleDslResultHandler<?,?>> resultHandlerMap;
+    final Table<Class<?>, Class<?>, MapleDslResultHandler<?,?>> resultHandlerTable;
     /**
-     * Extension properties is not make sure of the specific field type, so needs a default result handler to process it.
-     * Diff the other result handler, it returns object type in direct.
+     * key: inbound field type, value: definition result handler.
      */
-    final MapleDslResultHandler<?,?> defaultResultHandler;
+    final Map<Class<?>, MapleDslDefinitionResultHandler<?>> definitionResultHandlerMap;
     /**
      * Processed for NULL parameter value
-     * @see com.mapledsl.core.extension.introspect.BeanDefinition#getter(Object, String)
-     * @see com.mapledsl.core.extension.introspect.BeanDefinition#parameterized(String, Object)
      */
-    final MapleDslParameterHandler nullParameterHandler;
+    final MapleDslParameterHandler<Object> nullParameterHandler;
 
+    /**
+     * The {@code MapleDslHandlerRegistry} class is responsible for handling the registration of parameter handlers and result handlers in the Maple DSL framework.
+     *
+     * @param context The {@code MapleDslConfiguration} to be used for registration.
+     */
     MapleDslHandlerRegistry(@NotNull MapleDslConfiguration context) {
-        this.context = context;
-
-        this.parameterHandlerMap = StreamSupport.stream(ServiceLoader.load(MapleDslParameterHandlerCollector.class).spliterator(), false)
+        final Optional<MapleDslParameterHandlerCollector> parameterHandlerCollectorOpt = StreamSupport.stream(ServiceLoader.load(MapleDslParameterHandlerCollector.class).spliterator(), false)
                 .filter(Objects::nonNull)
                 .filter(it -> context.module.versionPredicate().test(it.version()))
-                .findFirst()
-                .map(Supplier::get)
-                .orElseGet(MapleDslParameterHandlerCollector::defaultParameterHandlers);
+                .findFirst();
 
-        this.resultHandlerMap = StreamSupport.stream(ServiceLoader.load(MapleDslResultHandlerCollector.class).spliterator(), false)
+        this.nullParameterHandler = parameterHandlerCollectorOpt
+                .map(MapleDslParameterHandlerCollector::nullParameterHandler)
+                .orElseGet(MapleDslParameterHandlerCollector::defaultNullParameterHandler);
+
+        this.parameterHandlerMap = Collections.synchronizedMap(Stream.concat(parameterHandlerCollectorOpt
+                .map(MapleDslParameterHandlerCollector::parameterHandlers)
+                .map(Collection::stream)
+                .orElseGet(Stream::empty), MapleDslParameterHandlerCollector.defaultParameterHandlers().stream())
+                .collect(Collectors.toMap(MapleDslParameterHandler::parameterType, Function.identity())));
+
+        final Optional<MapleDslResultHandlerCollector> resultHandlerCollectorOpt = StreamSupport.stream(ServiceLoader.load(MapleDslResultHandlerCollector.class).spliterator(), false)
                 .filter(Objects::nonNull)
                 .filter(it -> context.module.versionPredicate().test(it.version()))
-                .findFirst()
-                .map(Supplier::get)
-                .orElseGet(MapleDslResultHandlerCollector::defaultResultHandlers);
+                .findFirst();
 
-        // parameter handler collector must contain the null parameter handler(void.class).
-        if (!parameterHandlerMap.containsKey(void.class)) throw new MapleDslBindingException("Missing null parameter handler, Please check the related-dependency has been configured.");
-        this.nullParameterHandler = parameterHandlerMap.get(void.class);
+        //noinspection UnstableApiUsage
+        this.resultHandlerTable = Tables.synchronizedTable(Stream.concat(resultHandlerCollectorOpt
+                .map(MapleDslResultHandlerCollector::resultHandlers)
+                .map(Collection::stream)
+                .orElseGet(Stream::empty), MapleDslResultHandlerCollector.defaultResultHandlers().stream())
+                .collect(Tables.toTable(MapleDslResultHandler::inboundType, MapleDslResultHandler::outboundType, Function.identity(), HashBasedTable::create)));
 
-        // result handler collector must contain the default handler(Object.class).
-        if (!resultHandlerMap.containsKey(Object.class)) throw new MapleDslBindingException("Missing the default handler, Please check the related-dependency has been configured.");
-        this.defaultResultHandler = resultHandlerMap.get(Object.class);
+        this.definitionResultHandlerMap = Collections.synchronizedMap(Stream.concat(resultHandlerCollectorOpt
+                .map(MapleDslResultHandlerCollector::definitionResultHandlers)
+                .map(Collection::stream)
+                .orElseGet(Stream::empty), MapleDslResultHandlerCollector.defaultDefinitionResultHandlers().stream())
+                .collect(Collectors.toMap(MapleDslDefinitionResultHandler::inboundType, Function.identity())));
     }
 
-    void registerParameterHandler(MapleDslParameterHandler parameterHandler) {
+    /**
+     * Registers a parameter handler in the Maple DSL handler registry.
+     *
+     * @param parameterHandler The parameter handler to be registered.
+     */
+    void registerParameterHandler(MapleDslParameterHandler<?> parameterHandler) {
         requireNonNull(parameterHandler.parameterType(), "parameterType must not be null");
         requireNonNull(parameterHandler, "parameterHandler must not be null");
         parameterHandlerMap.put(parameterHandler.parameterType(), parameterHandler);
     }
 
-    <IN, OUT> void registerResultHandler(MapleDslResultHandler<IN, OUT> resultHandler) {
-        requireNonNull(resultHandler.resultType(), "resultType must not be null");
+    /**
+     * Registers a result handler in the Maple DSL handler registry.
+     *
+     * @param resultHandler The result handler to be registered.
+     * @throws NullPointerException if resultHandler.outboundType() or resultHandler are null.
+     */
+    void registerResultHandler(MapleDslResultHandler<?, ?> resultHandler) {
+        requireNonNull(resultHandler.outboundType(), "resultType must not be null");
         requireNonNull(resultHandler, "resultHandler must not be null");
-        if (!context.module.<IN, OUT>resultHandlerPredicate().test(resultHandler)) throw new MapleDslBindingException("ResultHandler predicate does not passed, please keep the related-module specification.");
-
-        resultHandlerMap.put(resultHandler.resultType(), resultHandler);
-    }
-
-    MapleDslParameterHandler getParameterHandler(Class<?> parameterType) {
-        return parameterHandlerMap.get(parameterType);
-    }
-
-    MapleDslResultHandler<?, ?> getResultHandler(Class<?> resultType) {
-        return resultHandlerMap.getOrDefault(resultType, defaultResultHandler);
-    }
-
-    MapleDslParameterHandler getNullParameterHandler() {
-        return nullParameterHandler;
-    }
-
-    MapleDslResultHandler<?,?> getDefaultResultHandler() {
-        return defaultResultHandler;
+        resultHandlerTable.put(resultHandler.inboundType(), resultHandler.outboundType(), resultHandler);
     }
 }

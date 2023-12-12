@@ -5,8 +5,7 @@ import org.apache.commons.codec.digest.MurmurHash2;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
- * @author bofa1ex
- * @since 2023/08/22
+ * This enum represents different strategies for generating key policies.
  */
 public enum KeyPolicyStrategies implements KeyPolicyStrategy {
     /**

@@ -15,24 +15,44 @@ import com.vesoft.nebula.client.graph.net.Session;
 
 import java.util.List;
 
+/**
+ * The MapleNebulaDslSessionFactory class is an implementation of the MapleDslSessionFactory interface.
+ * It provides methods for opening a session and retrieving the configuration for executing Maple DSL queries against Nebula Graph.
+ */
 public class MapleNebulaDslSessionFactory implements MapleDslSessionFactory {
-
     private final NebulaPool nebulaPool;
-
     private final String userName;
-
     private final String password;
-
     private final String space;
-
     private final boolean reconnect;
 
     private final MapleDslConfiguration configuration;
 
+    /**
+     * Creates an instance of MapleNebulaDslSessionFactory.
+     *
+     * @param configuration   The MapleDslConfiguration object used for Maple DSL execution.
+     * @param hostAddress     The list of Nebula Graph server addresses and ports.
+     * @param space           The name of the space in Nebula Graph to connect to.
+     * @param userName        The username for authentication.
+     * @param password        The password for authentication.
+     * @param nebulaPoolConfig  The configurations for multiple connections to Nebula Graph.
+     */
     public MapleNebulaDslSessionFactory(MapleDslConfiguration configuration, List<HostAddress> hostAddress, String space, String userName, String password, NebulaPoolConfig nebulaPoolConfig) {
         this(configuration, hostAddress, space, userName, password, nebulaPoolConfig, true);
     }
 
+    /**
+     * Creates an instance of MapleNebulaDslSessionFactory.
+     *
+     * @param configuration The MapleDslConfiguration object used for Maple DSL execution.
+     * @param hostAddress   The list of Nebula Graph server addresses and ports.
+     * @param space         The name of the space in Nebula Graph to connect to.
+     * @param userName      The username for authentication.
+     * @param password      The password for authentication.
+     * @param nebulaPoolConfig The configurations for multiple connections to Nebula Graph.
+     * @param reconnect     Whether to reconnect to Nebula Graph when the connection is lost.
+     */
     public MapleNebulaDslSessionFactory(MapleDslConfiguration configuration, List<HostAddress> hostAddress, String space, String userName, String password, NebulaPoolConfig nebulaPoolConfig, boolean reconnect) {
         this.space = space;
         this.userName = userName;

@@ -26,21 +26,59 @@ import java.util.stream.StreamSupport;
 import static java.lang.String.format;
 
 /**
- * @author bofa1ex
- * @since 2023/08/21
+ * The MapleDslTemplateRegistry class is responsible for managing the template registry for the Maple DSL.
+ * <p></p>
+ * It provides methods for borrowing and returning template objects, as well as initializing the template pool.
+ * <p></p>
+ * The template registry is implemented as a GenericObjectPool, which provides pooling functionality for the STGroup template objects.
  */
 final class MapleDslTemplateRegistry {
     static final int DEFAULT_TEMPLATE_GROUP_POOL_MAX_TOTAL = Runtime.getRuntime().availableProcessors() * 5;
     static final int DEFAULT_TEMPLATE_GROUP_POOL_MAX_IDLE = Runtime.getRuntime().availableProcessors() * 2;
     static final int DEFAULT_TEMPLATE_GROUP_POOL_MIN_IDLE = GenericObjectPoolConfig.DEFAULT_MIN_IDLE;
 
+    /**
+     * The MapleDslModelAdaptor class is responsible for adapting model objects to the Maple DSL.
+     * <p></p>
+     * It implements the ModelAdaptor interface, which allows it to provide the necessary functionality
+     * to interact with the model objects.
+     * <p></p>
+     * It also implements the MapleDslDialectRenderHelper interface, which provides additional helper methods
+     * for rendering DSL expressions in the Maple DSL dialect.
+     */
     final MapleDslModelAdaptor modelAdaptor;
+    /**
+     * The MapleDslClazzRender class is an implementation of the AttributeRenderer interface for rendering Class objects.
+     * It is also aware of the MapleDslDialect context and provides helper methods for rendering DSL expressions.
+     */
     final MapleDslClazzRender clazzRender;
+    /**
+     * This variable is of type MapleDslDialectSelectionRender. It is an abstract base class for rendering a MapleDslDialectSelection into a string representation.
+     * It provides methods for rendering various types of elements like vertices, edges, in-vertices, and out-vertices.
+     * Implementations of this class should provide the specific rendering logic for the target dialect.
+     */
     final MapleDslDialectSelectionRender selectionRender;
+    /**
+     * This abstract class provides functionality for rendering Maple DSL functions in different dialects.
+     */
     final MapleDslDialectFunctionRender functionRender;
+    /**
+     * This variable represents an instance of the MapleDslDialectPredicateRender class.
+     * It is an abstract class that provides methods for rendering various parts of a predicate query.
+     * Subclasses must implement the necessary methods to provide custom rendering logic.
+     * The variable is intended to be used for rendering predicate queries in a specific Maple DSL dialect.
+     */
     final MapleDslDialectPredicateRender predicateRender;
-    final MapleDslConfiguration context;
+    /**
+     * The templateGroup variable represents a generic object pool that holds instances of the STGroup class.
+     */
     final GenericObjectPool<STGroup> templateGroup;
+    /**
+     * The templateProperties variable holds the properties that are used for configuring a template.
+     * This variable is of type Properties, which is a subclass of Hashtable<Object,Object>.
+     * The properties are key-value pairs, where the key is a String and the value is an Object.
+     * This variable is declared as final, meaning that it cannot be reassigned once initialized.
+     */
     final Properties templateProperties;
 
     MapleDslTemplateRegistry(MapleDslConfiguration context, Integer maxTotal, Integer maxIdle, Integer minIdle) {
@@ -69,7 +107,6 @@ final class MapleDslTemplateRegistry {
         genericObjectPoolConfig.setMaxIdle(maxIdle);
         genericObjectPoolConfig.setMinIdle(minIdle);
 
-        this.context = context;
         this.templateProperties = context.module().dialectProperties();
         this.templateGroup = new GenericObjectPool<>(templateGroupPooledObjectFactory, genericObjectPoolConfig);
 
@@ -136,6 +173,14 @@ final class MapleDslTemplateRegistry {
         }
     }
 
+    /**
+     * Retrieves a template from the template group with the specified name.
+     *
+     * @param templateName the name of the template to retrieve
+     * @return the retrieved template as an instance of {@link ST}
+     * @throws MapleDslException if an error occurs during template retrieval
+     * @throws MapleDslBindingException if the dialect template fetch error occurs
+     */
     @NotNull ST borrowTemplate(String templateName) {
         try {
             final String inspectedTemplateName = inspect(templateName);
@@ -150,6 +195,11 @@ final class MapleDslTemplateRegistry {
         }
     }
 
+    /**
+     * Returns a template to the template group.
+     *
+     * @param st the template to return
+     */
     void returnTemplate(@Nullable ST st) {
         if (st == null) return;
         if (st.groupThatCreatedThisInstance == null) return;

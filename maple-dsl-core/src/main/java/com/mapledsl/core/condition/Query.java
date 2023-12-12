@@ -5,7 +5,17 @@ import com.mapledsl.core.model.Model;
 
 import java.io.Serializable;
 
+/**
+ * The Query interface represents a query for a model object.
+ *
+ * @param <M> the type of the model object
+ */
 public interface Query<M extends Model<?>> {
+    /**
+     * The Sort interface represents a sorting criteria for a query on a model object.
+     *
+     * @param <M> the type of the model object
+     */
     interface Sort<M extends Model<?>> extends Query<M> {
         Query<M> ascending();
         Query<M> descending();

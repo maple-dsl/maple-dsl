@@ -14,15 +14,20 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 
-public interface Model<R extends Number & CharSequence> extends Serializable {
+/**
+ * The Model interface represents a basic model with properties and getters and setters for those properties.
+ *
+ * @param <ID> The type of the identifier for the model.
+ */
+public interface Model<ID> extends Serializable {
     String ID = "id", TAG = "tag";
 
-    @Nullable R id();
-    @Nullable String label();
+    @Nullable @PropertyGetter(ID) ID id();
+    @Nullable @PropertyGetter(TAG) String label();
 
     @NotNull Map<String, Object> props();
 
-    default Model<R> put(String key, Object value) {
+    default Model<ID> put(String key, Object value) {
         final Map<String, Object> props = props();
         props.put(key, value);
         return this;
@@ -38,44 +43,47 @@ public interface Model<R extends Number & CharSequence> extends Serializable {
     @SuppressWarnings("unchecked")
     default <D> D getOrDefault(String key, D defaultValue) {
         final Map<String, Object> props = props();
-        if (props.isEmpty()) return null;
         return (D) props.getOrDefault(key, defaultValue);
     }
 
     /**
-     * Base graph PATH model
+     * Represents a path in a graph, consisting of a sequence of vertices and edges.
+     *
+     * @param <ID> the type of the vertex and edge IDs
      */
     @ApiStatus.NonExtendable
-    final class Path implements Serializable {
-        LinkedList<V> vertices;
-        LinkedList<E> edges;
+    final class Path<ID> implements Serializable {
+        LinkedList<V<ID>> vertices;
+        LinkedList<E<ID>> edges;
 
-        public Path(LinkedList<V> vertices, LinkedList<E> edges) {
+        public Path(LinkedList<V<ID>> vertices, LinkedList<E<ID>> edges) {
             this.vertices = vertices;
             this.edges = edges;
         }
 
-        public V first() {
+        public V<ID> first() {
             return vertices == null ? null : vertices.getFirst();
         }
 
-        public V last() {
+        public V<ID> last() {
             return vertices == null ? null : vertices.getLast();
         }
 
-        public LinkedList<V> vertices() {
+        public LinkedList<V<ID>> vertices() {
             return vertices;
         }
 
-        public LinkedList<E> edges() {
+        public LinkedList<E<ID>> edges() {
             return edges;
         }
     }
 
     /**
-     * Base graph VERTEX model.
+     * This class represents a generic model with properties and getters and setters for those properties.
+     *
+     * @param <ID> The type of the identifier for the model.
      */
-    class V implements Model<ID> {
+    class V<ID> implements Model<ID> {
         protected @Property(value = ID, defined = false)    ID id;
         protected @Property(value = TAG, defined = false)   String label;
         protected @PropertyIgnore                           Map<String, Object> props;
@@ -94,23 +102,13 @@ public interface Model<R extends Number & CharSequence> extends Serializable {
             return props;
         }
 
-        public @PropertySetter(ID) V setId(ID id) {
+        public @PropertySetter(ID) V<ID> setId(ID id) {
             this.id = id;
             return this;
         }
 
-        public @PropertySetter(TAG) V setLabel(String label) {
+        public @PropertySetter(TAG) V<ID> setLabel(String label) {
             this.label = label;
-            return this;
-        }
-
-        public V setId(String id) {
-            this.id = new ID(id);
-            return this;
-        }
-
-        public V setId(Number id) {
-            this.id = new ID(id);
             return this;
         }
 
@@ -119,23 +117,11 @@ public interface Model<R extends Number & CharSequence> extends Serializable {
             return label + "@" + id;
         }
 
-        public static V of(ID id) {
-            return new V().setId(id);
-        }
-
-        public static V of(String id) {
-            return new V().setId(id);
-        }
-
-        public static V of(Number id) {
-            return new V().setId(id);
-        }
-
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            V v = (V) o;
+            V<?> v = (V<?>) o;
             return Objects.equals(id, v.id) && Objects.equals(label, v.label);
         }
 
@@ -146,9 +132,11 @@ public interface Model<R extends Number & CharSequence> extends Serializable {
     }
 
     /**
-     * Base graph EDGE model.
+     * The E class represents a generic model with properties and getters and setters for those properties.
+     *
+     * @param <ID> The type of the identifier for the model.
      */
-    class E implements Model<ID> {
+    class E<ID> implements Model<ID> {
         protected @Property(value = ID, defined = false)    ID id;
         protected @Property(value = SRC, defined = false)   ID src;
         protected @Property(value = DST, defined = false)   ID dst;
@@ -177,53 +165,23 @@ public interface Model<R extends Number & CharSequence> extends Serializable {
             return props;
         }
 
-        public @PropertySetter(TAG) E setLabel(String label) {
+        public @PropertySetter(TAG) E<ID> setLabel(String label) {
             this.label = label;
             return this;
         }
 
-        public @PropertySetter(ID) E setId(ID id) {
+        public @PropertySetter(ID) E<ID> setId(ID id) {
             this.id = id;
             return this;
         }
 
-        public @PropertySetter(SRC) E setSrc(ID src) {
+        public @PropertySetter(SRC) E<ID> setSrc(ID src) {
             this.src = src;
             return this;
         }
 
-        public @PropertySetter(DST) E setDst(ID dst) {
+        public @PropertySetter(DST) E<ID> setDst(ID dst) {
             this.dst = dst;
-            return this;
-        }
-
-        public E setId(String id) {
-            this.id = new ID(id);
-            return this;
-        }
-
-        public E setId(Number id) {
-            this.id = new ID(id);
-            return this;
-        }
-
-        public E setSrc(String id) {
-            this.src = new ID(id);
-            return this;
-        }
-
-        public E setSrc(Number id) {
-            this.src = new ID(id);
-            return this;
-        }
-
-        public E setDst(String id) {
-            this.dst = new ID(id);
-            return this;
-        }
-
-        public E setDst(Number id) {
-            this.dst = new ID(id);
             return this;
         }
 
@@ -233,13 +191,5 @@ public interface Model<R extends Number & CharSequence> extends Serializable {
         }
 
         public static final String SRC = "src", DST = "dst";
-
-        public static E of(String id, String src, String dst) {
-            return new E().setId(id).setSrc(src).setDst(dst);
-        }
-
-        public static E of(Number id, Number src, Number dst) {
-            return new E().setId(id).setSrc(src).setDst(dst);
-        }
     }
 }

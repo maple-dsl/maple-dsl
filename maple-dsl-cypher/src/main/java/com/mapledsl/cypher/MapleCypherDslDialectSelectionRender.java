@@ -8,6 +8,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.StringJoiner;
 
+/**
+ * This class extends MapleDslDialectSelectionRender and provides the specific rendering logic for the Maple Cypher DSL dialect.
+ */
 public class MapleCypherDslDialectSelectionRender extends MapleDslDialectSelectionRender {
 
     @Override

@@ -1,17 +1,22 @@
 package com.mapledsl.core;
 
 import com.mapledsl.core.exception.MapleDslBindingException;
+import com.mapledsl.core.exception.MapleDslException;
+import com.mapledsl.core.exception.MapleDslUncheckedException;
 import com.mapledsl.core.extension.KeyPolicyStrategies;
 import com.mapledsl.core.extension.KeyPolicyStrategy;
 import com.mapledsl.core.extension.NamingStrategies;
 import com.mapledsl.core.extension.NamingStrategy;
 import com.mapledsl.core.extension.introspect.BeanDefinition;
 import com.mapledsl.core.extension.introspect.BeanPropertyCustomizer;
+import com.mapledsl.core.extension.introspect.ModelPropertyCustomizer;
 import com.mapledsl.core.model.Model;
+import com.mapledsl.core.module.MapleDslDefinitionResultHandler;
 import com.mapledsl.core.module.MapleDslModule;
 import com.mapledsl.core.module.MapleDslParameterHandler;
 import com.mapledsl.core.module.MapleDslResultHandler;
 import org.apiguardian.api.API;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -26,18 +31,62 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.UnaryOperator;
 import java.util.stream.StreamSupport;
 
+/**
+ * Represents the configuration for the Maple DSL.
+ */
 public final class MapleDslConfiguration {
-    static final Logger LOG = LoggerFactory.getLogger(MapleDslConfiguration.class);
-    static final AtomicReference<MapleDslConfiguration> PRIMARY_CONFIGURATION = new AtomicReference<>();
-
+    /**
+     * Represents a Maple DSL module.
+     */
     @NotNull final MapleDslModule module;
+    /**
+     * Registry for Maple DSL templates.
+     */
     @NotNull final MapleDslTemplateRegistry templateRegistry;
+    /**
+     * The handler registry for the Maple DSL framework.
+     */
     @NotNull final MapleDslHandlerRegistry handlerRegistry;
+    /**
+     * The MapleDslDefinitionRegistry class represents a registry for Maple DSL bean definitions and customizers.
+     */
     @NotNull final MapleDslDefinitionRegistry mapperRegistry;
+    /**
+     * Represents the region configuration for the Maple DSL.
+     *
+     * <p>The region configuration includes the following properties:</p>
+     * <ul>
+     *     <li>{@code zoneId}: The {@code ZoneId} for the region. Default value is {@code ZoneId.systemDefault()}.</li>
+     *     <li>{@code dateTimeFormatter}: The {@code DateTimeFormatter} for date and time values in the region. Default value is {@code DateTimeFormatter.ISO_LOCAL_DATE_TIME}.</li
+     *>
+     *     <li>{@code dateFormatter}: The {@code DateTimeFormatter} for date values in the region. Default value is {@code DateTimeFormatter.ISO_LOCAL_DATE}.</li>
+     *     <li>{@code timeFormatter}: The {@code DateTimeFormatter} for time values in the region. Default value is {@code DateTimeFormatter.ISO_LOCAL_TIME}.</li>
+     *     <li>{@code locale}: The {@code Locale} for the region. Default value is {@code Locale.getDefault()}.</li>
+     *     <li>{@code timeZone}: The {@code TimeZone} for the region. Default value is the system default time zone associated with the {@code ZoneId}.</li>
+     * </ul>
+     */
     @NotNull final RegionConfig regionConfig;
+    /**
+     * The {@code NamingStrategy} interface represents a strategy for translating input strings.
+     * It provides a method to translate an input string based on a given locale.
+     */
     @NotNull final NamingStrategy namingStrategy;
+    /**
+     * The interface KeyPolicyStrategy represents a strategy for generating keys.
+     */
     @NotNull final KeyPolicyStrategy keyPolicyStrategy;
 
+    /**
+     * Represents the configuration for the Maple DSL.
+     *
+     * @param module The Maple DSL module.
+     * @param regionConfig The region configuration.
+     * @param namingStrategy The naming strategy.
+     * @param keyPolicyStrategy The key policy strategy.
+     * @param templatePoolConfigMaxTotal The maximum total number of templates in the template pool configuration. Can be null.
+     * @param templatePoolConfigMaxIdle The maximum number of idle templates in the template pool configuration. Can be null.
+     * @param templatePoolConfigMinIdle The minimum number of idle templates in the template pool configuration. Can be null.
+     */
     MapleDslConfiguration(@NotNull MapleDslModule module, @NotNull RegionConfig regionConfig,
                           @NotNull NamingStrategy namingStrategy, @NotNull KeyPolicyStrategy keyPolicyStrategy,
                           @Nullable Integer templatePoolConfigMaxTotal, @Nullable Integer templatePoolConfigMaxIdle, @Nullable Integer templatePoolConfigMinIdle) {
@@ -51,73 +100,229 @@ public final class MapleDslConfiguration {
         this.templateRegistry = new MapleDslTemplateRegistry(this, templatePoolConfigMaxTotal, templatePoolConfigMaxIdle, templatePoolConfigMinIdle);
     }
 
-    public <BEAN> MapleDslConfiguration registerBeanPropertyCustomizer(BeanPropertyCustomizer<BEAN> customizer) {
+    /**
+     * Registers a customizer for bean properties in the Maple DSL configuration.
+     *
+     * @param customizer The customizer for bean properties.
+     * @return The updated Maple DSL configuration.
+     */
+    @Contract("_ -> this")
+    public MapleDslConfiguration registerBeanPropertyCustomizer(BeanPropertyCustomizer<?> customizer) {
         mapperRegistry.registerBeanPropertyCustomizer(customizer);
         return this;
     }
 
-    public MapleDslConfiguration registerModelPropertyCustomizer(BeanPropertyCustomizer<Model<?>> customizer) {
+    /**
+     * Registers a {@link ModelPropertyCustomizer} for bean properties in the Maple DSL configuration.
+     *
+     * @param customizer The {@link ModelPropertyCustomizer} for bean properties.
+     * @return The updated {@link MapleDslConfiguration} instance.
+     */
+    @Contract("_ -> this")
+    public MapleDslConfiguration registerModelPropertyCustomizer(ModelPropertyCustomizer customizer) {
         mapperRegistry.registerModelPropertyCustomizer(customizer);
         return this;
     }
 
-    public MapleDslConfiguration registerParameterHandler(MapleDslParameterHandler parameterHandler) {
+    /**
+     * Registers a parameter handler in the Maple DSL configuration.
+     *
+     * @param parameterHandler The parameter handler to be registered.
+     * @return The updated Maple DSL configuration.
+     */
+    @Contract("_ -> this")
+    public MapleDslConfiguration registerParameterHandler(MapleDslParameterHandler<?> parameterHandler) {
         handlerRegistry.registerParameterHandler(parameterHandler);
         return this;
     }
 
-    public <IN, OUT> MapleDslConfiguration registerResultHandler(MapleDslResultHandler<IN, OUT> resultHandler) {
+    /**
+     * Registers a result handler in the Maple DSL configuration.
+     *
+     * @param resultHandler The result handler to be registered.
+     * @return The updated Maple DSL configuration.
+     */
+    @Contract("_ -> this")
+    public MapleDslConfiguration registerResultHandler(MapleDslResultHandler<?,?> resultHandler) {
         handlerRegistry.registerResultHandler(resultHandler);
         return this;
     }
 
-    public @Nullable <M extends Model<?>> String label(Class<M> beanClazz) {
-        if (beanClazz.isPrimitive() || beanClazz.isArray()) return null;
-        if (Number.class.isAssignableFrom(beanClazz)) return null;
-        if (CharSequence.class.isAssignableFrom(beanClazz)) return null;
-        if (Boolean.class.isAssignableFrom(beanClazz)) return null;
-        if (Collection.class.isAssignableFrom(beanClazz) || Map.class.isAssignableFrom(beanClazz)) return null;
-        return mapperRegistry.getBeanDefinition(beanClazz).label();
+    /**
+     * Retrieves the label for the specified model class.
+     *
+     * @param modelClazz The model class.
+     * @return The label.
+     * @throws IllegalArgumentException if the modelClazz is null.
+     */
+    @SuppressWarnings("DataFlowIssue")
+    public @NotNull <M extends Model<?>> String label(Class<M> modelClazz) {
+        return beanDefinitionUnchecked(modelClazz).label();
     }
 
-    public <BEAN> BeanDefinition<BEAN> beanDefinition(Class<BEAN> clazz) {
-        return mapperRegistry.getBeanDefinition(clazz);
+    /**
+     * Retrieves the bean definition for the specified bean class.
+     *
+     * @param beanClazz The class of the bean.
+     * @param <BEAN> The type of the bean.
+     * @return The bean definition for the specified bean class, or null if not found.
+     * @throws MapleDslException if an exception occurs during the retrieval of the bean definition.
+     */
+    public @Nullable <BEAN> BeanDefinition<BEAN> beanDefinition(Class<BEAN> beanClazz) {
+        try {
+            return mapperRegistry.getBeanDefinition(beanClazz);
+        } catch (MapleDslUncheckedException e) {
+            return null;
+        } catch (Exception e) {
+            throw new MapleDslException(e);
+        }
     }
 
-    public <BEAN> BeanPropertyCustomizer<BEAN> beanPropertyCustomizer(Class<BEAN> clazz) {
+    @SuppressWarnings("unchecked")
+    public @Nullable <ID> BeanDefinition<Model.V<ID>> vertexDefinition() {
+        try {
+            final BeanDefinition<?> vertexDefinition = mapperRegistry.getBeanDefinition(Model.V.class);
+            return (BeanDefinition<Model.V<ID>>) vertexDefinition;
+        } catch (MapleDslUncheckedException e) {
+            return null;
+        } catch (Exception e) {
+            throw new MapleDslException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public @Nullable <ID> BeanDefinition<Model.E<ID>> edgeDefinition() {
+        try {
+            final BeanDefinition<?> edgeDefinition = mapperRegistry.getBeanDefinition(Model.E.class);
+            return (BeanDefinition<Model.E<ID>>) edgeDefinition;
+        } catch (MapleDslUncheckedException e) {
+            return null;
+        } catch (Exception e) {
+            throw new MapleDslException(e);
+        }
+    }
+
+    /**
+     * Retrieves the bean definition for the specified bean class.
+     *
+     * @param beanClazz The class of the bean.
+     * @param <BEAN> The type of the bean.
+     * @return The bean definition for the specified bean class.
+     * @throws MapleDslUncheckedException if an exception occurs during the retrieval of the bean definition.
+     */
+    public @NotNull <BEAN> BeanDefinition<BEAN> beanDefinitionUnchecked(Class<BEAN> beanClazz) throws MapleDslUncheckedException {
+        return mapperRegistry.getBeanDefinition(beanClazz);
+    }
+
+    /**
+     * Retrieves the bean property customizer for the specified bean class.
+     *
+     * @param clazz The class of the bean.
+     * @param <BEAN> The type of the bean.
+     * @return The bean property customizer for the specified bean class.
+     */
+    public @Nullable <BEAN> BeanPropertyCustomizer<BEAN> beanPropertyCustomizer(Class<BEAN> clazz) {
         return mapperRegistry.getBeanPropertyCustomizer(clazz);
     }
 
-    public <MODEL extends Model<?>> BeanPropertyCustomizer<MODEL> modelPropertyCustomizer() {
+    /**
+     * Retrieves the {@link ModelPropertyCustomizer} for bean properties in the Maple DSL configuration.
+     *
+     * @return The {@link ModelPropertyCustomizer} instance.
+     */
+    public @NotNull ModelPropertyCustomizer modelPropertyCustomizer() {
         return mapperRegistry.getModelPropertyCustomizer();
     }
 
-    public MapleDslParameterHandler parameterHandler(Class<?> clazz) {
-        return handlerRegistry.getParameterHandler(clazz);
+    /**
+     * Process the given parameter and convert it to a string value based on its type.
+     *
+     * @param <PARAM> The type of the parameter.
+     * @param param   The parameter value.
+     * @return The string value of the parameter.
+     */
+    @SuppressWarnings("unchecked")
+    public @NotNull <PARAM> String parameterized(@Nullable PARAM param) {
+        if (param == null) return handlerRegistry.nullParameterHandler.apply(param, this);
+        if (param instanceof List) {
+            final List<?> listParam = (List<?>) param;
+            return ((MapleDslParameterHandler<List<?>>) handlerRegistry.parameterHandlerMap.get(List.class)).apply(listParam, this);
+        }
+        if (param instanceof Set) {
+            final Set<?> setParam = (Set<?>) param;
+            return ((MapleDslParameterHandler<Set<?>>) handlerRegistry.parameterHandlerMap.get(Set.class)).apply(setParam, this);
+        }
+        if (param instanceof Map) {
+            final Map<?,?> mapParam = (Map<?,?>) param;
+            return ((MapleDslParameterHandler<Map<?,?>>) handlerRegistry.parameterHandlerMap.get(Map.class)).apply(mapParam, this);
+        }
+
+        if (!handlerRegistry.parameterHandlerMap.containsKey(param.getClass())) return handlerRegistry.nullParameterHandler.apply(param, this);
+        final MapleDslParameterHandler<PARAM> parameterHandler = (MapleDslParameterHandler<PARAM>) handlerRegistry.parameterHandlerMap.get(param.getClass());
+        return parameterHandler.apply(param, this);
     }
 
-    public MapleDslDialectSelectionRender selectionRender() {
-        return templateRegistry.selectionRender;
+    /**
+     * Retrieves the result of applying the given inbound value to the specified bean definition.
+     *
+     * @param <IN>        The type of the inbound value.
+     * @param <OUT>       The type of the outbound value.
+     * @param inbound     The inbound value. Can be null.
+     * @param definition  The bean definition.
+     * @return The result of applying the inbound value to the bean definition, or null if the inbound value is null or if no result handler is found for the inbound value.
+     */
+    @Contract("null, _ -> null")
+    @SuppressWarnings("unchecked")
+    public @Nullable <IN, OUT> OUT resultant(@Nullable IN inbound, @NotNull BeanDefinition<OUT> definition) {
+        if (inbound == null) return null;
+        @Nullable final MapleDslDefinitionResultHandler<IN> definitionResultHandler = (MapleDslDefinitionResultHandler<IN>) handlerRegistry.definitionResultHandlerMap.get(inbound.getClass());
+        if (definitionResultHandler == null) {
+            if (LOG.isWarnEnabled()) LOG.warn("definition result handler not found from: " + inbound.getClass());
+            return null;
+        }
+
+        return definitionResultHandler.apply(inbound, definition, this);
     }
 
-    public MapleDslDialectFunctionRender functionRender() {
-        return templateRegistry.functionRender;
+    @Contract("null -> null")
+    public @Nullable <IN> Object resultant(@Nullable IN inbound) {
+        final Object resultant = resultant(inbound, Object.class);
+        return resultant == null ? inbound : resultant;
     }
 
-    public MapleDslDialectPredicateRender predicateRender() {
-        return templateRegistry.predicateRender;
-    }
+    /**
+     * Retrieves the result of applying the given inbound value to the specified outbound class.
+     *
+     * @param inbound The inbound value. Can be null.
+     * @param outboundClazz The class of the outbound value.
+     * @param <IN> The type of the inbound value.
+     * @param <OUT> The type of the outbound value.
+     * @return The result of applying the inbound value to the outbound class, or null if the inbound value is null or if no result handler is found for the inbound value.
+     */
+    @Contract("null, _ -> null")
+    @SuppressWarnings("unchecked")
+    public @Nullable <IN, OUT> OUT resultant(@Nullable IN inbound, @NotNull Class<OUT> outboundClazz) {
+        if (inbound == null) return null;
+        if (inbound.getClass().equals(outboundClazz)) return (OUT) inbound;
 
-    public MapleDslResultHandler<?,?> resultHandler(Class<?> clazz) {
-        return handlerRegistry.getResultHandler(clazz);
-    }
+        final BeanDefinition<OUT> outBeanDefinition = beanDefinition(outboundClazz);
+        if (outBeanDefinition != null) {
+            LOG.info("OUT:{} resultant via it definition.", outboundClazz);
+            return resultant(inbound, outBeanDefinition);
+        }
 
-    public MapleDslResultHandler<?,?> defaultResultHandler() {
-        return handlerRegistry.getDefaultResultHandler();
-    }
+        if (!handlerRegistry.resultHandlerTable.containsRow(inbound.getClass())) {
+            LOG.warn("IN:{} does not found result handler.", inbound.getClass());
+            return null;
+        }
 
-    public MapleDslParameterHandler nullParameterHandler() {
-        return handlerRegistry.getNullParameterHandler();
+        final MapleDslResultHandler<IN, OUT> resultHandler = (MapleDslResultHandler<IN, OUT>) handlerRegistry.resultHandlerTable.get(inbound.getClass(), outboundClazz);
+        if (resultHandler == null) {
+            LOG.warn("IN:{},OUT:{} does not found result handler.", inbound.getClass(), outboundClazz);
+            return null;
+        }
+
+        return resultHandler.apply(inbound, this);
     }
 
     public KeyPolicyStrategy keyPolicyStrategy() {
@@ -156,6 +361,9 @@ public final class MapleDslConfiguration {
         return regionConfig.timeZone;
     }
 
+    /**
+     * Configuration for specifying the region settings.
+     */
     public static class RegionConfig {
         ZoneId zoneId = ZoneId.systemDefault();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -278,6 +486,12 @@ public final class MapleDslConfiguration {
             return this;
         }
 
+        /**
+         * Builds a MapleDslConfiguration object based on the provided configuration parameters.
+         *
+         * @return The MapleDslConfiguration object.
+         * @throws MapleDslBindingException If the module is not found.
+         */
         public MapleDslConfiguration build() {
             if (namingStrategy == null) namingStrategy = NamingStrategies.SNAKE_CASE;
             if (keyPolicyStrategy == null) keyPolicyStrategy = KeyPolicyStrategies.MANUAL;
@@ -304,11 +518,23 @@ public final class MapleDslConfiguration {
         }
     }
 
+    /**
+     * Returns the primary configuration for the Maple DSL.
+     *
+     * @return The primary MapleDslConfiguration instance.
+     * @since Stable
+     */
     @API(status = API.Status.STABLE)
     public static MapleDslConfiguration primaryConfiguration() {
         return primaryConfiguration(UnaryOperator.identity());
     }
 
+    /**
+     * Retrieves the primary configuration for the Maple DSL.
+     *
+     * @param configurationBuilderUnary The UnaryOperator to build the configuration.
+     * @return The primary MapleDslConfiguration instance.
+     */
     @API(status = API.Status.STABLE)
     public static MapleDslConfiguration primaryConfiguration(UnaryOperator<Builder> configurationBuilderUnary) {
         return PRIMARY_CONFIGURATION.updateAndGet(primaryConfiguration -> {
@@ -319,6 +545,13 @@ public final class MapleDslConfiguration {
         });
     }
 
+    /**
+     * Disables access warnings.
+     * <p>
+     * This method uses Java reflection to access and modify internal fields and methods to disable access warnings.
+     * It is recommended to use this method only if you understand the implications and necessity of disabling access warnings.
+     *
+     */
     static void disableAccessWarnings() {
         try {
             Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
@@ -337,6 +570,9 @@ public final class MapleDslConfiguration {
             LOG.warn("Skipped disable access warning");
         }
     }
+
+    static final Logger LOG = LoggerFactory.getLogger(MapleDslConfiguration.class);
+    static final AtomicReference<MapleDslConfiguration> PRIMARY_CONFIGURATION = new AtomicReference<>();
 
     static {
         disableAccessWarnings();

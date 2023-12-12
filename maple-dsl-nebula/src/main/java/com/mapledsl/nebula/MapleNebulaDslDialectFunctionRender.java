@@ -9,6 +9,10 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 
+/**
+ * The MapleNebulaDslDialectFunctionRender class is a concrete implementation of the MapleDslDialectFunctionRender abstract class.
+ * It provides functionality for rendering Maple DSL functions specific to the Nebula dialect.
+ */
 public class MapleNebulaDslDialectFunctionRender extends MapleDslDialectFunctionRender {
     @Override
     protected String toFunction(MapleDslDialectFunction<?> value) {

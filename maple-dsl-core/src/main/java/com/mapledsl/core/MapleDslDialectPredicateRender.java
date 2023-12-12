@@ -8,6 +8,23 @@ import org.stringtemplate.v4.AttributeRenderer;
 
 import java.util.Locale;
 
+/**
+ * This abstract class represents a predicate renderer for a specific Maple DSL dialect.
+ * It provides methods for rendering various parts of a predicate query, including vertices, edges, and comparisons.
+ * Subclasses must implement the vertex, edge, inV, and outV methods to provide custom rendering logic.
+ * <p></p>
+ * The class also provides an implementation for rendering the complete predicate query as a string.
+ * The toString method takes a MapleDslDialectPredicate object and returns the rendered query.
+ * <p></p>
+ * Subclasses must also implement the dialect method to specify the dialect of the Maple DSL.
+ * <p></p>
+ * The class is parameterized with the type of the MapleDslDialectPredicate that it can render.
+ * It implements the AttributeRenderer interface to specify the type it can render.
+ * It also implements the MapleDslDialectContextAware, MapleDslDialectAware, and MapleDslDialectRenderHelper interfaces to provide additional context and rendering capabilities.
+ * <p></p>
+ * This class is intended to be extended by specific dialect predicate renderers.
+ */
+@SuppressWarnings("rawtypes")
 public abstract class MapleDslDialectPredicateRender implements AttributeRenderer<MapleDslDialectPredicate>, MapleDslDialectContextAware, MapleDslDialectAware, MapleDslDialectRenderHelper {
     protected MapleDslConfiguration context;
     protected abstract String vertex(@NotNull String ref, @Nullable String label, String column);
@@ -17,6 +34,13 @@ public abstract class MapleDslDialectPredicateRender implements AttributeRendere
 
     protected abstract String op(OP op);
 
+    /**
+     * Returns the appropriate column based on the given MapleDslDialectPredicate.
+     *
+     * @param predicate the MapleDslDialectPredicate used to determine the column
+     * @return the column based on the given predicate
+     * @throws UnsupportedOperationException if the predicate does not match any conditions
+     */
     private String column(MapleDslDialectPredicate<?> predicate) {
         if (predicate.v())    return vertex(predicate.ref(), predicate.label(context), predicate.column());
         if (predicate.e())    return edge(predicate.ref(), predicate.label(context), predicate.column());
@@ -26,13 +50,17 @@ public abstract class MapleDslDialectPredicateRender implements AttributeRendere
         throw new UnsupportedOperationException();
     }
 
+    private String value(MapleDslDialectPredicate<?> predicate) {
+        return context.parameterized(predicate.value());
+    }
+
     @Override
     public final String toString(MapleDslDialectPredicate predicate, String formatString, Locale locale) {
         if (predicate == null) return NULL;
 
         final String column = column(predicate);
+        final String value  = value(predicate);
         final String op     = op(predicate.op());
-        final String value  = predicate.value(context);
 
         if (!predicate.hasNext()) {
             if (predicate.hasSuffix) return column + op + value + PAREN_R;

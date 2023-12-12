@@ -1,8 +1,8 @@
 package com.mapledsl.core.extension.lambda;
 
 /**
- * @author bofa1ex
- * @since 2023/8/14
+ * The ShadowLambdaMeta class is an implementation of the LambdaMeta interface that represents metadata about a lambda function.
+ * It provides methods to retrieve the implementation method name and the instantiated class for the lambda function.
  */
 class ShadowLambdaMeta implements LambdaMeta {
     private final SerializedLambda lambda;

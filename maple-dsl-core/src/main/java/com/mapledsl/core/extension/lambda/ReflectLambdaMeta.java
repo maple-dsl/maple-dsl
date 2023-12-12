@@ -6,8 +6,8 @@ import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Field;
 
 /**
- * @author bofa1ex
- * @since 2023/8/14
+ * The ReflectLambdaMeta class is an implementation of the LambdaMeta interface.
+ * It is used to extract metadata about a lambda function using reflection.
  */
 class ReflectLambdaMeta implements LambdaMeta {
     private static final Field FIELD_CAPTURING_CLASS;

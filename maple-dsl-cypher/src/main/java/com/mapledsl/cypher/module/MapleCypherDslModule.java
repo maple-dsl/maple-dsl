@@ -10,6 +10,10 @@ import java.util.Properties;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * The class {@code MapleCypherDslModule} is a subclass of {@code MapleDslModule} that represents a Maple Cypher DSL module.
+ * It provides methods to get the version, dialect, and dialect properties specific to the Maple Cypher DSL module.
+ */
 public class MapleCypherDslModule extends MapleDslModule {
     public static final String VERSION = "cypher:0.1.0-release";
     public static final String DIALECT = "cypher";

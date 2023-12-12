@@ -3,8 +3,7 @@ package com.mapledsl.core.extension;
 import java.util.Locale;
 
 /**
- * @author bofa1ex
- * @since 2023/08/22
+ * Defines a functional interface for translating input using a naming strategy.
  */
 @FunctionalInterface
 public interface NamingStrategy {

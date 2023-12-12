@@ -9,8 +9,8 @@ import java.lang.reflect.Proxy;
 import static com.mapledsl.core.extension.lambda.LambdaMeta.setAccessible;
 
 /**
- * @author bofa1ex
- * @since 2023/8/14
+ * The IdeaProxyLambdaMeta class is an implementation of the LambdaMeta interface.
+ * It is used to extract metadata about a lambda function implemented using the Idea proxy.
  */
 class IdeaProxyLambdaMeta implements LambdaMeta {
     private static final Field FIELD_MEMBER_NAME;

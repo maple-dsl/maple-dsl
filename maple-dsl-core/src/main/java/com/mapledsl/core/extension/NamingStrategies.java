@@ -3,8 +3,8 @@ package com.mapledsl.core.extension;
 import java.util.Locale;
 
 /**
- * @author bofa1ex
- * @since 2023/08/22
+ * An enumeration of naming strategies that implement the {@link NamingStrategy} interface.
+ * Each strategy provides a way to translate a given input string into a different naming convention.
  */
 public enum NamingStrategies implements NamingStrategy {
     LOWER_CAMEL_CASE {

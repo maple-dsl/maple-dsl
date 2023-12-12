@@ -1,5 +1,11 @@
 package com.mapledsl.core.extension.func;
 
+/**
+ * Functional interface that represents an operation that accepts an object of type T and a short value,
+ * and performs some action on them.
+ *
+ * @param <T> the type of the object argument
+ */
 @FunctionalInterface
 public interface ObjShortConsumer<T> {
 

@@ -2,9 +2,11 @@ package com.mapledsl.core.condition.wrapper;
 
 import com.mapledsl.core.condition.common.Func;
 import com.mapledsl.core.model.Model;
+import org.apiguardian.api.API;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@API(status = API.Status.INTERNAL)
 public final class MapleDslDialectFunction<M extends Model<?>> extends MapleDslDialectBase<M> {
     private final @Nullable String column;
     private final @NotNull String alias;

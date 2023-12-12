@@ -3,11 +3,23 @@ package com.mapledsl.core.condition;
 import com.mapledsl.core.extension.func.SerializableFunction;
 import com.mapledsl.core.model.Model;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.function.Consumer;
 
+/**
+ * The Condition interface represents a condition that can be applied to a model.
+ *
+ * @param <M> the type of the model
+ * @param <Children> the type of the child conditions
+ */
 public interface Condition<M extends Model<?>, Children> {
+    /**
+     * The `Unary` interface represents a condition that operates on a single `Model` object.
+     * It extends the `Condition` interface and specifies that the concrete implementation should
+     * provide methods to chain multiple conditions together.
+     *
+     * @param <M> The type of the `Model` object on which the condition operates.
+     */
     interface Unary<M extends Model<?>> extends Condition<M, Unary<M>> {}
 
     Children or();
@@ -27,20 +39,20 @@ public interface Condition<M extends Model<?>, Children> {
     Children notNull(SerializableFunction<M, ?> column);
     Children notNull(boolean condition, SerializableFunction<M, ?> column);
 
-    Children eq(SerializableFunction<M, Serializable> column, Serializable value);
-    Children eq(boolean condition, SerializableFunction<M, Serializable> column, Serializable value);
-    Children eq(String column, Serializable value);
-    Children eq(boolean condition, String column, Serializable value);
+    Children eq(SerializableFunction<M, ?> column, Object value);
+    Children eq(boolean condition, SerializableFunction<M, ?> column, Object value);
+    Children eq(String column, Object value);
+    Children eq(boolean condition, String column, Object value);
 
-    Children ne(SerializableFunction<M, Serializable> column, Serializable value);
-    Children ne(boolean condition, SerializableFunction<M, Serializable> column, Serializable value);
-    Children ne(String column, Serializable value);
-    Children ne(boolean condition, String column, Serializable value);
+    Children ne(SerializableFunction<M, ?> column, Object value);
+    Children ne(boolean condition, SerializableFunction<M, ?> column, Object value);
+    Children ne(String column, Object value);
+    Children ne(boolean condition, String column, Object value);
 
-    Children in(SerializableFunction<M, Serializable> column, Collection<Serializable> value);
-    Children in(boolean condition, SerializableFunction<M, Serializable> column, Collection<Serializable> value);
-    Children in(String column, Collection<Serializable> value);
-    Children in(boolean condition, String column, Collection<Serializable> value);
+    Children in(SerializableFunction<M, ?> column, Collection<?> value);
+    Children in(boolean condition, SerializableFunction<M, ?> column, Collection<?> value);
+    Children in(String column, Collection<?> value);
+    Children in(boolean condition, String column, Collection<?> value);
 
     <R extends Number> Children gt(SerializableFunction<M, R> column, R value);
     <R extends Number> Children gt(boolean condition, SerializableFunction<M, R> column, R value);

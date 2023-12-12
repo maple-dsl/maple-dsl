@@ -10,6 +10,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.EnumMap;
 import java.util.Map;
 
+/**
+ * The class {@code MapleCypherDslDialectPredicateRender} is a subclass of {@code MapleDslDialectPredicateRender}
+ * that represents a predicate renderer for the Maple Cypher DSL dialect.
+ * It overrides various methods to provide custom rendering logic for vertices, edges, and comparisons.
+ */
 public class MapleCypherDslDialectPredicateRender extends MapleDslDialectPredicateRender {
     @Override
     public String dialect() {
