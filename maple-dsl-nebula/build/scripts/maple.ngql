@@ -1,0 +1,38 @@
+ADD HOSTS "storaged0":9779
+:sleep 5
+
+CREATE SPACE maple (vid_type = FIXED_STRING(512));
+CREATE SPACE maple_hash (vid_type = INT64);
+:sleep 5
+
+USE maple;
+CREATE TAG person (name string NULL, age int NULL);
+CREATE EDGE impact (type string NULL);
+CREATE EDGE follow (type string NULL);
+:sleep 20
+CREATE TAG INDEX index_person_tag on person();
+CREATE EDGE INDEX index_follow_tag on follow();
+CREATE EDGE INDEX index_impact_tag on impact();
+:sleep 20
+INSERT VERTEX person (name, age) VALUES "p001":("bofa", 26);
+INSERT VERTEX person (name, age) VALUES "p002":("zhangsan", 30);
+INSERT VERTEX person (name, age) VALUES "p003":("lisi", 32);
+INSERT EDGE impact (type) VALUES "p001"->"p002":("type1");
+INSERT EDGE impact (type) VALUES "p001"->"p002"@1:("type2");
+
+USE maple_hash;
+CREATE TAG person (name string NULL, age int NULL);
+CREATE EDGE impact (type string NULL);
+CREATE EDGE follow (type string NULL);
+:sleep 20
+CREATE TAG INDEX index_person_tag on person();
+CREATE EDGE INDEX index_follow_tag on follow();
+CREATE EDGE INDEX index_impact_tag on impact();
+:sleep 20
+
+INSERT VERTEX person (name, age) VALUES 1:("bofa", 26);
+INSERT VERTEX person (name, age) VALUES 2:("zhangsan", 30);
+INSERT VERTEX person (name, age) VALUES 3:("lisi", 32);
+INSERT EDGE impact (type) VALUES 1->2:("type1");
+INSERT EDGE impact (type) VALUES 1->2@1:("type2");
+
