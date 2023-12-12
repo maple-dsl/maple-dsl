@@ -6,7 +6,6 @@ import com.mapledsl.core.exception.MapleDslReflectionException;
 import com.mapledsl.core.extension.func.ThrowingFunction;
 import com.mapledsl.core.extension.func.ThrowingSupplier;
 import com.mapledsl.core.model.Model;
-import com.mapledsl.core.module.MapleDslParameterHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -22,56 +21,90 @@ import java.util.*;
 import static java.util.Objects.requireNonNull;
 
 /**
- * @author bofa1ex
- * @since 2023/08/22
+ * The {@code BeanDefinition} class represents the definition of a bean.
+ * It stores information about the bean class, property accessors and writers,
+ * and provides methods for creating new instances, accessing properties, and setting properties on the bean.
+ *
+ * @param <BEAN> the type of the bean
  */
-@SuppressWarnings("unchecked")
 public class BeanDefinition<BEAN> {
     static final Logger LOG = LoggerFactory.getLogger(BeanDefinition.class);
     private final MapleDslConfiguration context;
 
+    /**
+     * Variable lookup for retrieving method handles.
+     */
     @NotNull private final MethodHandles.Lookup lookup;
     @NotNull private final BeanCreator<BEAN> creator;
-    @NotNull private final Class<BEAN> beanClazz;
     @Nullable private final String label;
 
-    @SuppressWarnings("rawtypes")
-    private final BeanPropertyCustomizer propertyCustomizer;
+    /**
+     * The accessor for customizing bean properties.
+     * <p></p>
+     * This field allows you to define a custom accessor for modifying and accessing bean properties.
+     * The accessor should implement the `Bean
+     */
+    private final BeanPropertyCustomizerAccessor<BEAN> propertyCustomizerAccessor;
+    /**
+     * A variable that represents a functional interface used for customizing the injection of extension property key and value.
+     * <p></p>
+     * The {@code propertyCustomizerWriter} is used to customize the injection of extension property key and value for a target bean. It allows the user to specify a custom implementation
+     * for setting the property value.
+     */
+    private final BeanPropertyCustomizerWriter<BEAN> propertyCustomizerWriter;
     /** key: property name, value: property accessor */
     private final Map<String, BeanPropertyAccessor> propertyAccessorMap = new HashMap<>();
     /** key: property name, value: property writer */
     private final Map<String, BeanPropertyWriter> propertyWriterMap = new HashMap<>();
+    /** key: accessor name, value: property_name */
+    private final Map<String, String> accessorNamePropertyMap = new HashMap<>();
+    /** key: property name, value: property_type */
+    private final Map<String, Class<?>> propertyTypeMap = new HashMap<>();
     /** item: property name, exclude the fields which annotated with @Property(defined=false) */
-    private final Set<String> excludeNonDefinedPropertyKeySet = new HashSet<>();
-    /** key: getter_method_name, value: property_name */
-    private final Map<String, String> propertyGetterImplMethodNameMap = new LinkedHashMap<>();
+    private final Set<String> definedPropertyNameSet = new HashSet<>();
 
-    public BeanDefinition(MapleDslConfiguration context, Class<BEAN> beanClazz, @Nullable String label) {
+    @SuppressWarnings("unchecked")
+    BeanDefinition(@NotNull MapleDslConfiguration context, @NotNull Class<BEAN> beanClazz, @Nullable String label) {
         this.context = context;
         this.label = label;
-        this.beanClazz = beanClazz;
-        this.propertyCustomizer = beanClazz.isAssignableFrom(Model.class) ? context.modelPropertyCustomizer() : context.beanPropertyCustomizer(beanClazz);
         this.lookup = LookupSettings.privateLookupIn(beanClazz);
         this.creator = new BeanCreator<>(lookup, beanClazz);
-    }
 
-    public @Nullable String label() {
-        return label;
+        if (Model.class.isAssignableFrom(beanClazz)) {
+            this.propertyCustomizerAccessor = (BeanPropertyCustomizerAccessor<BEAN>) context.modelPropertyCustomizer();
+            this.propertyCustomizerWriter = (BeanPropertyCustomizerWriter<BEAN>) context.modelPropertyCustomizer();
+        } else {
+            this.propertyCustomizerAccessor = context.beanPropertyCustomizer(beanClazz);
+            this.propertyCustomizerWriter = context.beanPropertyCustomizer(beanClazz);
+        }
     }
 
     public BEAN newInstance() {
         return requireNonNull(creator, "Missing creator").newInstance();
     }
 
-    public Set<String> propertyKeys(@NotNull BEAN bean) {
-        if (propertyCustomizer == null) return excludeNonDefinedPropertyKeySet;
-        final Set<String> propertyKeys = new HashSet<>(this.excludeNonDefinedPropertyKeySet);
-        propertyKeys.addAll(propertyCustomizer.propertyKeys(bean, context));
-        return propertyKeys;
+    public @Nullable String label() {
+        return label;
     }
 
-    public String property(String getterImplMethodName) {
-        return propertyGetterImplMethodNameMap.get(getterImplMethodName);
+    public @Nullable String propertyName(@NotNull String accessorName) {
+        return accessorNamePropertyMap.get(accessorName);
+    }
+
+    /**
+     * Returns a set of property names for the given bean.
+     *
+     * @param bean the target bean (nullable)
+     * @return a set of property names
+     */
+    public Set<String> propertyNames(@Nullable BEAN bean) {
+        if (bean == null) return Collections.emptySet();
+        if (propertyCustomizerAccessor == null) return definedPropertyNameSet;
+
+        final Set<String> propertyKeys = new HashSet<>(this.definedPropertyNameSet);
+        propertyKeys.addAll(propertyCustomizerAccessor.propertyKeys(bean, context));
+
+        return propertyKeys;
     }
 
     /**
@@ -83,45 +116,20 @@ public class BeanDefinition<BEAN> {
      */
     public String getter(BEAN target, String propertyName) {
         if (target == null) return null;
+
+        Object propertyValue = null;
         if (propertyAccessorMap.containsKey(propertyName)) {
             final BeanPropertyAccessor beanPropertyAccessor = propertyAccessorMap.get(propertyName);
-            final Object getterValue = beanPropertyAccessor.getter(target);
-            return beanPropertyAccessor.parameterized(getterValue);
+            propertyValue = beanPropertyAccessor.delegate.apply(target);
+            return context.parameterized(propertyValue);
         }
 
-        if (propertyCustomizer != null) {
-            Object propertyValue = propertyCustomizer.getter(target, propertyName, context);
-            final MapleDslParameterHandler parameterHandler = context.parameterHandler(propertyValue.getClass());
-            if (parameterHandler != null) return parameterHandler.apply(propertyValue, context);
+        if (propertyCustomizerAccessor != null) {
+            propertyValue = propertyCustomizerAccessor.getter(target, propertyName, context);
+            return context.parameterized(propertyValue);
         }
 
-        return context.nullParameterHandler().apply(null, context);
-    }
-
-    /**
-     * Diff {@link #getter(Object, String)}, it only parameterized the target value according the propertyName.
-     * @param propertyName   property name.
-     * @param propertyValue  property value, need to parameterized it.
-     * @return the parameterized value of the property value.
-     */
-    public String parameterized(String propertyName, Object propertyValue) {
-        if (propertyValue == null) return null;
-        if (propertyAccessorMap.containsKey(propertyName)) {
-            final BeanPropertyAccessor beanPropertyAccessor = propertyAccessorMap.get(propertyName);
-            return beanPropertyAccessor.parameterized(propertyValue);
-        }
-
-        final MapleDslParameterHandler parameterHandler = context.parameterHandler(propertyValue.getClass());
-        if (parameterHandler != null) return parameterHandler.apply(propertyValue, context);
-
-        LOG.warn("{} {} missing the parameterHandler.", beanClazz, propertyName);
-        return context.nullParameterHandler().apply(propertyValue, context);
-    }
-
-    public boolean hasSetter(BEAN target, String propertyName) {
-        if (target == null) return false;
-        if (propertyWriterMap.containsKey(propertyName)) return true;
-        return propertyCustomizer.hasSetter(target, propertyName, context);
+        return context.parameterized(propertyValue);
     }
 
     /**
@@ -135,39 +143,69 @@ public class BeanDefinition<BEAN> {
     public void setter(BEAN target, String propertyName, Object propertyValue) {
         if (target == null) return;
         if (propertyValue == null) return;
+
+        final Class<?> propertyType = propertyTypeMap.get(propertyName);
+        final Object resultant = propertyType == null ? context.resultant(propertyValue) : context.resultant(propertyValue, propertyType);
         if (propertyWriterMap.containsKey(propertyName)) {
             final BeanPropertyWriter beanPropertyWriter = propertyWriterMap.get(propertyName);
-            beanPropertyWriter.setter(target, propertyValue);
+            beanPropertyWriter.delegate.accept(target, resultant);
             return;
         }
 
-        if (propertyCustomizer != null) propertyCustomizer.setter(target, propertyName, propertyValue, context);
+        if (label != null && LOG.isWarnEnabled()) LOG.warn("Property:{} does not found it writer.", propertyName);
+        if (propertyCustomizerWriter != null) propertyCustomizerWriter.setter(target, propertyName, resultant, context);
     }
 
-    void putDefinedPropertyKey(String propertyKey) {
-        excludeNonDefinedPropertyKeySet.add(propertyKey);
+    void addDefinedBeanPropertyName(String propertyName) {
+        if (definedPropertyNameSet.contains(propertyName)) throw new MapleDslBindingException("Duplicate defined property " + propertyName);
+        definedPropertyNameSet.add(propertyName);
     }
 
-    void putBeanPropertyAccessor(String propertyName, Class<?> propertyType, Method getterMethod) {
-        if (getterMethod == null) return;
-        if (propertyAccessorMap.containsKey(propertyName)) throw new MapleDslBindingException("Duplicate getter property " + propertyName + " in " + getterMethod);
+    boolean containsBeanPropertyType(String propertyName) {
+        return propertyTypeMap.containsKey(propertyName);
+    }
 
-        BeanPropertyAccessor beanPropertyAccessor = new BeanPropertyAccessor(context, lookup, propertyType, getterMethod);
+    void putBeanPropertyType(String propertyName, Class<?> propertyType) {
+        if (containsBeanPropertyType(propertyName)) throw new MapleDslBindingException("Duplicate property " + propertyName + ", it type:" + propertyType);
+        propertyTypeMap.put(propertyName, propertyType);
+    }
+
+    boolean containsBeanPropertyAccessorName(String accessorName) {
+        return accessorNamePropertyMap.containsKey(accessorName);
+    }
+
+    void putAccessorNameProperty(String accessorName, String propertyName) {
+        if (containsBeanPropertyAccessorName(accessorName)) throw new MapleDslBindingException("Duplicate getter name " + accessorName + " with " + propertyName);
+
+        accessorNamePropertyMap.put(accessorName, propertyName);
+    }
+
+    boolean containsBeanPropertyAccessor(String propertyName) {
+        return propertyAccessorMap.containsKey(propertyName);
+    }
+
+    void putBeanPropertyAccessor(String propertyName, @NotNull Method getterMethod) {
+        if (containsBeanPropertyAccessor(propertyName)) throw new MapleDslBindingException("Duplicate getter property " + propertyName + " in " + getterMethod);
+
+        BeanPropertyAccessor beanPropertyAccessor = new BeanPropertyAccessor(lookup, getterMethod);
         switch (propertyName) {
             case Model.ID:
             case Model.E.SRC:
-            case Model.E.DST:
-                beanPropertyAccessor.override(context.keyPolicyStrategy());
+            case Model.E.DST: beanPropertyAccessor.override(context.keyPolicyStrategy());
         }
 
-        propertyGetterImplMethodNameMap.put(getterMethod.getName(), propertyName);
+        accessorNamePropertyMap.put(getterMethod.getName(), propertyName);
         propertyAccessorMap.put(propertyName, beanPropertyAccessor);
     }
 
-    void putBeanPropertyWriter(String propertyName, Class<?> propertyType, Method setterMethod) {
-        if (setterMethod == null) return;
-        if (propertyWriterMap.containsKey(propertyName)) throw new MapleDslBindingException("Duplicate setter property " + propertyName + " in " + setterMethod);
-        propertyWriterMap.put(propertyName, new BeanPropertyWriter(context, propertyType, lookup, setterMethod));
+    boolean containsBeanPropertyWriter(String propertyName) {
+        return propertyWriterMap.containsKey(propertyName);
+    }
+
+    void putBeanPropertyWriter(String propertyName, @NotNull Method setterMethod) {
+        if (containsBeanPropertyWriter(propertyName)) throw new MapleDslBindingException("Duplicate setter property " + propertyName + " in " + setterMethod);
+
+        propertyWriterMap.put(propertyName, new BeanPropertyWriter(lookup, setterMethod));
     }
 
     /**

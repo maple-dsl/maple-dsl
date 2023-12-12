@@ -8,16 +8,14 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
-public class DefaultModelPropertyCustomizer implements BeanPropertyCustomizer<Model> {
+/**
+ * This class is an implementation of the ModelPropertyCustomizer interface.
+ * It provides methods for customizing the properties of a Model object.
+ */
+public class DefaultModelPropertyCustomizer implements ModelPropertyCustomizer {
 
     @Override
-    public Class<Model> beanClazz() {
-        return Model.class;
-    }
-
-    @Override
-    public Set<String> propertyKeys(@NotNull Model bean, MapleDslConfiguration context) {
+    public Set<String> propertyKeys(@NotNull Model<?> bean, MapleDslConfiguration context) {
         final @NotNull Map<String, Object> modelPropertyMap = bean.props();
         if (modelPropertyMap.isEmpty()) return Collections.emptySet();
 
@@ -25,22 +23,17 @@ public class DefaultModelPropertyCustomizer implements BeanPropertyCustomizer<Mo
     }
 
     @Override
-    public Object getter(@NotNull Model bean, @NotNull String propertyKey, MapleDslConfiguration context) {
+    public Object getter(@NotNull Model<?> bean, @NotNull String propertyKey, MapleDslConfiguration context) {
         return bean.get(propertyKey);
     }
 
     @Override
-    public void setter(@NotNull Model bean, @NotNull String propertyKey, @NotNull Object propertyValue, MapleDslConfiguration context) {
+    public void setter(@NotNull Model<?> bean, @NotNull String propertyKey, Object propertyValue, MapleDslConfiguration context) {
         bean.put(propertyKey, propertyValue);
     }
 
     @Override
-    public boolean hasSetter(@NotNull Model bean, @NotNull String propertyKey, MapleDslConfiguration context) {
-        return true;
-    }
-
-    @Override
-    public boolean hasGetter(@NotNull Model bean, @NotNull String propertyKey, MapleDslConfiguration context) {
-        return bean.props().containsKey(propertyKey);
+    public String toString() {
+        return "DefaultModelPropertyCustomizer";
     }
 }

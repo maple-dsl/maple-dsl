@@ -2,212 +2,227 @@ package com.mapledsl.core.module;
 
 import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.MapleDslDialectRenderHelper;
-import com.mapledsl.core.model.ID;
 import com.mapledsl.core.model.Model;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.time.*;
 import java.util.*;
-import java.util.function.Function;
 
-enum DefaultMapleDslParameterHandlers implements MapleDslParameterHandler {
-    NULL(void.class, MapleDslDialectRenderHelper::identify) {
+import static com.mapledsl.core.MapleDslDialectRenderHelper.quote;
+
+enum DefaultMapleDslParameterHandlers implements MapleDslDialectRenderHelper {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    CLASS(new MapleDslParameterHandler<Class>() {
         @Override
-        public String apply(@Nullable Object parameter, MapleDslConfiguration ctx) {
-            return "NULL";
+        public Class<Class> parameterType() {
+            return Class.class;
         }
-    },
-    _ID(ID.class, MapleDslDialectRenderHelper::identify) {
+
         @Override
-        public Object compose(@NotNull Object parameter, @NotNull MapleDslConfiguration ctx) {
-            if (parameter instanceof ID) {
-                final ID id = (ID) parameter;
-                if (id.getNumberValue() != null) return MapleDslDialectRenderHelper.numeric(id.getNumberValue());
-                return MapleDslDialectRenderHelper.escaped(id.getTextValue());
-            }
-            if (parameter instanceof String) {
-                return MapleDslDialectRenderHelper.escaped(parameter);
-            }
-            if (parameter instanceof Number) {
-                return MapleDslDialectRenderHelper.identify(parameter);
-            }
-            return NULL.apply(parameter, ctx);
+        public @NotNull String apply(Class param, MapleDslConfiguration context) {
+            return quote(Model.class.isAssignableFrom(param) ?
+                    context.label(((Class<? extends Model>) param)) :
+                    param.getSimpleName().toLowerCase(context.globalLocale()));
         }
-    },
-    Boolean(boolean.class, MapleDslDialectRenderHelper::identify),
-    BOOLEAN(Boolean.class, MapleDslDialectRenderHelper::identify),
-    Char(char.class, MapleDslDialectRenderHelper::identify),
-    CHAR(Character.class, MapleDslDialectRenderHelper::identify),
-    Byte(byte.class, MapleDslDialectRenderHelper::identify),
-    BYTE(Byte.class, MapleDslDialectRenderHelper::identify),
-    Short(short.class, MapleDslDialectRenderHelper::identify),
-    SHORT(Short.class, MapleDslDialectRenderHelper::identify),
-    Int(int.class, MapleDslDialectRenderHelper::identify),
-    INT(Integer.class, MapleDslDialectRenderHelper::identify),
-    Long(long.class, MapleDslDialectRenderHelper::identify),
-    LONG(Long.class, MapleDslDialectRenderHelper::identify),
-    Float(float.class, MapleDslDialectRenderHelper::identify),
-    FLOAT(Float.class, MapleDslDialectRenderHelper::identify),
-    Double(double.class, MapleDslDialectRenderHelper::identify),
-    DOUBLE(Double.class, MapleDslDialectRenderHelper::identify),
-    Class(Class.class, MapleDslDialectRenderHelper::escaped) {
+    }),
+    STRING(new MapleDslParameterHandler<String>() {
         @Override
-        public Object compose(@NotNull Object parameter, @NotNull MapleDslConfiguration ctx) {
-            if (!(parameter instanceof Class)) throw new IllegalArgumentException(String.format("parameter:%s, cast as CLASS error.", parameter));
-            Class<?> it = (Class<?>) parameter;
-            final String label = ctx.label(it.asSubclass(Model.class));
-            return label == null ? it.getSimpleName().toLowerCase(ctx.globalLocale()) : label;
+        public Class<String> parameterType() {
+            return String.class;
         }
-    },
-    STRING(String.class, MapleDslDialectRenderHelper::escaped) {
+
         @Override
-        public Object compose(@NotNull Object parameter, @NotNull MapleDslConfiguration ctx) {
-            if (!(parameter instanceof String)) throw new IllegalArgumentException(String.format("parameter:%s, cast as STRING error.", parameter));
-            String it = (String) parameter;
-            it = it.replaceAll("\\\\", "\\\\\\\\");
-            return it;
+        public @NotNull String apply(String value, MapleDslConfiguration ctx) {
+            return quote(value);
         }
-    },
-    DATE(java.util.Date.class, MapleDslDialectRenderHelper::identify) {
+    }),
+    _BOOLEAN(MapleDslParameterHandler.identify(boolean.class)),
+    BOOLEAN(MapleDslParameterHandler.identify(Boolean.class)),
+    _CHAR(MapleDslParameterHandler.identify(char.class)),
+    CHAR(MapleDslParameterHandler.identify(Character.class)),
+    _BYTE(MapleDslParameterHandler.identify(byte.class)),
+    BYTE(MapleDslParameterHandler.identify(Byte.class)),
+    _SHORT(MapleDslParameterHandler.identify(short.class)),
+    SHORT(MapleDslParameterHandler.identify(Short.class)),
+    _INT(MapleDslParameterHandler.identify(int.class)),
+    INT(MapleDslParameterHandler.identify(Integer.class)),
+    _LONG(MapleDslParameterHandler.identify(long.class)),
+    LONG(MapleDslParameterHandler.identify(Long.class)),
+    _FLOAT(MapleDslParameterHandler.identify(float.class)),
+    FLOAT(MapleDslParameterHandler.identify(Float.class)),
+    _DOUBLE(MapleDslParameterHandler.identify(double.class)),
+    DOUBLE(MapleDslParameterHandler.identify(Double.class)),
+    DATE(new MapleDslParameterHandler<Date>() {
         @Override
-        public Object compose(@NotNull Object parameter, @NotNull MapleDslConfiguration ctx) {
-            if (!(parameter instanceof java.util.Date)) throw new IllegalArgumentException(String.format("parameter:%s, cast as DATE error.", parameter));
-            return ((java.util.Date) parameter).toInstant().toEpochMilli();
+        public Class<Date> parameterType() {
+            return java.util.Date.class;
         }
-    },
-    SQL_DATE(java.sql.Date.class, MapleDslDialectRenderHelper::identify) {
+
         @Override
-        public Object compose(@NotNull Object parameter, @NotNull MapleDslConfiguration ctx) {
-            if (!(parameter instanceof java.sql.Date)) throw new IllegalArgumentException(String.format("parameter:%s, cast as DATE error.", parameter));
-            return ((java.sql.Date) parameter).toInstant().toEpochMilli();
+        public @NotNull String apply(Date date, MapleDslConfiguration ctx) {
+            return date.toInstant().toEpochMilli() + "";
         }
-    },
-    LOCAL_DATE_TIME(LocalDateTime.class, MapleDslDialectRenderHelper::identify) {
+    }),
+    SQL_DATE(new MapleDslParameterHandler<java.sql.Date>() {
         @Override
-        public Object compose(@NotNull Object parameter, @NotNull MapleDslConfiguration ctx) {
-            if (!(parameter instanceof LocalDateTime)) throw new IllegalArgumentException(String.format("parameter:%s, cast as LOCAL_DATE_TIME error.", parameter));
-            return ((LocalDateTime) parameter)
+        public Class<java.sql.Date> parameterType() {
+            return java.sql.Date.class;
+        }
+
+        @Override
+        public @NotNull String apply(java.sql.Date date, MapleDslConfiguration ctx) {
+            return date.toInstant().toEpochMilli()  + "";
+        }
+    }),
+    LOCAL_DATE_TIME(new MapleDslParameterHandler<LocalDateTime>() {
+        @Override
+        public Class<LocalDateTime> parameterType() {
+            return LocalDateTime.class;
+        }
+
+        @Override
+        public @NotNull String apply(LocalDateTime localDateTime, MapleDslConfiguration ctx) {
+            return localDateTime
                     .atZone(ctx.globalZoneId())
                     .toInstant()
-                    .toEpochMilli();
+                    .toEpochMilli()  + "";
         }
-    },
-    LOCAL_DATE(LocalDate.class, MapleDslDialectRenderHelper::identify) {
+    }),
+    LOCAL_DATE(new MapleDslParameterHandler<LocalDate>() {
         @Override
-        public Object compose(@NotNull Object parameter, @NotNull MapleDslConfiguration ctx) {
-            if (!(parameter instanceof LocalDate)) throw new IllegalArgumentException(String.format("parameter:%s, cast as LOCAL_DATE error.", parameter));
-            return ((LocalDate) parameter)
+        public Class<LocalDate> parameterType() {
+            return LocalDate.class;
+        }
+
+        @Override
+        public @NotNull String apply(LocalDate localDate, MapleDslConfiguration ctx) {
+            return localDate
                     .atTime(0, 0)
                     .atZone(ctx.globalZoneId())
                     .toInstant()
-                    .toEpochMilli();
+                    .toEpochMilli() + "";
         }
-    },
-    LOCAL_TIME(LocalTime.class, MapleDslDialectRenderHelper::identify) {
+    }),
+    LOCAL_TIME(new MapleDslParameterHandler<LocalTime>() {
         @Override
-        public Object compose(@NotNull Object parameter, @NotNull MapleDslConfiguration ctx) {
-            if (!(parameter instanceof LocalTime)) throw new IllegalArgumentException(String.format("parameter:%s, cast as LOCAL_TIME error.", parameter));
-            return ((LocalTime) parameter)
+        public Class<LocalTime> parameterType() {
+            return LocalTime.class;
+        }
+
+        @Override
+        public @NotNull String apply(LocalTime localTime, MapleDslConfiguration ctx) {
+            return localTime
                     .atDate(LocalDate.now())
                     .atZone(ctx.globalZoneId())
                     .toInstant()
-                    .toEpochMilli();
+                    .toEpochMilli() + "";
         }
-    },
-    OFFSET_DATE_TIME(OffsetDateTime.class, MapleDslDialectRenderHelper::identify) {
+    }),
+    OFFSET_DATE_TIME(new MapleDslParameterHandler<OffsetDateTime>() {
         @Override
-        public Object compose(@NotNull Object parameter, @NotNull MapleDslConfiguration ctx) {
-            if (!(parameter instanceof OffsetDateTime)) throw new IllegalArgumentException(String.format("parameter:%s, cast as OFFSET_DATE_TIME error.", parameter));
-            return ((OffsetDateTime) parameter)
+        public Class<OffsetDateTime> parameterType() {
+            return OffsetDateTime.class;
+        }
+
+        @Override
+        public @NotNull String apply(OffsetDateTime offsetDateTime, MapleDslConfiguration mapleDslConfiguration) {
+            return offsetDateTime
                     .toInstant()
-                    .toEpochMilli();
+                    .toEpochMilli() + "";
         }
-    },
-    OFFSET_TIME(OffsetTime.class, MapleDslDialectRenderHelper::identify) {
+    }),
+    OFFSET_TIME(new MapleDslParameterHandler<OffsetTime>() {
         @Override
-        public Object compose(@NotNull Object parameter, @NotNull MapleDslConfiguration ctx) {
-            if (!(parameter instanceof OffsetTime)) throw new IllegalArgumentException(String.format("parameter:%s, cast as OFFSET_TIME error.", parameter));
-            return ((OffsetTime) parameter)
+        public Class<OffsetTime> parameterType() {
+            return OffsetTime.class;
+        }
+
+        @Override
+        public @NotNull String apply(OffsetTime offsetTime, MapleDslConfiguration mapleDslConfiguration) {
+            return offsetTime
                     .atDate(LocalDate.now())
                     .toInstant()
-                    .toEpochMilli();
+                    .toEpochMilli() + "";
         }
-    },
-    ZONED_DATE_TIME(ZonedDateTime.class, MapleDslDialectRenderHelper::identify) {
+    }),
+    ZONED_DATE_TIME(new MapleDslParameterHandler<ZonedDateTime>() {
         @Override
-        public Object compose(@NotNull Object parameter, @NotNull MapleDslConfiguration ctx) {
-            if (!(parameter instanceof ZonedDateTime)) throw new IllegalArgumentException(String.format("parameter:%s, cast as ZONED_DATE_TIME error.", parameter));
-            return ((ZonedDateTime) parameter)
+        public Class<ZonedDateTime> parameterType() {
+            return ZonedDateTime.class;
+        }
+
+        @Override
+        public @NotNull String apply(ZonedDateTime zonedDateTime, MapleDslConfiguration mapleDslConfiguration) {
+            return zonedDateTime
                     .toInstant()
-                    .toEpochMilli();
+                    .toEpochMilli() + "";
         }
-    },
-    LIST(List.class, MapleDslDialectRenderHelper::identify) {
+    }),
+    @SuppressWarnings("rawtypes")
+    LIST(new MapleDslParameterHandler<List>() {
         @Override
-        public String apply(@Nullable Object parameter, MapleDslConfiguration ctx) {
-            if (parameter == null) return "[]";
+        public Class<List> parameterType() {
+            return List.class;
+        }
+
+        @Override
+        public @NotNull String apply(List param, MapleDslConfiguration context) {
+            if (param == null) return "[]";
             final StringJoiner joiner = new StringJoiner(",", "[", "]");
-            for (Object it : (List<?>) parameter) {
-                MapleDslParameterHandler parameterHandler = ctx.parameterHandler(it.getClass());
-                joiner.add(parameterHandler.apply(it, ctx));
+            for (Object it : (List<?>) param) {
+                joiner.add(context.parameterized(it));
             }
 
-            return suffixProcessor.apply(joiner);
+            return joiner.toString();
         }
-    },
-    SET(Set.class, MapleDslDialectRenderHelper::identify) {
+    }),
+    @SuppressWarnings("rawtypes")
+    SET(new MapleDslParameterHandler<Set>() {
         @Override
-        public String apply(@Nullable Object parameter, MapleDslConfiguration ctx) {
-            if (parameter == null) return "[]";
+        public Class<Set> parameterType() {
+            return Set.class;
+        }
+
+        @Override
+        public @NotNull String apply(Set param, MapleDslConfiguration context) {
+            if (param == null) return "[]";
             final StringJoiner joiner = new StringJoiner(",", "[", "]");
-            for (Object it : (Set<?>) parameter) {
-                MapleDslParameterHandler parameterHandler = ctx.parameterHandler(it.getClass());
-                joiner.add(parameterHandler.apply(it, ctx));
+            for (Object it : (Set<?>) param) {
+                joiner.add(context.parameterized(it));
             }
 
-            return suffixProcessor.apply(joiner);
+            return joiner.toString();
         }
-    },
-    MAP(Map.class, MapleDslDialectRenderHelper::identify) {
+    }),
+    @SuppressWarnings("rawtypes")
+    MAP(new MapleDslParameterHandler<Map>() {
         @Override
-        public String apply(@Nullable Object parameter, MapleDslConfiguration ctx) {
-            if (parameter == null) return "{}";
+        public Class<Map> parameterType() {
+            return Map.class;
+        }
+
+        @Override
+        public @NotNull String apply(Map param, MapleDslConfiguration context) {
+            if (param == null) return "{}";
             final StringJoiner joiner = new StringJoiner(",", "{", "}");
-            for (Map.Entry<?, ?> entry : ((Map<?, ?>) parameter).entrySet()) {
+            for (Map.Entry<?, ?> entry : ((Map<?, ?>) param).entrySet()) {
                 final Object key = entry.getKey();
                 final Object value = entry.getValue();
                 if (key == null) continue;
 
-                final MapleDslParameterHandler parameterHandler = ctx.parameterHandler(value.getClass());
-                joiner.add(key + ":" + parameterHandler.apply(value, ctx));
+                joiner.add("\"" + key + "\"" + ":" + quoteEscaper.escape(context.parameterized(value)));
             }
 
-            return suffixProcessor.apply(joiner);
+            return joiner.toString();
         }
-    };
+    });
 
-    final Class<?> parameterType;
-    final Function<Object, String> suffixProcessor;
-
-    <R> DefaultMapleDslParameterHandlers(Class<R> parameterType, Function<Object, String> suffixProcessor) {
-        this.parameterType = parameterType;
-        this.suffixProcessor = suffixProcessor;
+    final MapleDslParameterHandler<?> parameterHandler;
+    <R> DefaultMapleDslParameterHandlers(MapleDslParameterHandler<R> parameterHandler) {
+        this.parameterHandler = parameterHandler;
     }
 
-    @Override
-    public String apply(@Nullable Object parameter, MapleDslConfiguration ctx) {
-        if (parameter == null) return NULL.apply(parameter, ctx);
-        if (parameter instanceof List) return LIST.apply(parameter, ctx);
-        if (parameter instanceof Set) return SET.apply(parameter, ctx);
-        if (parameter instanceof Collection) return SET.apply(new LinkedHashSet<>(((Collection<?>) parameter)), ctx);
-        if (parameter instanceof Map) return MAP.apply(parameter, ctx);
-
-        return this.suffixProcessor.apply(compose(parameter, ctx));
-    }
-
-    @Override
-    public java.lang.Class<?> parameterType() {
-        return parameterType;
+    MapleDslParameterHandler<?> parameterHandler() {
+        return parameterHandler;
     }
 }

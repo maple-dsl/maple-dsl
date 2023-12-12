@@ -10,8 +10,9 @@ import java.util.function.Supplier;
 import static java.lang.invoke.MethodType.methodType;
 
 /**
- * @author bofa1ex
- * @since 2022/08/03
+ * A class for creating instances of a specified bean class using reflection and method handles.
+ *
+ * @param <BEAN> the type of bean to create.
  */
 public class BeanCreator<BEAN> {
     final Supplier<BEAN> supplier;

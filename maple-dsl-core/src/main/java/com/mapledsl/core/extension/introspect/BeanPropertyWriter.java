@@ -1,69 +1,32 @@
 package com.mapledsl.core.extension.introspect;
 
-import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.exception.MapleDslBindingException;
 import com.mapledsl.core.exception.MapleDslException;
-import com.mapledsl.core.extension.func.ObjBooleanBiFunction;
-import com.mapledsl.core.extension.func.ObjBooleanConsumer;
-import com.mapledsl.core.extension.func.ObjCharBiFunction;
-import com.mapledsl.core.extension.func.ObjCharConsumer;
-import com.mapledsl.core.extension.func.ObjDoubleBiFunction;
-import com.mapledsl.core.extension.func.ObjFloatBiFunction;
-import com.mapledsl.core.extension.func.ObjFloatConsumer;
-import com.mapledsl.core.extension.func.ObjIntBiFunction;
-import com.mapledsl.core.extension.func.ObjLongBiFunction;
-import com.mapledsl.core.extension.func.ObjShortBiFunction;
-import com.mapledsl.core.extension.func.ObjShortConsumer;
-import com.mapledsl.core.module.MapleDslResultHandler;
+import com.mapledsl.core.extension.func.*;
 
 import java.lang.invoke.LambdaConversionException;
 import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.ObjDoubleConsumer;
-import java.util.function.ObjIntConsumer;
-import java.util.function.ObjLongConsumer;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 import static java.lang.invoke.MethodType.methodType;
 
 /**
- * @author bofa1ex
- * @since 2022/08/02
+ * The BeanPropertyWriter class is responsible for writing property values to a Java Bean object using a setter method.
+ * It utilizes LambdaMetafactory to create function interfaces for different types of properties, such as int, long, boolean, short, float, and double.
+ * The writer utilizes the delegate field to invoke the appropriate function interface for the property type.
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 class BeanPropertyWriter {
-    private final MapleDslConfiguration context;
-    private final MapleDslResultHandler resultHandler;
-    private final Predicate<Class<?>> resultValuePredicate;
     BiConsumer<Object, Object> delegate;
 
-    void setter(Object target, Object propertyValue) {
-        if (target == null) return;
-        if (propertyValue == null) return;
-        if (resultValuePredicate.test(propertyValue.getClass())) {
-            propertyValue = resultHandler.apply(propertyValue, context);
-        }
-        if (propertyValue == null) return;
-        delegate.accept(target, propertyValue);
-    }
-
-    BeanPropertyWriter(MapleDslConfiguration context, MapleDslResultHandler resultHandler) {
-        this.context = context;
-        this.resultHandler = resultHandler;
-        this.resultValuePredicate = context.module().resultValuePredicate();
-    }
-
-    BeanPropertyWriter(MapleDslConfiguration context, Class<?> propertyType, MethodHandles.Lookup lookup, Method setterMethod) {
-        this(context, context.resultHandler(propertyType));
+    BeanPropertyWriter(MethodHandles.Lookup lookup, Method setterMethod) {
         final Class<?> returnType = setterMethod.getReturnType();
         final Class<?>[] parameterTypes = setterMethod.getParameterTypes();
 
-        if (parameterTypes.length > 1)
-            throw new MapleDslBindingException("Illegal parameter size for setter " + setterMethod);
+        if (parameterTypes.length > 1) throw new MapleDslBindingException("Illegal parameter size for setter " + setterMethod);
         final Class<?> parameterType = parameterTypes[0];
 
         if (Object.class.isAssignableFrom(returnType)) {
@@ -167,7 +130,7 @@ class BeanPropertyWriter {
 
         @Override
         public void accept(Object target, Object propertyValue) {
-            consumer.accept(target, (int) propertyValue);
+            consumer.accept(target, propertyValue == null ? 0 : (int) propertyValue);
         }
     }
 
@@ -193,7 +156,7 @@ class BeanPropertyWriter {
 
         @Override
         public void accept(Object target, Object propertyValue) {
-            consumer.accept(target, (short) propertyValue);
+            consumer.accept(target, propertyValue == null ? 0 : (short) propertyValue);
         }
     }
 
@@ -220,7 +183,7 @@ class BeanPropertyWriter {
 
         @Override
         public void accept(Object target, Object propertyValue) {
-            consumer.accept(target, (float) propertyValue);
+            consumer.accept(target, propertyValue == null ? 0f : (float) propertyValue);
         }
     }
 
@@ -246,7 +209,7 @@ class BeanPropertyWriter {
 
         @Override
         public void accept(Object target, Object propertyValue) {
-            consumer.accept(target, (double) propertyValue);
+            consumer.accept(target, propertyValue == null ? 0.0d : (double) propertyValue);
         }
     }
 
@@ -273,7 +236,7 @@ class BeanPropertyWriter {
 
         @Override
         public void accept(Object target, Object propertyValue) {
-            consumer.accept(target, (char) propertyValue);
+            consumer.accept(target, propertyValue == null ? '\0' : (char) propertyValue);
         }
     }
 
@@ -299,7 +262,7 @@ class BeanPropertyWriter {
 
         @Override
         public void accept(Object target, Object propertyValue) {
-            consumer.accept(target, ((long) propertyValue));
+            consumer.accept(target, propertyValue == null ? 0L : (long) propertyValue);
         }
     }
 
@@ -325,11 +288,11 @@ class BeanPropertyWriter {
 
         @Override
         public void accept(Object target, Object propertyValue) {
-            consumer.accept(target, ((boolean) propertyValue));
+            consumer.accept(target, propertyValue != null && (boolean) propertyValue);
         }
     }
 
-    static class BeanUnaryPropertyWriter implements BiConsumer {
+    static class BeanUnaryPropertyWriter<T> implements BiConsumer {
         final BiFunction<Object, Object, Object> function;
 
         BeanUnaryPropertyWriter(MethodHandles.Lookup lookup, Method setterMethod) {
@@ -350,8 +313,8 @@ class BeanPropertyWriter {
         }
 
         @Override
-        public void accept(Object target, Object propertyValue) {
-            function.apply(target, propertyValue);
+        public void accept(Object target, Object purePropertyValue) {
+            function.apply(target, purePropertyValue);
         }
     }
 
@@ -377,7 +340,7 @@ class BeanPropertyWriter {
 
         @Override
         public void accept(Object target, Object propertyValue) {
-            function.apply(target, (int) propertyValue);
+            function.apply(target, propertyValue == null ? 0 : (int) propertyValue);
         }
     }
 
@@ -403,7 +366,7 @@ class BeanPropertyWriter {
 
         @Override
         public void accept(Object target, Object propertyValue) {
-            function.apply(target, (short) propertyValue);
+            function.apply(target, propertyValue == null ? 0 : (short) propertyValue);
         }
     }
 
@@ -429,7 +392,7 @@ class BeanPropertyWriter {
 
         @Override
         public void accept(Object target, Object propertyValue) {
-            function.apply(target, (float) propertyValue);
+            function.apply(target, propertyValue == null ? 0f : (float) propertyValue);
         }
     }
 
@@ -455,7 +418,7 @@ class BeanPropertyWriter {
 
         @Override
         public void accept(Object target, Object propertyValue) {
-            function.apply(target, (double) propertyValue);
+            function.apply(target, propertyValue == null ? 0.0d : (double) propertyValue);
         }
     }
 
@@ -481,7 +444,7 @@ class BeanPropertyWriter {
 
         @Override
         public void accept(Object target, Object propertyValue) {
-            function.apply(target, (char) propertyValue);
+            function.apply(target, propertyValue == null ? '\0': (char) propertyValue);
         }
     }
 
@@ -507,7 +470,7 @@ class BeanPropertyWriter {
 
         @Override
         public void accept(Object target, Object propertyValue) {
-            function.apply(target, (long) propertyValue);
+            function.apply(target, propertyValue == null ? 0L: ((long) propertyValue));
         }
     }
 
@@ -534,7 +497,7 @@ class BeanPropertyWriter {
 
         @Override
         public void accept(Object target, Object propertyValue) {
-            function.apply(target, (boolean) propertyValue);
+            function.apply(target, propertyValue != null && (boolean) propertyValue);
         }
     }
 }

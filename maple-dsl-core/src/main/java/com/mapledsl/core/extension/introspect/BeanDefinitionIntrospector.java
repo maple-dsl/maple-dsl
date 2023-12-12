@@ -2,7 +2,9 @@ package com.mapledsl.core.extension.introspect;
 
 import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.annotation.*;
+import com.mapledsl.core.exception.MapleDslBindingException;
 import com.mapledsl.core.model.Model;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,11 +12,13 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+/**
+ * The BeanDefinitionIntrospector class is responsible for introspecting a bean class and
+ * generating a BeanDefinition object that represents the properties and methods of the bean.
+ * It uses reflection to gather information about the fields, methods, and annotations of the bean class.
+ */
 public class BeanDefinitionIntrospector {
     static final Logger LOG = LoggerFactory.getLogger(BeanDefinitionIntrospector.class);
     private final MapleDslConfiguration context;
@@ -23,9 +27,16 @@ public class BeanDefinitionIntrospector {
         this.context = context;
     }
 
+    /**
+     * Resolves the BeanDefinition for the given bean class.
+     *
+     * @param <BEAN>     the type of the bean
+     * @param beanClazz  the class of the bean
+     * @return the resolved BeanDefinition for the bean class
+     */
     public <BEAN> BeanDefinition<BEAN> resolve(Class<BEAN> beanClazz) {
-        final Map<Field, Class<?>> beanFieldTypeMap = new HashMap<>();
-        final Set<Method> candidateMethods = new HashSet<>();
+        final Set<Field> beanFieldTypeSet = new LinkedHashSet<>();
+        final Set<Method> candidateMethodSet = new LinkedHashSet<>();
 
         final String label = findLabel(beanClazz);
         final BeanDefinition<BEAN> beanDefinition = new BeanDefinition<>(context, beanClazz, label);
@@ -34,43 +45,76 @@ public class BeanDefinitionIntrospector {
             for (Field curField : cur.getDeclaredFields()) {
                 if (Modifier.isStatic(curField.getModifiers())) continue;
                 if (curField.isAnnotationPresent(PropertyIgnore.class)) continue;
-                beanFieldTypeMap.put(curField, findFieldType(curField));
+                beanFieldTypeSet.add(curField);
             }
             for (Method curMethod : cur.getDeclaredMethods()) {
                 if (Modifier.isStatic(curMethod.getModifiers())) continue;
-                candidateMethods.add(curMethod);
+                candidateMethodSet.add(curMethod);
             }
         }
 
-        for (Map.Entry<Field, Class<?>> fieldTypeEntry : beanFieldTypeMap.entrySet()) {
-            final Field candidateField = fieldTypeEntry.getKey();
-            final Class<?> candidateFieldType = fieldTypeEntry.getValue();
+        for (Class<?>[] items = beanClazz.getInterfaces(); items.length != 0;) {
+            final List<Class<?>> candidates = new LinkedList<>();
+            for (Class<?> cur : items) {
+                for (Method curMethod : cur.getDeclaredMethods()) {
+                    if (Modifier.isStatic(curMethod.getModifiers())) continue;
+                    if (curMethod.isAnnotationPresent(PropertyGetter.class) || curMethod.isAnnotationPresent(PropertySetter.class)) candidateMethodSet.add(curMethod);
+                }
+                Collections.addAll(candidates, cur.getInterfaces());
+            }
+            items = candidates.toArray(new Class[0]);
+        }
 
+        for (Field candidateField : beanFieldTypeSet) {
             final String candidateFieldName = candidateField.getName();
             final String propertyName = findProperty(candidateField);
-            if (isPropertyDefined(candidateField)) beanDefinition.putDefinedPropertyKey(propertyName);
 
-            final Method getter = findGetter(candidateFieldName, propertyName, candidateMethods);
-            final Method setter = findSetter(candidateFieldName, propertyName, candidateMethods);
+            if (propertyName.isEmpty()) throw new MapleDslBindingException("Field: " + candidateField + ", propertyName must not be empty.");
+            if (isPropertyDefined(candidateField)) beanDefinition.addDefinedBeanPropertyName(propertyName);
+            beanDefinition.putBeanPropertyType(propertyName, candidateField.getType());
 
-            beanDefinition.putBeanPropertyAccessor(propertyName, candidateFieldType, getter);
-            beanDefinition.putBeanPropertyWriter(propertyName, candidateFieldType, setter);
+            final Method getter = findGetter(candidateFieldName, propertyName, candidateMethodSet);
+            final Method setter = findSetter(candidateFieldName, propertyName, candidateMethodSet);
+
+            if (getter == null) continue;
+            beanDefinition.putBeanPropertyAccessor(propertyName, getter);
+            if (setter == null) continue;
+            beanDefinition.putBeanPropertyWriter(propertyName, setter);
+        }
+
+        for (Method candidateMethod : candidateMethodSet) {
+            final PropertyGetter propertyGetter = findPropertyGetter(candidateMethod);
+            if (propertyGetter == null || propertyGetter.value().isEmpty()) continue;
+            final String propertyName = propertyGetter.value();
+
+            if (beanDefinition.containsBeanPropertyAccessorName(candidateMethod.getName())) continue;
+            beanDefinition.putAccessorNameProperty(candidateMethod.getName(), propertyName);
+
+            if (beanDefinition.containsBeanPropertyAccessor(propertyName)) continue;
+            beanDefinition.putBeanPropertyAccessor(propertyName, candidateMethod);
+        }
+
+        for (Method candidateMethod : candidateMethodSet) {
+            final PropertySetter propertySetter = findPropertySetter(candidateMethod);
+            if (propertySetter == null || propertySetter.value().isEmpty()) continue;
+            final String propertyName = propertySetter.value();
+
+            if (beanDefinition.containsBeanPropertyWriter(propertyName)) continue;
+            beanDefinition.putBeanPropertyWriter(propertyName, candidateMethod);
         }
 
         return beanDefinition;
     }
 
-    public @Nullable String findLabel(Class<?> clazz) {
+    protected @Nullable String findLabel(Class<?> clazz) {
         if (!Model.class.isAssignableFrom(clazz)) return null;
+        if (Model.class == clazz || Model.V.class == clazz || Model.E.class == clazz || Model.Path.class == clazz) return null;
         if (clazz.isAnnotationPresent(Label.class)) return clazz.getDeclaredAnnotation(Label.class).value();
-
         return context.namingStrategy().translate(clazz.getSimpleName(), context.globalLocale());
     }
 
-    public String findProperty(Field field) {
-        if (field.isAnnotationPresent(Property.class)) {
-            return field.getDeclaredAnnotation(Property.class).value();
-        }
+    protected @NotNull String findProperty(Field field) {
+        if (field.isAnnotationPresent(Property.class)) return field.getDeclaredAnnotation(Property.class).value();
         return context.namingStrategy().translate(field.getName(), context.globalLocale());
     }
 
@@ -78,39 +122,43 @@ public class BeanDefinitionIntrospector {
         return !field.isAnnotationPresent(Property.class) || field.getDeclaredAnnotation(Property.class).defined();
     }
 
-    protected Method findGetter(String fieldName, String propertyName, Set<Method> candidateMethods) {
+    protected boolean isAnnotatedPropertyGetter(Method method) {
+        return method.isAnnotationPresent(PropertyGetter.class);
+    }
+
+    protected @Nullable PropertyGetter findPropertyGetter(Method method) {
+        if (!method.isAnnotationPresent(PropertyGetter.class)) return null;
+        return method.getDeclaredAnnotation(PropertyGetter.class);
+    }
+
+    protected @Nullable Method findGetter(String fieldName, String propertyName, Set<Method> candidateMethods) {
         for (Method candidateMethod : candidateMethods) {
-            PropertyGetter propertyGetter = candidateMethod.getDeclaredAnnotation(PropertyGetter.class);
-            if (propertyGetter != null && propertyGetter.value().equalsIgnoreCase(propertyName)){
-                return candidateMethod;
-            }
+            final PropertyGetter propertyGetter = findPropertyGetter(candidateMethod);
+            if (propertyGetter != null && propertyGetter.value().equalsIgnoreCase(propertyName)) return candidateMethod;
+
             final String candidateMethodName = candidateMethod.getName();
-            if (candidateMethodName.startsWith("get") && candidateMethodName.substring(3).equalsIgnoreCase(fieldName)){
-                return candidateMethod;
-            }
+            if (candidateMethodName.startsWith("get") && candidateMethodName.substring(3).equalsIgnoreCase(fieldName)) return candidateMethod;
         }
-        LOG.warn("Field:{} missing the getter method", fieldName);
+
+        if (LOG.isWarnEnabled()) LOG.warn("Field:{} missing the getter method", fieldName);
         return null;
     }
 
-    protected Method findSetter(String fieldName, String propertyName, Set<Method> candidateMethods) {
-        for (Method candidateMethod : candidateMethods) {
-            PropertySetter propertySetter = candidateMethod.getDeclaredAnnotation(PropertySetter.class);
-            if (propertySetter != null && propertySetter.value().equalsIgnoreCase(propertyName)){
-                return candidateMethod;
-            }
-            final String candidateMethodName = candidateMethod.getName();
-            if (candidateMethodName.startsWith("set") && candidateMethodName.substring(3).equalsIgnoreCase(fieldName)){
-                return candidateMethod;
-            }
-        }
-        LOG.warn("Field:{} missing the setter method", fieldName);
-        return null;
+    protected @Nullable PropertySetter findPropertySetter(Method method) {
+        if (!method.isAnnotationPresent(PropertySetter.class)) return null;
+        return method.getDeclaredAnnotation(PropertySetter.class);
     }
 
-    protected Class<?> findFieldType(Field field) {
-        final Class<?> fieldType = field.getType();
-        if (LOG.isDebugEnabled()) LOG.debug("Loading bean definition, Field:{}, Type:{}", field, fieldType);
-        return fieldType;
+    protected @Nullable Method findSetter(String fieldName, String propertyName, Set<Method> candidateMethods) {
+        for (Method candidateMethod : candidateMethods) {
+            final PropertySetter propertySetter = findPropertySetter(candidateMethod);
+            if (propertySetter != null && propertySetter.value().equalsIgnoreCase(propertyName)) return candidateMethod;
+
+            final String candidateMethodName = candidateMethod.getName();
+            if (candidateMethodName.startsWith("set") && candidateMethodName.substring(3).equalsIgnoreCase(fieldName)) return candidateMethod;
+        }
+
+        if (LOG.isWarnEnabled()) LOG.warn("Field:{} missing the setter method", fieldName);
+        return null;
     }
 }

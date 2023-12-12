@@ -1,6 +1,5 @@
 package com.mapledsl.core.extension.introspect;
 
-import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.exception.MapleDslBindingException;
 import com.mapledsl.core.exception.MapleDslException;
 import com.mapledsl.core.extension.KeyPolicyStrategies;
@@ -9,41 +8,22 @@ import com.mapledsl.core.extension.func.ToBooleanFunction;
 import com.mapledsl.core.extension.func.ToCharFunction;
 import com.mapledsl.core.extension.func.ToFloatFunction;
 import com.mapledsl.core.extension.func.ToShortFunction;
-import com.mapledsl.core.module.MapleDslParameterHandler;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.LambdaConversionException;
 import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-import java.util.function.ToDoubleFunction;
-import java.util.function.ToIntFunction;
-import java.util.function.ToLongFunction;
-import java.util.function.UnaryOperator;
+import java.util.function.*;
 
 import static java.lang.invoke.MethodType.methodType;
 
 /**
- * @author bofa1ex
- * @since 2022/08/02
- */
-@SuppressWarnings({"unchecked", "rawtypes"})
+ * The BeanPropertyAccessor class is used to access a specific property of a JavaBean object*/
 class BeanPropertyAccessor {
-    protected final MapleDslConfiguration context;
-    protected final AtomicReference<MapleDslParameterHandler> parameterHandlerRef;
     Function<Object, Object> delegate;
 
-    BeanPropertyAccessor(MapleDslConfiguration context, AtomicReference<MapleDslParameterHandler> parameterHandlerRef) {
-        this.context = context;
-        this.parameterHandlerRef = parameterHandlerRef;
-    }
-
-    BeanPropertyAccessor(MapleDslConfiguration context, MethodHandles.Lookup lookup, Class propertyType, Method getterMethod) {
-        this(context, new AtomicReference<>(context.parameterHandler(propertyType)));
-
+    BeanPropertyAccessor(MethodHandles.Lookup lookup, Method getterMethod) {
         final Class<?> returnType = getterMethod.getReturnType();
         if (!returnType.isPrimitive()) {
             this.delegate = new BeanObjPropertyAccessor(lookup, getterMethod);
@@ -69,34 +49,12 @@ class BeanPropertyAccessor {
         }
     }
 
-    final Object getter(Object bean) {
-        if (bean == null) return null;
-        return delegate.apply(bean);
-    }
-
-    /**
-     * Thread safe for parameter handler complete in runtime.
-     *
-     * @param value before parameterized value.
-     * @return after parameterized value.
-     */
-    final String parameterized(Object value) {
-        // if bean property type is not sure in compile stage,
-        // it will complete in runtime automatically.
-        @NotNull final MapleDslParameterHandler parameterHandler = parameterHandlerRef.updateAndGet(it -> {
-            if (it == null) it = context.parameterHandler(value.getClass());
-            if (it == null) it = context.nullParameterHandler();
-            return it;
-        });
-
-        return parameterHandler.apply(value, context);
-    }
-
     void override(KeyPolicyStrategy keyPolicyStrategy) {
         if (keyPolicyStrategy == KeyPolicyStrategies.MANUAL) return;
         this.delegate = delegate.andThen(keyPolicyStrategy::generate);
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     static class BeanObjPropertyAccessor implements UnaryOperator<Object> {
         final Function<Object, Object> function;
 
@@ -123,6 +81,7 @@ class BeanPropertyAccessor {
         }
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     static class BeanToIntPropertyAccessor implements UnaryOperator<Object> {
         final ToIntFunction<Object> function;
 
@@ -201,6 +160,7 @@ class BeanPropertyAccessor {
         }
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     static class BeanToDoublePropertyAccessor implements UnaryOperator<Object> {
         final ToDoubleFunction function;
 
@@ -226,7 +186,6 @@ class BeanPropertyAccessor {
             return function.applyAsDouble(target);
         }
     }
-
 
     static class BeanToCharPropertyAccessor implements UnaryOperator<Object> {
         final ToCharFunction function;
@@ -254,6 +213,7 @@ class BeanPropertyAccessor {
         }
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     static class BeanToLongPropertyAccessor implements UnaryOperator<Object> {
         final ToLongFunction<Object> function;
 
