@@ -1,8 +1,7 @@
 package com.mapledsl.core.exception;
 
 /**
- * @author bofa1ex
- * @since 2023/8/14
+ * Exception class for Maple Domain-Specific Language (DSL) binding related errors.
  */
 public class MapleDslBindingException extends MapleDslException {
     public MapleDslBindingException(String message) {

@@ -1,8 +1,7 @@
 package com.mapledsl.core.exception;
 
 /**
- * @author bofa1ex
- * @since 2023/8/14
+ * Exception class for errors that occur during the execution of Maple DSL.
  */
 public class MapleDslExecutionException extends MapleDslException {
     public MapleDslExecutionException(String message) {

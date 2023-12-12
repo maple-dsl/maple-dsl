@@ -1,8 +1,8 @@
 package com.mapledsl.core.exception;
 
 /**
- * @author bofa1ex
- * @since 2023/8/14
+ * Exception class for Maple Domain-Specific Language (DSL) related errors
+ * that occur during serialization.
  */
 public class MapleDslSerializedException extends MapleDslException {
     public MapleDslSerializedException(String message) {
