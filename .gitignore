@@ -31,3 +31,6 @@ bin/
 
 /maple-dsl-core/target/
 /maple-dsl-core/target/apidocs/src-html/
+
+/maple-dsl-nebula/build/data/storage0/nebula/**/**.log
+/maple-dsl-nebula/build/logs/
