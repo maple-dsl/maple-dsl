@@ -1,19 +1,19 @@
 package com.mapledsl.nebula.module;
 
 import com.mapledsl.core.exception.MapleDslBindingException;
-import com.mapledsl.core.module.MapleDslDuplexModule;
-import com.mapledsl.core.module.MapleDslResultHandler;
-import com.vesoft.nebula.Value;
+import com.mapledsl.core.module.MapleDslModule;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.function.Predicate;
 
 import static java.util.Objects.requireNonNull;
 
-public class MapleNebulaDslModule extends MapleDslDuplexModule {
+/**
+ * Represents a Maple DSL module for the Nebula dialect.
+ */
+public class MapleNebulaDslModule extends MapleDslModule {
     public static final String VERSION = "nebula:0.1.0-release";
     public static final String DIALECT = "nebula";
 
@@ -37,15 +37,5 @@ public class MapleNebulaDslModule extends MapleDslDuplexModule {
         }
 
         return dialectTemplateProperties;
-    }
-
-    @Override
-    public <IN, OUT> Predicate<MapleDslResultHandler<IN, OUT>> resultHandlerPredicate() {
-        return it -> it.getClass().isAssignableFrom(MapleNebulaDslResultHandler.class);
-    }
-
-    @Override
-    public Predicate<Class<?>> resultValuePredicate() {
-        return Value.class::equals;
     }
 }

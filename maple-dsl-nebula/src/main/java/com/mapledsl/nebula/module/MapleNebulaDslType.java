@@ -1,5 +1,7 @@
 package com.mapledsl.nebula.module;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.mapledsl.core.model.Model;
 import com.mapledsl.nebula.model.NebulaModel;
 import com.vesoft.nebula.Date;
@@ -15,11 +17,39 @@ import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * Enum class representing different types in Maple Nebula DSL.
+ * <p></p>
+ * The MapleNebulaDslType enum provides methods for converting values of type `Value` to the corresponding Java types.
+ * Each enum constant has an `apply` method that takes a `Value` object and returns a value of the corresponding Java type.
+ * <p></p>
+ * The enum constants represent the following types:
+ * 1. NULL: Represents a null value.
+ * 2. BOOLEAN: Represents a boolean value.
+ * 3. LONG: Represents a long value.
+ * 4. DOUBLE: Represents a double value.
+ * 5. STRING: Represents a string value.
+ * 6. DATE: Represents a date value.
+ * 7. TIME: Represents a time value.
+ * 8. DATETIME: Represents a datetime value.
+ * 9. VERTEX: Represents a vertex value.
+ * 10. EDGE: Represents an edge value.
+ * 11. PATH: Represents a path value.
+ * 12. LIST: Represents a list value.
+ * 13. MAP: Represents a map value.
+ * 14. SET: Represents a set value.
+ * 15. DATASET: Represents a dataset value.
+ * 16. GEOGRAPHY: Represents a geography value.
+ * 17. DURATION: Represents a duration value.
+ * <p></p>
+ * The enum has a static method `any` which takes a `Value` object and returns the corresponding Java object based on its set field.
+ * <p></p>
+ */
 @SuppressWarnings("unchecked")
 public enum MapleNebulaDslType {
     NULL(1) {
         @Override
-        public Void apply(Value value) {
+        <R> R apply(Value value) {
             return null;
         }
     },
@@ -106,13 +136,20 @@ public enum MapleNebulaDslType {
             final LinkedList<Map<String, Object>> vertices = new LinkedList<>();
             final LinkedList<Map<String, Object>> edges = new LinkedList<>();
 
+            final Map<String, Object> ret = new HashMap<>();
+            ret.put("vertices", vertices);
+            ret.put("edges", edges);
+
+            if (it.src == null) return ret;
+
             Value cur = Value.vVal(it.src);
             vertices.add(VERTEX.apply(cur));
 
             for (Step step : it.steps) {
+                if (step.dst == null) continue;
                 final Value nextVertex = Value.vVal(step.dst);
-
                 vertices.add(VERTEX.apply(nextVertex));
+
                 edges.add(EDGE.apply(Value.eVal(Edge.builder()
                         .setName(step.name)
                         .setSrc(cur)
@@ -125,16 +162,13 @@ public enum MapleNebulaDslType {
                 cur = nextVertex;
             }
 
-            final Map<String, Object> ret = new HashMap<>();
-            ret.put("vertices", vertices);
-            ret.put("edges", edges);
             return ret;
         }
     },
     LIST(12) {
         @Override
         public List<Object> apply(Value value) {
-            if (value.getLVal().isSetValues()) return Collections.emptyList();
+            if (!value.getLVal().isSetValues()) return Collections.emptyList();
             final List<Value> valueList = value.getLVal().values;
             if (valueList.isEmpty()) return Collections.emptyList();
 
@@ -149,29 +183,51 @@ public enum MapleNebulaDslType {
     MAP(13) {
         @Override
         public Map<String, Object> apply(Value value) {
-            return new LinkedHashMap(){
-                {
-                    for (Map.Entry<byte[], Value> entry : value.getMVal().kvs.entrySet()) {
-                        put(new String(entry.getKey()).intern(), apply(entry.getValue()));
-                    }
-                }
-            };
+            if (!value.getMVal().isSetKvs()) return Maps.newHashMap();
+            final Map<byte[], Value> valueMap = value.getMVal().kvs;
+            if (valueMap.isEmpty()) return Maps.newHashMap();
+
+            final Map<String, Object> ret = new HashMap<>(valueMap.size());
+            for (Map.Entry<byte[], Value> entry : valueMap.entrySet()) {
+                ret.put(new String(entry.getKey()).intern(), apply(entry.getValue()));
+            }
+
+            return ret;
         }
     },
     SET(14) {
         @Override
-        public HashSet apply(Value value) {
-            return new HashSet(){
-                {
-                    for (Value it : value.getUVal().values) { add(any(it)); }
-                }
-            };
+        public Set<Object> apply(Value value) {
+            if (!value.getUVal().isSetValues()) return Sets.newHashSet();
+            final Set<Value> valueSet = value.getUVal().values;
+            if (valueSet.isEmpty()) return Sets.newHashSet();
+
+            final Set<Object> ret = new HashSet<>(valueSet.size());
+            for (Value it : valueSet) {
+                ret.add(any(it));
+            }
+
+            return ret;
         }
     },
     DATASET(15) {
         @Override
-        public Serializable apply(Value value) {
-            throw new UnsupportedOperationException("Has not been implemented.");
+        public Map<String, Set<Object>> apply(Value value) {
+            if (!value.getGVal().isSetRows()) return Maps.newHashMap();
+            if (value.getGVal().rows.isEmpty()) return Maps.newHashMap();
+
+            final Map<String, Set<Object>> ret = new HashMap<>(value.getGVal().rows.size());
+            for (int i = 0; i < value.getGVal().rows.size(); i++) {
+                final Row row = value.getGVal().rows.get(i);
+                final String col = new String(value.getGVal().column_names.get(i)).intern();
+                if (!row.isSetValues()) {
+                    ret.put(col, Collections.emptySet());
+                    continue;
+                }
+
+                ret.put(col, row.values.stream().map(MapleNebulaDslType::any).collect(Collectors.toSet()));
+            }
+            return ret;
         }
     },
     GEOGRAPHY(16) {
@@ -200,7 +256,7 @@ public enum MapleNebulaDslType {
             it -> it.setField, Function.identity()
     ));
 
-    private static Object any(Value value) {
+    public static Object any(Value value) {
         final MapleNebulaDslType nebulaType = NEBULA_DSL_TYPE_MAPPINGS.get(value.getSetField());
         return nebulaType == null ? null : nebulaType.apply(value);
     }
