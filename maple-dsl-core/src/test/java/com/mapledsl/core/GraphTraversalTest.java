@@ -146,7 +146,7 @@ public class GraphTraversalTest {
     }
 
     @Label("person")
-    static class Person extends Model.V {
+    static class Person extends Model.V<String> {
         private String name;
 
         public String getName() {
@@ -160,10 +160,10 @@ public class GraphTraversalTest {
     }
 
     @Label("impact")
-    static class Impact extends Model.E {
+    static class Impact extends Model.E<String> {
     }
 
     @Label("follow")
-    static class Follow extends Model.E {
+    static class Follow extends Model.E<String> {
     }
 }

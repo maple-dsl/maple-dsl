@@ -6,7 +6,7 @@ import com.mapledsl.core.model.Model;
 public class CypherBaseTest {
 
     @Label("person")
-    public static class Person extends Model.V {
+    public static class Person extends Model.V<String> {
         private String name;
         private Integer age;
 
@@ -20,7 +20,16 @@ public class CypherBaseTest {
     }
 
     @Label("impact")
-    public static class Impact extends Model.E {
+    public static class Impact extends Model.E<String> {
+        private String type;
+
+        public String getType() {
+            return type;
+        }
+    }
+
+    @Label("impact_fork")
+    public static class ImpactNum extends Model.E<Long> {
         private String type;
 
         public String getType() {
@@ -29,6 +38,6 @@ public class CypherBaseTest {
     }
 
     @Label("follow")
-    public static class Follow extends Model.E {
+    public static class Follow extends Model.E<String> {
     }
 }

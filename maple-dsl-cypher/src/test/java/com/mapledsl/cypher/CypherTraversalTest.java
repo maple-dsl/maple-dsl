@@ -182,7 +182,7 @@ public class CypherTraversalTest extends CypherBaseTest {
     @ParameterizedTest
     @ValueSource(strings = "MATCH (src) - [e:impact*0..1] -> (p) WHERE id(src) IN [\"p001\",\"p002\"] " +
             "RETURN id(p) AS p_id,p.name AS p_name,head(labels(p)) AS p_tag " +
-            "ORDER BY p_tag ASC,p_id,p_name DESC")
+            "ORDER BY p_tag ASC,p_name DESC")
     public void should_traverse_ordering(String expected) {
         assertEquals(expected, traverse("p001", "p002")
                 .outE(Impact.class)
