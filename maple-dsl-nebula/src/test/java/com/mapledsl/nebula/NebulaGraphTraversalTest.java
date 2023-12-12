@@ -181,7 +181,7 @@ public class NebulaGraphTraversalTest extends NebulaGraphBaseTest {
 
     @ParameterizedTest
     @ValueSource(strings = "GO 0 TO 1 STEPS FROM \"p001\",\"p002\" OVER impact WHERE id($$) IS NOT NULL YIELD id($$) AS p_id,$$.person.name AS p_name,head(labels($$)) AS p_tag " +
-            "| ORDER BY $-.p_tag ASC,$-.p_id,$-.p_name DESC")
+            "| ORDER BY $-.p_tag ASC,$-.p_name DESC")
     public void should_traverse_ordering(String expected) {
         assertEquals(expected, traverse("p001", "p002")
                 .outE(Impact.class)

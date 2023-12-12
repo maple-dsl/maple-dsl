@@ -46,62 +46,62 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
     @ParameterizedTest
     @ValueSource(strings = "FETCH PROP ON impact \"p001\" -> \"p002\"@0 YIELD edge AS e")
     public void should_fetch_edge_return_itself_automatic(String expected) {
-        assertEquals(expected, edge(Impact.class, Impact.of("p001", "p002")).render());
-        assertEquals(expected, edge("impact", Impact.of("p001", "p002")).render());
+        assertEquals(expected, edge(Impact.class, new Impact().setSrc("p001").setDst("p002")).render());
+        assertEquals(expected, edge("impact", new Impact().setSrc("p001").setDst("p002")).render());
     }
 
     @ParameterizedTest
     @ValueSource(strings = "FETCH PROP ON impact \"p001\" -> \"p002\"@0,\"p001\" -> \"p002\"@1,\"p001\" -> \"p003\"@0 YIELD edge AS e")
     public void should_fetch_edges_string_vid_return_itself_automatic(String expected) {
         assertEquals(expected, edge(Impact.class,
-                Impact.of("p001", "p002").setRank(0L),
-                Impact.of("p001", "p002").setRank(1L),
-                Impact.of("p001", "p003"))
+                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
+                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
+                new Impact().setSrc("p001").setDst("p003"))
                 .render());
         assertEquals(expected, edge("impact",
-                Impact.of("p001", "p002").setRank(0L),
-                Impact.of("p001", "p002").setRank(1L),
-                Impact.of("p001", "p003"))
+                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
+                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
+                new Impact().setSrc("p001").setDst("p003"))
                 .render());
         assertEquals(expected, edge("impact",
-                Impact.of("p001", "p002").setRank(0L),
-                Impact.of("p001", "p002").setRank(1L),
-                Impact.of("p001", "p003"))
+                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
+                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
+                new Impact().setSrc("p001").setDst("p003"))
                 .render());
         assertEquals(expected, edge("impact", Arrays.asList(
-                Impact.of("p001", "p002").setRank(0L),
-                Impact.of("p001", "p002").setRank(1L),
-                Impact.of("p001", "p003")))
+                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
+                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
+                new Impact().setSrc("p001").setDst("p003")))
                 .render());
         assertEquals(expected, edge("impact", ImmutableList.of(
-                Impact.of("p001", "p002").setRank(0L),
-                Impact.of("p001", "p002").setRank(1L),
-                Impact.of("p001", "p003")))
+                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
+                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
+                new Impact().setSrc("p001").setDst("p003")))
                 .render());
     }
 
     @ParameterizedTest
     @ValueSource(strings = "FETCH PROP ON impact 1 -> 2@0,1 -> 2@1,1 -> 3@0 YIELD edge AS e")
     public void should_fetch_edges_numeric_vid_return_itself_automatic(String expected) {
-        assertEquals(expected, edge(Impact.class,
-                Impact.of(1, 2).setRank(0L),
-                Impact.of(1, 2).setRank(1L),
-                Impact.of(1, 3))
+        assertEquals(expected, edge(ImpactHash.class,
+                new ImpactHash().setRank(0L).setSrc(1L).setDst(2L),
+                new ImpactHash().setRank(1L).setSrc(1L).setDst(2L),
+                new ImpactHash().setSrc(1L).setDst(3L))
                 .render());
         assertEquals(expected, edge("impact",
-                Impact.of(1, 2).setRank(0L),
-                Impact.of(1, 2).setRank(1L),
-                Impact.of(1, 3))
+                new ImpactHash().setRank(0L).setSrc(1L).setDst(2L),
+                new ImpactHash().setRank(1L).setSrc(1L).setDst(2L),
+                new ImpactHash().setSrc(1L).setDst(3L))
                 .render());
         assertEquals(expected, edge("impact", Arrays.asList(
-                Impact.of(1, 2).setRank(0L),
-                Impact.of(1, 2).setRank(1L),
-                Impact.of(1, 3)))
+                new ImpactHash().setRank(0L).setSrc(1L).setDst(2L),
+                new ImpactHash().setRank(1L).setSrc(1L).setDst(2L),
+                new ImpactHash().setSrc(1L).setDst(3L)))
                 .render());
         assertEquals(expected, edge("impact", ImmutableList.of(
-                Impact.of(1, 2).setRank(0L),
-                Impact.of(1, 2).setRank(1L),
-                Impact.of(1, 3)))
+                new ImpactHash().setRank(0L).setSrc(1L).setDst(2L),
+                new ImpactHash().setRank(1L).setSrc(1L).setDst(2L),
+                new ImpactHash().setSrc(1L).setDst(3L)))
                 .render());
     }
 
@@ -117,9 +117,9 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
     @ValueSource(strings = "FETCH PROP ON impact \"p001\" -> \"p002\"@0,\"p001\" -> \"p002\"@1,\"p001\" -> \"p003\"@0 YIELD dst(edge) AS impact_dst_vid")
     public void should_fetch_edge_with_selection_complicit_alias(String expected) {
         assertEquals(expected, edge(Impact.class,
-                Impact.of("p001", "p002").setRank(0L),
-                Impact.of("p001", "p002").setRank(1L),
-                Impact.of("p001", "p003"))
+                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
+                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
+                new Impact().setSrc("p001").setDst("p003"))
                 .selectAs(Impact::dst, "impact_dst_vid")
                 .render());
     }
@@ -139,9 +139,9 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
             "| ORDER BY $-.impact_dst_vid ASC,$-.rank DESC")
     public void should_fetch_edge_with_selection_ordering(String expected) {
         assertEquals(expected, edge(Impact.class,
-                Impact.of("p001", "p002").setRank(0L),
-                Impact.of("p001", "p002").setRank(1L),
-                Impact.of("p001", "p003"))
+                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
+                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
+                new Impact().setSrc("p001").setDst("p003"))
                 .selectAs(Impact::dst, "impact_dst_vid").ascending()
                 .select(Impact::rank).descending()
                 .render());
@@ -159,9 +159,9 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
     @ValueSource(strings = "FETCH PROP ON impact \"p001\" -> \"p002\"@0,\"p001\" -> \"p002\"@1,\"p001\" -> \"p003\"@0 YIELD edge AS e | YIELD COUNT(*) AS cnt")
     public void should_fetch_edge_with_shadow_selection(String expected) {
         assertEquals(expected, edge(Impact.class,
-                Impact.of("p001", "p002").setRank(0L),
-                Impact.of("p001", "p002").setRank(1L),
-                Impact.of("p001", "p003"))
+                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
+                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
+                new Impact().setSrc("p001").setDst("p003"))
                 .count("cnt")
                 .render());
     }
@@ -179,9 +179,9 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
             "| YIELD COUNT($-.rank) AS rank_cnt")
     public void should_fetch_edge_with_shadow_selection_2(String expected) {
         assertEquals(expected, edge(Impact.class,
-                Impact.of("p001", "p002").setRank(0L),
-                Impact.of("p001", "p002").setRank(1L),
-                Impact.of("p001", "p003"))
+                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
+                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
+                new Impact().setSrc("p001").setDst("p003"))
                 .count(Impact::rank, "rank_cnt")
                 .render());
     }
@@ -200,9 +200,9 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
             "| YIELD COUNT(*) AS cnt,COUNT($-.rank) AS rank_cnt")
     public void should_fetch_edge_with_selection_count(String expected) {
         assertEquals(expected, edge(Impact.class,
-                Impact.of("p001", "p002").setRank(0L),
-                Impact.of("p001", "p002").setRank(1L),
-                Impact.of("p001", "p003"))
+                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
+                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
+                new Impact().setSrc("p001").setDst("p003"))
                 .count("cnt")
                 .count(Impact::rank, "rank_cnt")
                 .render());
@@ -222,9 +222,9 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
             "| YIELD SUM($-.rank) AS sum_rank,SUM($-.rank) AS sum_rank2")
     public void should_fetch_edge_with_selection_sum(String expected) {
         assertEquals(expected, edge(Impact.class,
-                Impact.of("p001", "p002").setRank(0L),
-                Impact.of("p001", "p002").setRank(1L),
-                Impact.of("p001", "p003"))
+                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
+                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
+                new Impact().setSrc("p001").setDst("p003"))
                 .sum(Impact::rank, "sum_rank")
                 .sum("rank", "sum_rank2")
                 .render());
@@ -244,9 +244,9 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
             "| YIELD MAX($-.rank) AS max_rank,MAX($-.rank) AS max_rank2")
     public void should_fetch_edge_with_selection_max(String expected) {
         assertEquals(expected, edge(Impact.class,
-                Impact.of("p001", "p002").setRank(0L),
-                Impact.of("p001", "p002").setRank(1L),
-                Impact.of("p001", "p003"))
+                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
+                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
+                new Impact().setSrc("p001").setDst("p003"))
                 .max(Impact::rank, "max_rank")
                 .max("rank", "max_rank2")
                 .render());
@@ -266,9 +266,9 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
             "| YIELD MIN($-.rank) AS min_rank,MIN($-.rank) AS min_rank2")
     public void should_fetch_edge_with_selection_min(String expected) {
         assertEquals(expected, edge(Impact.class,
-                Impact.of("p001", "p002").setRank(0L),
-                Impact.of("p001", "p002").setRank(1L),
-                Impact.of("p001", "p003"))
+                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
+                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
+                new Impact().setSrc("p001").setDst("p003"))
                 .min(Impact::rank, "min_rank")
                 .min("rank", "min_rank2")
                 .render());
@@ -288,9 +288,9 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
             "| YIELD AVG($-.rank) AS avg_rank,AVG($-.rank) AS avg_rank2")
     public void should_fetch_edge_with_selection_avg(String expected) {
         assertEquals(expected, edge(Impact.class,
-                Impact.of("p001", "p002").setRank(0L),
-                Impact.of("p001", "p002").setRank(1L),
-                Impact.of("p001", "p003"))
+                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
+                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
+                new Impact().setSrc("p001").setDst("p003"))
                 .avg(Impact::rank, "avg_rank")
                 .avg("rank", "avg_rank2")
                 .render());
@@ -310,9 +310,9 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
             "| OFFSET 1 LIMIT 2")
     public void should_match_edge_with_selection_limit(String expected) {
         assertEquals(expected, edge(Impact.class,
-                Impact.of("p001", "p002").setRank(0L),
-                Impact.of("p001", "p002").setRank(1L),
-                Impact.of("p001", "p003"))
+                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
+                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
+                new Impact().setSrc("p001").setDst("p003"))
                 .select(Impact::getType)
                 .limit(1, 2)
                 .render());
