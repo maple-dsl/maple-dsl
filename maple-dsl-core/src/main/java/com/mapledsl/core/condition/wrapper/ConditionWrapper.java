@@ -8,20 +8,19 @@ import com.mapledsl.core.extension.func.SerializableFunction;
 import com.mapledsl.core.model.Model;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
 
-public class ConditionWrapper<M extends Model<?>> implements Condition.Unary<M>, Wrapper {
+public class ConditionWrapper<M extends Model<?>> implements Condition.Unary<M>, Wrapper<M> {
     MapleDslDialectPredicate<M> head, tail;
     private final Consumer<MapleDslDialectBase<M>> predicateDecorator;
-    private final Wrapper delegateWrapper;
+    private final Wrapper<M> delegateWrapper;
     private final AtomicReference<OP> connection = new AtomicReference<>(OP.AND);
 
-    ConditionWrapper(@NotNull Consumer<MapleDslDialectBase<M>> predicateDecorator, @NotNull Wrapper delegateWrapper) {
+    ConditionWrapper(@NotNull Consumer<MapleDslDialectBase<M>> predicateDecorator, @NotNull Wrapper<M> delegateWrapper) {
         this.predicateDecorator = predicateDecorator;
         this.delegateWrapper = delegateWrapper;
     }
@@ -81,51 +80,51 @@ public class ConditionWrapper<M extends Model<?>> implements Condition.Unary<M>,
     }
 
     @Override
-    public ConditionWrapper<M> eq(SerializableFunction<M, Serializable> column, Serializable value) {
+    public ConditionWrapper<M> eq(SerializableFunction<M, ?> column, Object value) {
         requireNonNull(column);
         return eq(column.asText(), value);
     }
 
     @Override
-    public ConditionWrapper<M> eq(boolean condition, SerializableFunction<M, Serializable> column, Serializable value) {
+    public ConditionWrapper<M> eq(boolean condition, SerializableFunction<M, ?> column, Object value) {
         if (!condition) return this;
         return eq(column, value);
     }
 
     @Override
-    public ConditionWrapper<M> eq(boolean condition, String column, Serializable value) {
+    public ConditionWrapper<M> eq(boolean condition, String column, Object value) {
         if (!condition) return this;
         return eq(column, value);
     }
 
     @Override
-    public ConditionWrapper<M> eq(String column, Serializable value) {
+    public ConditionWrapper<M> eq(String column, Object value) {
         requireNonNull(column);
         next(new MapleDslDialectPredicate<>(column, OP.EQ, value));
         return this;
     }
 
     @Override
-    public ConditionWrapper<M> ne(SerializableFunction<M, Serializable> column, Serializable value) {
+    public ConditionWrapper<M> ne(SerializableFunction<M, ?> column, Object value) {
         requireNonNull(column);
         return ne(column.asText(), value);
     }
 
     @Override
-    public ConditionWrapper<M> ne(boolean condition, SerializableFunction<M, Serializable> column, Serializable value) {
+    public ConditionWrapper<M> ne(boolean condition, SerializableFunction<M, ?> column, Object value) {
         if (!condition) return this;
         return ne(column, value);
     }
 
     @Override
-    public ConditionWrapper<M> ne(String column, Serializable value) {
+    public ConditionWrapper<M> ne(String column, Object value) {
         requireNonNull(column);
         next(new MapleDslDialectPredicate<>(column, OP.NE, value));
         return this;
     }
 
     @Override
-    public ConditionWrapper<M> ne(boolean condition, String column, Serializable value) {
+    public ConditionWrapper<M> ne(boolean condition, String column, Object value) {
         if (!condition) return this;
         return ne(column, value);
     }
@@ -231,26 +230,26 @@ public class ConditionWrapper<M extends Model<?>> implements Condition.Unary<M>,
     }
 
     @Override
-    public ConditionWrapper<M> in(SerializableFunction<M, Serializable> column, Collection<Serializable> value) {
+    public ConditionWrapper<M> in(SerializableFunction<M, ?> column, Collection<?> value) {
         requireNonNull(column);
         return in(column.asText(), value);
     }
 
     @Override
-    public ConditionWrapper<M> in(boolean condition, SerializableFunction<M, Serializable> column, Collection<Serializable> value) {
+    public ConditionWrapper<M> in(boolean condition, SerializableFunction<M, ?> column, Collection<?> value) {
         if (!condition) return this;
         return in(column, value);
     }
 
     @Override
-    public ConditionWrapper<M> in(String column, Collection<Serializable> value) {
+    public ConditionWrapper<M> in(String column, Collection<?> value) {
         requireNonNull(column);
         next(new MapleDslDialectPredicate<>(column, OP.IN, value));
         return this;
     }
 
     @Override
-    public ConditionWrapper<M> in(boolean condition, String column, Collection<Serializable> value) {
+    public ConditionWrapper<M> in(boolean condition, String column, Collection<?> value) {
         if (!condition) return this;
         return in(column, value);
     }

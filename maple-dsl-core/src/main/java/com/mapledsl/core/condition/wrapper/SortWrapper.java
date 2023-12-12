@@ -19,23 +19,23 @@ import static java.util.Objects.requireNonNull;
 public class SortWrapper<M extends Model<?>> extends QueryWrapper<M> implements Query.Sort<M> {
     protected final Set<String> orderAscSet = new LinkedHashSet<>();
     protected final Set<String> orderDescSet = new LinkedHashSet<>();
-    private final Set<String> orderCandidateSet = new LinkedHashSet<>();
+    private String[] orderCandidateArr;
 
-    SortWrapper(@NotNull Consumer<MapleDslDialectBase<M>> mapleDslDialectBaseConsumer, @NotNull Wrapper delegateWrapper) {
+    SortWrapper(@NotNull Consumer<MapleDslDialectBase<M>> mapleDslDialectBaseConsumer, @NotNull Wrapper<M> delegateWrapper) {
         super(mapleDslDialectBaseConsumer, delegateWrapper);
     }
 
     @Override
     protected synchronized void next(@NotNull MapleDslDialectFunction<M> next) {
         super.next(next);
-        orderCandidateSet.add(next.alias());
+        orderCandidateArr = new String[] { next.alias() };
     }
 
     @Override
     protected synchronized void next(@NotNull MapleDslDialectSelection<M> next) {
         super.next(next);
         if (next.isAllPresent()) return;
-        Collections.addAll(orderCandidateSet, next.aliases());
+        orderCandidateArr = next.aliases();
     }
 
     @Override
@@ -222,17 +222,15 @@ public class SortWrapper<M extends Model<?>> extends QueryWrapper<M> implements 
 
     @Override
     public synchronized QueryWrapper<M> ascending() {
-        if (orderCandidateSet.isEmpty()) return this;
-        orderAscSet.addAll(orderCandidateSet);
-        orderCandidateSet.clear();
+        if (orderCandidateArr == null || orderCandidateArr.length == 0) return this;
+        Collections.addAll(orderAscSet, orderCandidateArr);
         return this;
     }
 
     @Override
     public synchronized QueryWrapper<M> descending() {
-        if (orderCandidateSet.isEmpty()) return this;
-        orderDescSet.addAll(orderCandidateSet);
-        orderCandidateSet.clear();
+        if (orderCandidateArr == null || orderCandidateArr.length == 0) return this;
+        Collections.addAll(orderDescSet, orderCandidateArr);
         return this;
     }
 }

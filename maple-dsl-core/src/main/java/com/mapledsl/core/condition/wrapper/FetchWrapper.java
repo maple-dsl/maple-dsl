@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-public class FetchWrapper<M extends Model<?>> implements Wrapper, Query<M> {
+public class FetchWrapper<M extends Model<?>> implements Wrapper<M>, Query<M> {
     static final int REF_INDEX = 0;
     static final int LABEL_INDEX = 1;
     static final int FROM_INDEX = 2;
@@ -70,11 +70,11 @@ public class FetchWrapper<M extends Model<?>> implements Wrapper, Query<M> {
         return renderFunc.apply(context, arguments);
     }
 
-    public Wrapper limit(int limit) {
+    public Wrapper<M> limit(int limit) {
         return limit(0, limit);
     }
 
-    public Wrapper limit(int skip, int limit) {
+    public Wrapper<M> limit(int skip, int limit) {
         selection.skip = skip;
         selection.limit = limit;
         return this;

@@ -13,7 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public abstract class QueryWrapper<M extends Model<?>> implements Query<M>, Wrapper {
+public abstract class QueryWrapper<M extends Model<?>> implements Query<M>, Wrapper<M> {
     MapleDslDialectSelection<M> headSelect, tailSelect, headShadowSelect, tailShadowSelect;
     MapleDslDialectFunction<M> headFunc, tailFunc;
     Integer skip, limit;
@@ -21,9 +21,9 @@ public abstract class QueryWrapper<M extends Model<?>> implements Query<M>, Wrap
     private final Set<String> selectionColumnSet = new LinkedHashSet<>();
     private final Set<String> selectionAliaSet = new LinkedHashSet<>();
     private final Consumer<MapleDslDialectBase<M>> dialectBaseConsumer;
-    private final Wrapper delegateWrapper;
+    private final Wrapper<M> delegateWrapper;
 
-    QueryWrapper(@NotNull Consumer<MapleDslDialectBase<M>> dialectBaseConsumer, @NotNull Wrapper delegateWrapper) {
+    QueryWrapper(@NotNull Consumer<MapleDslDialectBase<M>> dialectBaseConsumer, @NotNull Wrapper<M> delegateWrapper) {
         this.dialectBaseConsumer = dialectBaseConsumer;
         this.delegateWrapper = delegateWrapper;
     }
@@ -161,11 +161,11 @@ public abstract class QueryWrapper<M extends Model<?>> implements Query<M>, Wrap
         tailShadowSelect = tailShadowSelect.next;
     }
 
-    public Wrapper limit(int limit) {
+    public Wrapper<M> limit(int limit) {
         return limit(0, limit);
     }
 
-    public Wrapper limit(int skip, int limit) {
+    public Wrapper<M> limit(int skip, int limit) {
         this.skip = skip;
         this.limit = limit;
         return this;

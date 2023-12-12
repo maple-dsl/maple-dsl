@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.function.BiFunction;
 
-public abstract class TraversalWrapper implements Traversal, Wrapper {
+public abstract class TraversalWrapper implements Traversal, Wrapper<Model<?>> {
     static final int LENGTH = 26;
     static final int STEP_M_INDEX = 0;
     static final int STEP_N_INDEX = 1;
@@ -103,37 +103,37 @@ public abstract class TraversalWrapper implements Traversal, Wrapper {
     }
 
     @Override
-    public abstract TraversalStepWrapper inE(int stepM, int stepN, Collection<Class<? extends Model.E>> over);
+    public abstract TraversalStepWrapper inE(int stepM, int stepN, Collection<Class<? extends Model.E<?>>> over);
 
     @Override
-    public abstract TraversalStepWrapper inE(int stepM, int stepN, Class<? extends Model.E> over);
+    public abstract TraversalStepWrapper inE(int stepM, int stepN, Class<? extends Model.E<?>> over);
 
     @Override
-    public abstract TraversalStepWrapper inE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second);
+    public abstract TraversalStepWrapper inE(int stepM, int stepN, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second);
 
     @Override
-    public abstract TraversalStepWrapper inE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
+    public abstract TraversalStepWrapper inE(int stepM, int stepN, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second, Class<? extends Model.E<?>> third);
 
     @Override
     public abstract TraversalStepWrapper inE(int stepM, int stepN, @NotNull String... over);
 
     @Override
-    public TraversalStepWrapper inE(int step, Collection<Class<? extends Model.E>> over) {
+    public TraversalStepWrapper inE(int step, Collection<Class<? extends Model.E<?>>> over) {
         return inE(0, step, over);
     }
 
     @Override
-    public TraversalStepWrapper inE(int step, Class<? extends Model.E> over) {
+    public TraversalStepWrapper inE(int step, Class<? extends Model.E<?>> over) {
         return inE(0, step, over);
     }
 
     @Override
-    public TraversalStepWrapper inE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second) {
+    public TraversalStepWrapper inE(int step, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second) {
         return inE(0, step, first, second);
     }
 
     @Override
-    public TraversalStepWrapper inE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
+    public TraversalStepWrapper inE(int step, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second, Class<? extends Model.E<?>> third) {
         return inE(0, step, first, second, third);
     }
 
@@ -143,22 +143,22 @@ public abstract class TraversalWrapper implements Traversal, Wrapper {
     }
 
     @Override
-    public TraversalStepWrapper inE(Collection<Class<? extends Model.E>> over) {
+    public TraversalStepWrapper inE(Collection<Class<? extends Model.E<?>>> over) {
         return inE(1, over);
     }
 
     @Override
-    public TraversalStepWrapper inE(Class<? extends Model.E> over) {
+    public TraversalStepWrapper inE(Class<? extends Model.E<?>> over) {
         return inE(1, over);
     }
 
     @Override
-    public TraversalStepWrapper inE(Class<? extends Model.E> first, Class<? extends Model.E> second) {
+    public TraversalStepWrapper inE(Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second) {
         return inE(1, first, second);
     }
 
     @Override
-    public TraversalStepWrapper inE(Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
+    public TraversalStepWrapper inE(Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second, Class<? extends Model.E<?>> third) {
         return inE(1, first, second, third);
     }
 
@@ -168,37 +168,37 @@ public abstract class TraversalWrapper implements Traversal, Wrapper {
     }
 
     @Override
-    public abstract TraversalStepWrapper outE(int stepM, int stepN, Collection<Class<? extends Model.E>> over);
+    public abstract TraversalStepWrapper outE(int stepM, int stepN, Collection<Class<? extends Model.E<?>>> over);
 
     @Override
-    public abstract TraversalStepWrapper outE(int stepM, int stepN, Class<? extends Model.E> over);
+    public abstract TraversalStepWrapper outE(int stepM, int stepN, Class<? extends Model.E<?>> over);
 
     @Override
-    public abstract TraversalStepWrapper outE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second);
+    public abstract TraversalStepWrapper outE(int stepM, int stepN, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second);
 
     @Override
-    public abstract TraversalStepWrapper outE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
+    public abstract TraversalStepWrapper outE(int stepM, int stepN, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second, Class<? extends Model.E<?>> third);
 
     @Override
     public abstract TraversalStepWrapper outE(int stepM, int stepN, String... over);
 
     @Override
-    public TraversalStepWrapper outE(int step, Collection<Class<? extends Model.E>> over) {
+    public TraversalStepWrapper outE(int step, Collection<Class<? extends Model.E<?>>> over) {
         return outE(0, step, over);
     }
 
     @Override
-    public TraversalStepWrapper outE(int step, Class<? extends Model.E> over) {
+    public TraversalStepWrapper outE(int step, Class<? extends Model.E<?>> over) {
         return outE(0, step, over);
     }
 
     @Override
-    public TraversalStepWrapper outE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second) {
+    public TraversalStepWrapper outE(int step, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second) {
         return outE(0, step, first, second);
     }
 
     @Override
-    public TraversalStepWrapper outE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
+    public TraversalStepWrapper outE(int step, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second, Class<? extends Model.E<?>> third) {
         return outE(0, step, first, second, third);
     }
 
@@ -208,22 +208,22 @@ public abstract class TraversalWrapper implements Traversal, Wrapper {
     }
 
     @Override
-    public TraversalStepWrapper outE(Collection<Class<? extends Model.E>> over) {
+    public TraversalStepWrapper outE(Collection<Class<? extends Model.E<?>>> over) {
         return outE(1, over);
     }
 
     @Override
-    public TraversalStepWrapper outE(Class<? extends Model.E> over) {
+    public TraversalStepWrapper outE(Class<? extends Model.E<?>> over) {
         return outE(1, over);
     }
 
     @Override
-    public TraversalStepWrapper outE(Class<? extends Model.E> first, Class<? extends Model.E> second) {
+    public TraversalStepWrapper outE(Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second) {
         return outE(1, first, second);
     }
 
     @Override
-    public TraversalStepWrapper outE(Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
+    public TraversalStepWrapper outE(Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second, Class<? extends Model.E<?>> third) {
         return outE(1, first, second, third);
     }
 
@@ -233,37 +233,37 @@ public abstract class TraversalWrapper implements Traversal, Wrapper {
     }
 
     @Override
-    public abstract TraversalStepWrapper bothE(int stepM, int stepN, Collection<Class<? extends Model.E>> over);
+    public abstract TraversalStepWrapper bothE(int stepM, int stepN, Collection<Class<? extends Model.E<?>>> over);
 
     @Override
-    public abstract TraversalStepWrapper bothE(int stepM, int stepN, Class<? extends Model.E> over);
+    public abstract TraversalStepWrapper bothE(int stepM, int stepN, Class<? extends Model.E<?>> over);
 
     @Override
-    public abstract TraversalStepWrapper bothE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second);
+    public abstract TraversalStepWrapper bothE(int stepM, int stepN, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second);
 
     @Override
-    public abstract TraversalStepWrapper bothE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third);
+    public abstract TraversalStepWrapper bothE(int stepM, int stepN, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second, Class<? extends Model.E<?>> third);
 
     @Override
     public abstract TraversalStepWrapper bothE(int stepM, int stepN, String... over);
 
     @Override
-    public TraversalStepWrapper bothE(int step, Collection<Class<? extends Model.E>> over) {
+    public TraversalStepWrapper bothE(int step, Collection<Class<? extends Model.E<?>>> over) {
         return bothE(0, step, over);
     }
 
     @Override
-    public TraversalStepWrapper bothE(int step, Class<? extends Model.E> over) {
+    public TraversalStepWrapper bothE(int step, Class<? extends Model.E<?>> over) {
         return bothE(0, step, over);
     }
 
     @Override
-    public TraversalStepWrapper bothE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second) {
+    public TraversalStepWrapper bothE(int step, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second) {
         return bothE(0, step, first, second);
     }
 
     @Override
-    public TraversalStepWrapper bothE(int step, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
+    public TraversalStepWrapper bothE(int step, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second, Class<? extends Model.E<?>> third) {
         return bothE(0, step, first, second, third);
     }
 
@@ -273,22 +273,22 @@ public abstract class TraversalWrapper implements Traversal, Wrapper {
     }
 
     @Override
-    public TraversalStepWrapper bothE(Collection<Class<? extends Model.E>> over) {
+    public TraversalStepWrapper bothE(Collection<Class<? extends Model.E<?>>> over) {
         return bothE(1, over);
     }
 
     @Override
-    public TraversalStepWrapper bothE(Class<? extends Model.E> over) {
+    public TraversalStepWrapper bothE(Class<? extends Model.E<?>> over) {
         return bothE(1, over);
     }
 
     @Override
-    public TraversalStepWrapper bothE(Class<? extends Model.E> first, Class<? extends Model.E> second) {
+    public TraversalStepWrapper bothE(Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second) {
         return bothE(1, first, second);
     }
 
     @Override
-    public TraversalStepWrapper bothE(Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
+    public TraversalStepWrapper bothE(Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second, Class<? extends Model.E<?>> third) {
         return bothE(1, first, second, third);
     }
 
@@ -312,14 +312,14 @@ public abstract class TraversalWrapper implements Traversal, Wrapper {
         if (nextTraversalFrom == null) {
             if (terminate && curTraversalCompanionSet.isEmpty()) {
                 nextTraversalFrom = DEFAULT_NEXT_TRAVERSAL_FROM_ALIAS;
-                shadowSelectionList.add(new MapleDslDialectSelection<Model.V>(Model.ID, nextTraversalFrom)
+                shadowSelectionList.add(new MapleDslDialectSelection<Model.V<?>>(Model.ID, nextTraversalFrom)
                         .setOut(true)
                         .setInstantiatedAlias(DEFAULT_OUT_ALIAS)
                 );
             }
             if (!terminate) {
                 nextTraversalFrom = DEFAULT_NEXT_TRAVERSAL_FROM_ALIAS;
-                shadowSelectionList.add(new MapleDslDialectSelection<Model.V>(Model.ID, nextTraversalFrom)
+                shadowSelectionList.add(new MapleDslDialectSelection<Model.V<?>>(Model.ID, nextTraversalFrom)
                         .setOut(true)
                         .setInstantiatedAlias(DEFAULT_OUT_ALIAS)
                 );

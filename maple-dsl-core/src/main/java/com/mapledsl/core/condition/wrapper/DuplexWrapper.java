@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
 
-abstract class DuplexWrapper<M extends Model<?>, Children> implements Query<M>, Condition<M, Children>, Wrapper {
+abstract class DuplexWrapper<M extends Model<?>, Children> implements Query<M>, Condition<M, Children>, Wrapper<M> {
     protected final SortWrapper<M> selection;
     protected final ConditionWrapper<M> predicate;
 
@@ -72,49 +72,49 @@ abstract class DuplexWrapper<M extends Model<?>, Children> implements Query<M>, 
     }
 
     @Override
-    public final Children eq(SerializableFunction<M, Serializable> column, Serializable value) {
+    public final Children eq(SerializableFunction<M, ?> column, Object value) {
         this.predicate.eq(column, value);
         return instance();
     }
 
     @Override
-    public final Children eq(boolean condition, SerializableFunction<M, Serializable> column, Serializable value) {
+    public final Children eq(boolean condition, SerializableFunction<M, ?> column, Object value) {
         if (!condition) return instance();
         return eq(column, value);
     }
 
     @Override
-    public final Children eq(String column, Serializable value) {
+    public final Children eq(String column, Object value) {
         this.predicate.eq(column, value);
         return instance();
     }
 
     @Override
-    public final Children eq(boolean condition, String column, Serializable value) {
+    public final Children eq(boolean condition, String column, Object value) {
         if (!condition) return instance();
         return eq(column, value);
     }
 
     @Override
-    public final Children ne(SerializableFunction<M, Serializable> column, Serializable value) {
+    public final Children ne(SerializableFunction<M, ?> column, Object value) {
         this.predicate.ne(column, value);
         return instance();
     }
 
     @Override
-    public final Children ne(boolean condition, SerializableFunction<M, Serializable> column, Serializable value) {
+    public final Children ne(boolean condition, SerializableFunction<M, ?> column, Object value) {
         if (!condition) return instance();
         return ne(column, value);
     }
 
     @Override
-    public final Children ne(String column, Serializable value) {
+    public final Children ne(String column, Object value) {
         this.predicate.ne(column, value);
         return instance();
     }
 
     @Override
-    public final Children ne(boolean condition, String column, Serializable value) {
+    public final Children ne(boolean condition, String column, Object value) {
         if (!condition) return instance();
         return ne(column, value);
     }
@@ -216,25 +216,25 @@ abstract class DuplexWrapper<M extends Model<?>, Children> implements Query<M>, 
     }
 
     @Override
-    public final Children in(SerializableFunction<M, Serializable> column, Collection<Serializable> value) {
+    public final Children in(SerializableFunction<M, ?> column, Collection<?> value) {
         this.predicate.in(column, value);
         return instance();
     }
 
     @Override
-    public final Children in(boolean condition, SerializableFunction<M, Serializable> column, Collection<Serializable> value) {
+    public final Children in(boolean condition, SerializableFunction<M, ?> column, Collection<?> value) {
         if (!condition) return instance();
         return in(column, value);
     }
 
     @Override
-    public final Children in(String column, Collection<Serializable> value) {
+    public final Children in(String column, Collection<?> value) {
         this.predicate.in(column, value);
         return instance();
     }
 
     @Override
-    public final Children in(boolean condition, String column, Collection<Serializable> value) {
+    public final Children in(boolean condition, String column, Collection<?> value) {
         if (!condition) return instance();
         return in(column, value);
     }

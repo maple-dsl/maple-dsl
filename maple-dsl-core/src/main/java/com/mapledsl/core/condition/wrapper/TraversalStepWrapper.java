@@ -21,7 +21,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public TraversalStepWrapper inE(int stepM, int stepN, Collection<Class<? extends Model.E>> over) {
+    public TraversalStepWrapper inE(int stepM, int stepN, Collection<Class<? extends Model.E<?>>> over) {
         if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
         if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
         // if over is null, it will render as `*`
@@ -36,7 +36,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public TraversalStepWrapper inE(int stepM, int stepN, Class<? extends Model.E> over) {
+    public TraversalStepWrapper inE(int stepM, int stepN, Class<? extends Model.E<?>> over) {
         if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
         if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
         // if over is null, it will render as `*`
@@ -51,7 +51,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public TraversalStepWrapper inE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second) {
+    public TraversalStepWrapper inE(int stepM, int stepN, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second) {
         if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
         if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
         if (first == null) throw new MapleDslExecutionException("edgeType `first` must not be null.");
@@ -68,7 +68,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public TraversalStepWrapper inE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
+    public TraversalStepWrapper inE(int stepM, int stepN, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second, Class<? extends Model.E<?>> third) {
         if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
         if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
         if (first == null) throw new MapleDslExecutionException("edgeType `first` must not be null.");
@@ -101,7 +101,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public TraversalStepWrapper outE(int stepM, int stepN, Collection<Class<? extends Model.E>> over) {
+    public TraversalStepWrapper outE(int stepM, int stepN, Collection<Class<? extends Model.E<?>>> over) {
         if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0");
         if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1");
         // if over is null, it will render as `*`
@@ -116,7 +116,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public TraversalStepWrapper outE(int stepM, int stepN, Class<? extends Model.E> over) {
+    public TraversalStepWrapper outE(int stepM, int stepN, Class<? extends Model.E<?>> over) {
         if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0");
         if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1");
         // if over is null, it will render as `*`
@@ -131,7 +131,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public TraversalStepWrapper outE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second) {
+    public TraversalStepWrapper outE(int stepM, int stepN, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second) {
         if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
         if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
         if (first == null) throw new MapleDslExecutionException("edgeType `first` must not be null.");
@@ -148,7 +148,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public TraversalStepWrapper outE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
+    public TraversalStepWrapper outE(int stepM, int stepN, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second, Class<? extends Model.E<?>> third) {
         if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
         if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
         if (first == null) throw new MapleDslExecutionException("edgeType `first` must not be null.");
@@ -181,7 +181,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public TraversalStepWrapper bothE(int stepM, int stepN, Collection<Class<? extends Model.E>> over) {
+    public TraversalStepWrapper bothE(int stepM, int stepN, Collection<Class<? extends Model.E<?>>> over) {
         if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
         if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
         // if over is null, it will render as `*`
@@ -196,7 +196,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public TraversalStepWrapper bothE(int stepM, int stepN, Class<? extends Model.E> over) {
+    public TraversalStepWrapper bothE(int stepM, int stepN, Class<? extends Model.E<?>> over) {
         if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
         if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
         // if over is null, it will render as `*`
@@ -211,7 +211,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public TraversalStepWrapper bothE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second) {
+    public TraversalStepWrapper bothE(int stepM, int stepN, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second) {
         if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
         if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
         if (first == null) throw new MapleDslExecutionException("edgeType `first` must not be null.");
@@ -228,7 +228,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public TraversalStepWrapper bothE(int stepM, int stepN, Class<? extends Model.E> first, Class<? extends Model.E> second, Class<? extends Model.E> third) {
+    public TraversalStepWrapper bothE(int stepM, int stepN, Class<? extends Model.E<?>> first, Class<? extends Model.E<?>> second, Class<? extends Model.E<?>> third) {
         if (stepM < 0) throw new MapleDslExecutionException("stepM must not >= 0.");
         if (stepN < 1) throw new MapleDslExecutionException("stepN must not >= 1.");
         if (first == null) throw new MapleDslExecutionException("edgeType `first` must not be null.");
@@ -261,7 +261,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public <V extends Model.V> TraversalStepWrapper outV(String alias, Consumer<Step<V>> step) {
+    public <V extends Model.V<?>> TraversalStepWrapper outV(String alias, Consumer<Step<V>> step) {
         if (Objects.nonNull(arguments[OUT_ALIAS_INDEX])) throw new IllegalArgumentException("outV alias has been defined.");
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("outV alias must not be empty.");
         this.arguments[OUT_ALIAS_INDEX] = alias;
@@ -274,7 +274,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public <V extends Model.V> TraversalStepWrapper outV(String alias, Class<V> label, Consumer<Step<V>> step) {
+    public <V extends Model.V<?>> TraversalStepWrapper outV(String alias, Class<V> label, Consumer<Step<V>> step) {
         if (Objects.nonNull(arguments[OUT_ALIAS_INDEX])) throw new IllegalArgumentException("outV alias has been defined.");
         if (Objects.isNull(label)) throw new IllegalArgumentException("outV label must not be null.");
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("outV alias must not be empty.");
@@ -288,7 +288,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public <V extends Model.V> TraversalStepWrapper outV(String alias, String label, Consumer<Step<V>> step) {
+    public <V extends Model.V<?>> TraversalStepWrapper outV(String alias, String label, Consumer<Step<V>> step) {
         if (Objects.nonNull(arguments[OUT_ALIAS_INDEX])) throw new IllegalArgumentException("outV alias has been defined.");
         if (Objects.isNull(label)) throw new IllegalArgumentException("outV label must not be null.");
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("outV alias must not be empty.");
@@ -302,7 +302,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public <V extends Model.V> TraversalStepWrapper inV(String alias, Consumer<Step<V>> step) {
+    public <V extends Model.V<?>> TraversalStepWrapper inV(String alias, Consumer<Step<V>> step) {
         if (Objects.nonNull(arguments[IN_ALIAS_INDEX])) throw new IllegalArgumentException("inV alias has been defined.");
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("inV alias must not be empty.");
         this.arguments[IN_ALIAS_INDEX] = alias;
@@ -314,7 +314,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public <V extends Model.V> TraversalStepWrapper inV(String alias, Class<V> label, Consumer<Step<V>> step) {
+    public <V extends Model.V<?>> TraversalStepWrapper inV(String alias, Class<V> label, Consumer<Step<V>> step) {
         if (Objects.nonNull(arguments[IN_ALIAS_INDEX])) throw new IllegalArgumentException("inV alias has been defined.");
         if (Objects.isNull(label)) throw new IllegalArgumentException("inV label must not be null.");
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("inV alias must not be empty.");
@@ -327,7 +327,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public <V extends Model.V> TraversalStepWrapper inV(String alias, String label, Consumer<Step<V>> step) {
+    public <V extends Model.V<?>> TraversalStepWrapper inV(String alias, String label, Consumer<Step<V>> step) {
         if (Objects.nonNull(arguments[IN_ALIAS_INDEX])) throw new IllegalArgumentException("inV alias has been defined.");
         if (Objects.isNull(label)) throw new IllegalArgumentException("inV label must not be null.");
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("inV alias must not be empty.");
@@ -340,7 +340,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public <E extends Model.E> TraversalStepWrapper edge(String alias, Class<E> label, Consumer<Step<E>> step) {
+    public <E extends Model.E<?>> TraversalStepWrapper edge(String alias, Class<E> label, Consumer<Step<E>> step) {
         if (Objects.nonNull(arguments[EDGE_ALIAS_INDEX])) throw new IllegalArgumentException("edge alias has been defined.");
         if (Objects.isNull(label)) throw new IllegalArgumentException("edge label must not be null.");
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("edge alias must not be empty.");
@@ -353,7 +353,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public <E extends Model.E> TraversalStepWrapper edge(String alias, Consumer<Step<E>> step) {
+    public <E extends Model.E<?>> TraversalStepWrapper edge(String alias, Consumer<Step<E>> step) {
         if (Objects.nonNull(arguments[EDGE_ALIAS_INDEX])) throw new IllegalArgumentException("edge alias has been defined.");
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("edge alias must not be empty.");
         this.arguments[EDGE_ALIAS_INDEX] = alias;
@@ -365,7 +365,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
     }
 
     @Override
-    public <E extends Model.E> TraversalStepWrapper edge(String alias, String label, Consumer<Step<E>> stepConsumer) {
+    public <E extends Model.E<?>> TraversalStepWrapper edge(String alias, String label, Consumer<Step<E>> stepConsumer) {
         if (Objects.nonNull(arguments[EDGE_ALIAS_INDEX])) throw new IllegalArgumentException("edge alias has been defined.");
         if (Objects.isNull(label)) throw new IllegalArgumentException("edge label must not be null.");
         if (Objects.isNull(alias) || alias.trim().isEmpty()) throw new IllegalArgumentException("edge alias must not be empty.");
@@ -389,7 +389,7 @@ public class TraversalStepWrapper extends TraversalWrapper implements TraversalS
         return this;
     }
 
-    class StepWrapper<M extends Model<?>> extends DuplexWrapper<M, Step<M>> implements Step<M>, UnsupportedWrapper {
+    class StepWrapper<M extends Model<?>> extends DuplexWrapper<M, Step<M>> implements Step<M>, UnsupportedWrapper<M> {
 
         public StepWrapper(Consumer<MapleDslDialectBase<M>> renderModelDecorator) {
             super(renderModelDecorator,

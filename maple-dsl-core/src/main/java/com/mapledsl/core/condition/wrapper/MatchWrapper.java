@@ -74,11 +74,11 @@ public class MatchWrapper<M extends Model<?>> extends DuplexWrapper<M, MatchWrap
         return this;
     }
 
-    public Wrapper limit(int limit) {
+    public Wrapper<M> limit(int limit) {
         return limit(0, limit);
     }
 
-    public Wrapper limit(int skip, int limit) {
+    public Wrapper<M> limit(int skip, int limit) {
         selection.skip = skip;
         selection.limit = limit;
         return this;
