@@ -78,7 +78,7 @@ public interface MapleDslSession extends Closeable {
      */
     @Nullable <T> T selectOne(String stmt, Class<T> mappedEntityType);
 
-    default @Nullable <T> T selectOne(Wrapper stmtWrapper, Class<T> mappedEntityType) {
+    default @Nullable <T> T selectOne(Wrapper<?> stmtWrapper, Class<T> mappedEntityType) {
         return selectOne(requireNonNull(stmtWrapper).render(configuration()), mappedEntityType);
     }
 
@@ -106,7 +106,7 @@ public interface MapleDslSession extends Closeable {
      */
     @NotNull Map<String, Object> selectMap(@NotNull String stmt);
 
-    default @NotNull Map<String, Object> selectMap(@NotNull Wrapper stmtWrapper) {
+    default @NotNull Map<String, Object> selectMap(@NotNull Wrapper<?> stmtWrapper) {
         return selectMap(requireNonNull(stmtWrapper).render(configuration()));
     }
 
@@ -116,11 +116,11 @@ public interface MapleDslSession extends Closeable {
      * objects.
      *
      * @param stmt complete sql statement
-     * @return Map containing key pair data.
+     * @return containing key pair data.
      */
     @NotNull List<Map<String, Object>> selectMaps(@NotNull String stmt);
 
-    default @NotNull List<Map<String, Object>> selectMaps(@NotNull Wrapper stmtWrapper) {
+    default @NotNull List<Map<String, Object>> selectMaps(@NotNull Wrapper<?> stmtWrapper) {
         return selectMaps(requireNonNull(stmtWrapper).render(configuration()));
     }
 
@@ -132,7 +132,7 @@ public interface MapleDslSession extends Closeable {
      */
     boolean execute(@NotNull String stmt) throws MapleDslException;
 
-    default boolean execute(Wrapper stmtWrapper) {
+    default boolean execute(Wrapper<?> stmtWrapper) {
         return execute(requireNonNull(stmtWrapper).render(configuration()));
     }
 

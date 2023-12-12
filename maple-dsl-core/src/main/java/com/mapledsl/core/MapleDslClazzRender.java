@@ -9,7 +9,7 @@ import java.util.Locale;
  * The MapleDslClazzRender class is an implementation of the AttributeRenderer interface for rendering Class objects.
  * It is also aware of the MapleDslDialect context and provides helper methods for rendering DSL expressions.
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class MapleDslClazzRender implements AttributeRenderer<Class>, MapleDslDialectContextAware, MapleDslDialectRenderHelper {
     private MapleDslConfiguration context;
 

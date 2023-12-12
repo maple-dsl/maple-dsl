@@ -16,8 +16,6 @@ public interface ThrowingSupplier<T, E extends Throwable> {
     /**
      * Retrieves a result through the supplier function.
      *
-     * @param <T> the type of the result
-     * @param <E> the type of the checked exception that can be thrown
      * @return the result obtained by executing the supplier function
      * @throws E if the supplier function throws a checked exception
      */

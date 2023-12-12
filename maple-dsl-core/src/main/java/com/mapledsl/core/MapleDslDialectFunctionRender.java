@@ -23,6 +23,7 @@ import java.util.Locale;
  * - {@code MapleNebulaDslDialectFunctionRender}: implements the {@code toFunction} method for the Maple DSL Nebula module.
  * - {@code MapleCypherDslDialectFunctionRender}: implements the {@code toFunction} method for the Maple DSL Cypher module.
  */
+@SuppressWarnings("rawtypes")
 public abstract class MapleDslDialectFunctionRender implements AttributeRenderer<MapleDslDialectFunction>, MapleDslDialectAware, MapleDslDialectContextAware, MapleDslDialectRenderHelper {
     protected MapleDslConfiguration context;
     protected abstract String toFunction(MapleDslDialectFunction<?> value);

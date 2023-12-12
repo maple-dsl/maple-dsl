@@ -267,6 +267,7 @@ public final class MapleNebulaDslSession implements MapleDslSession {
 
     private <T> List<T> createValuesResult(@NotNull Class<T> valueType, @NotNull List<Value> values) {
         final List<T> ret= new ArrayList<>(values.size());
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < values.size(); i++) {
             final Value value = values.get(i);
             if (value == null || value.getFieldValue() == null) continue;
