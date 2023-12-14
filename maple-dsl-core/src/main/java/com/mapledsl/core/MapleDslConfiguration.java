@@ -179,24 +179,24 @@ public final class MapleDslConfiguration {
     }
 
     @SuppressWarnings("unchecked")
-    public @Nullable <ID> BeanDefinition<Model.V<ID>> vertexDefinition() {
+    public @NotNull <ID> BeanDefinition<Model.V<ID>> vertexDefinition() {
         try {
             final BeanDefinition<?> vertexDefinition = mapperRegistry.getBeanDefinition(Model.V.class);
             return (BeanDefinition<Model.V<ID>>) vertexDefinition;
         } catch (MapleDslUncheckedException e) {
-            return null;
+            throw e;
         } catch (Exception e) {
             throw new MapleDslException(e);
         }
     }
 
     @SuppressWarnings("unchecked")
-    public @Nullable <ID> BeanDefinition<Model.E<ID>> edgeDefinition() {
+    public @NotNull <ID> BeanDefinition<Model.E<ID>> edgeDefinition() {
         try {
             final BeanDefinition<?> edgeDefinition = mapperRegistry.getBeanDefinition(Model.E.class);
             return (BeanDefinition<Model.E<ID>>) edgeDefinition;
         } catch (MapleDslUncheckedException e) {
-            return null;
+            throw e;
         } catch (Exception e) {
             throw new MapleDslException(e);
         }
