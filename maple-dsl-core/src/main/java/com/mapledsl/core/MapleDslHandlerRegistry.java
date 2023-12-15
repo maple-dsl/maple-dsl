@@ -26,6 +26,7 @@ final class MapleDslHandlerRegistry {
      * row: inbound field type, column: value: result handler.
      */
     final Table<Class<?>, Class<?>, MapleDslResultHandler<?,?>> resultHandlerTable;
+    final Table<Class<?>, Class<?>, MapleDslResultHandler<?,?>> companionResultHandleTable;
     /**
      * key: inbound field type, value: definition result handler.
      */
@@ -66,6 +67,13 @@ final class MapleDslHandlerRegistry {
                 .map(MapleDslResultHandlerCollector::resultHandlers)
                 .map(Collection::stream)
                 .orElseGet(Stream::empty), MapleDslResultHandlerCollector.defaultResultHandlers().stream())
+                .collect(Tables.toTable(MapleDslResultHandler::inboundType, MapleDslResultHandler::outboundType, Function.identity(), HashBasedTable::create)));
+
+        //noinspection UnstableApiUsage
+        this.companionResultHandleTable = Tables.synchronizedTable(resultHandlerCollectorOpt
+                        .map(MapleDslResultHandlerCollector::companionResultHandlers)
+                        .map(Collection::stream)
+                        .orElseGet(Stream::empty)
                 .collect(Tables.toTable(MapleDslResultHandler::inboundType, MapleDslResultHandler::outboundType, Function.identity(), HashBasedTable::create)));
 
         this.definitionResultHandlerMap = Collections.synchronizedMap(Stream.concat(resultHandlerCollectorOpt

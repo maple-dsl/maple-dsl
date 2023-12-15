@@ -1,5 +1,6 @@
 package com.mapledsl.core.module;
 
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
@@ -17,12 +18,17 @@ public interface MapleDslResultHandlerCollector {
      * @return The set of Maple DSL result handlers.
      */
     Set<MapleDslResultHandler<?,?>> resultHandlers();
+
     /**
      * Retrieves a set of Maple DSL definition result handlers.
      *
      * @return The set of Maple DSL definition result handlers.
      */
     Set<MapleDslDefinitionResultHandler<?>> definitionResultHandlers();
+
+    default Set<MapleDslResultHandler<?,?>> companionResultHandlers() {
+        return resultHandlers().stream().filter(it -> Modifier.isAbstract(it.inboundType().getModifiers()) || Modifier.isInterface(it.inboundType().getModifiers())).collect(Collectors.toSet());
+    }
 
     /**
      * Returns the default set of Maple DSL definition result handlers.

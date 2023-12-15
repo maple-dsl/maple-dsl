@@ -275,10 +275,19 @@ public final class MapleDslConfiguration {
     @SuppressWarnings("unchecked")
     public @Nullable <IN, OUT> OUT resultant(@Nullable IN inbound, @NotNull BeanDefinition<OUT> definition) {
         if (inbound == null) return null;
-        @Nullable final MapleDslDefinitionResultHandler<IN> definitionResultHandler = (MapleDslDefinitionResultHandler<IN>) handlerRegistry.definitionResultHandlerMap.get(inbound.getClass());
+        @Nullable MapleDslDefinitionResultHandler<IN> definitionResultHandler = (MapleDslDefinitionResultHandler<IN>) handlerRegistry.definitionResultHandlerMap.get(inbound.getClass());
         if (definitionResultHandler == null) {
-            if (LOG.isWarnEnabled()) LOG.warn("definition result handler not found from: " + inbound.getClass());
-            return null;
+            LOG.debug("IN:{} does not found it definition result handler, inspect it superclass or superinterface in deeply.", inbound);
+            for (Class<?> definitionResultType : handlerRegistry.definitionResultHandlerMap.keySet()) {
+                if (definitionResultType.isAssignableFrom(inbound.getClass())) {
+                    definitionResultHandler = (MapleDslDefinitionResultHandler<IN>) handlerRegistry.definitionResultHandlerMap.get(definitionResultType);
+                    break;
+                }
+            }
+            if (definitionResultHandler == null) {
+                LOG.warn("IN:{} does not found it definition result handler after deep inspection. ", inbound);
+                return null;
+            }
         }
 
         return definitionResultHandler.apply(inbound, definition, this);
@@ -286,8 +295,7 @@ public final class MapleDslConfiguration {
 
     @Contract("null -> null")
     public @Nullable <IN> Object resultant(@Nullable IN inbound) {
-        final Object resultant = resultant(inbound, Object.class);
-        return resultant == null ? inbound : resultant;
+        return resultant(inbound, Object.class);
     }
 
     /**
@@ -303,22 +311,37 @@ public final class MapleDslConfiguration {
     @SuppressWarnings("unchecked")
     public @Nullable <IN, OUT> OUT resultant(@Nullable IN inbound, @NotNull Class<OUT> outboundClazz) {
         if (inbound == null) return null;
-        if (inbound.getClass().equals(outboundClazz)) return (OUT) inbound;
+
+        final Class<?> resultInboundType = inbound.getClass();
+        if (resultInboundType.equals(outboundClazz)) {
+            LOG.debug("IN:{} sink as OUT direct.", inbound);
+            return (OUT) inbound;
+        }
 
         final BeanDefinition<OUT> outBeanDefinition = beanDefinition(outboundClazz);
         if (outBeanDefinition != null) {
-            LOG.info("OUT:{} resultant via it definition.", outboundClazz);
+            LOG.debug("OUT:{} resultant via it definition.", outboundClazz);
             return resultant(inbound, outBeanDefinition);
         }
 
-        if (!handlerRegistry.resultHandlerTable.containsRow(inbound.getClass())) {
-            LOG.warn("IN:{} does not found result handler.", inbound.getClass());
-            return null;
+        MapleDslResultHandler<IN, OUT> resultHandler =  (MapleDslResultHandler<IN, OUT>) handlerRegistry.resultHandlerTable.get(resultInboundType, outboundClazz);
+        if (resultHandler == null) {
+            LOG.debug("IN:{},OUT:{} does not found it result handler, scanning through companion_result_handlers.", inbound, outboundClazz);
+            for (Class<?> companionResultInboundType : handlerRegistry.companionResultHandleTable.rowKeySet()) {
+                if (companionResultInboundType.isAssignableFrom(resultInboundType)) {
+                    resultHandler = (MapleDslResultHandler<IN, OUT>) handlerRegistry.companionResultHandleTable.get(companionResultInboundType, outboundClazz);
+                    break;
+                }
+            }
         }
 
-        final MapleDslResultHandler<IN, OUT> resultHandler = (MapleDslResultHandler<IN, OUT>) handlerRegistry.resultHandlerTable.get(inbound.getClass(), outboundClazz);
         if (resultHandler == null) {
-            LOG.warn("IN:{},OUT:{} does not found result handler.", inbound.getClass(), outboundClazz);
+            LOG.warn("IN:{},OUT:{} does not found it companion result handler either", inbound, outboundClazz);
+            if (outboundClazz == Object.class) {
+                LOG.warn("IN:{} sink as OUT direct.", resultInboundType);
+                return ((OUT) inbound);
+            }
+
             return null;
         }
 
