@@ -17,7 +17,7 @@ We wanted to avoid string concatenations in our query generation and decided do 
     <dependency>
         <groupId>io.github.maple-dsl</groupId>
         <artifactId>maple-dsl-cypher</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </dependency>
     ```
 
@@ -27,7 +27,7 @@ We wanted to avoid string concatenations in our query generation and decided do 
     <dependency>
         <groupId>io.github.maple-dsl</groupId>
         <artifactId>maple-dsl-nebula</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </dependency>
     ```
 

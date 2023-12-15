@@ -24,7 +24,7 @@ Inclusion of the Cypher-DSL in a Maven project
 <dependency>
   <groupId>io.github.maple-dsl</groupId>
   <artifactId>maple-dsl-cypher</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
@@ -33,7 +33,7 @@ Inclusion of the Nebula-DSL in a Maven project
 <dependency>
   <groupId>io.github.maple-dsl</groupId>
   <artifactId>maple-dsl-nebula</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
