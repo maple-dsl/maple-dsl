@@ -2,52 +2,52 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://maple-dsl.github.io/maple-dsl/master/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maple-dsl.github.io/maple-dsl/master/1.guide/1.overview/overview/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maple-dsl.github.io/maple-dsl/master/1.guide/2.traversal/traversal/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maple-dsl.github.io/maple-dsl/master/1.guide/3.match/match/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maple-dsl.github.io/maple-dsl/master/1.guide/4.fetch/fetch/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maple-dsl.github.io/maple-dsl/master/1.guide/5.mutation/mutation/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maple-dsl.github.io/maple-dsl/master/2.integration/spring/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maple-dsl.github.io/maple-dsl/master/3.appendix/FAQ/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maple-dsl.github.io/maple-dsl/master/3.appendix/how-to-contribute/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maple-dsl.github.io/maple-dsl/master/3.appendix/release-note/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
