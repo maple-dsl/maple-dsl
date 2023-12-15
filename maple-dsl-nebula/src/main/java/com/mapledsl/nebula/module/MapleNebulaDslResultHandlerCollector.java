@@ -21,7 +21,7 @@ public class MapleNebulaDslResultHandlerCollector implements MapleDslResultHandl
     @Override
     public Set<MapleDslResultHandler<?, ?>> resultHandlers() {
         return Arrays.stream(DefaultMapleNebulaDslResultHandlers.values())
-                .flatMap(it -> Arrays.stream(it.handlers))
+                .map(it -> it.handler)
                 .collect(Collectors.toSet());
     }
 

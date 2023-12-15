@@ -365,9 +365,9 @@ enum DefaultMapleNebulaDslResultHandlers {
     })),
     ANY(MapleNebulaDslResultHandler.identify(Object.class, (value, ctx) -> MapleNebulaDslType.any(value)));
 
-    final MapleDslResultHandler<?,?>[] handlers;
+    final MapleDslResultHandler<?,?> handler;
 
-    DefaultMapleNebulaDslResultHandlers(MapleDslResultHandler<?, ?>... handlers) {
-        this.handlers = handlers;
+    DefaultMapleNebulaDslResultHandlers(MapleDslResultHandler<?, ?> handler) {
+        this.handler = handler;
     }
 }
