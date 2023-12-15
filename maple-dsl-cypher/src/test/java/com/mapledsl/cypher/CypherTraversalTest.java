@@ -19,7 +19,7 @@ public class CypherTraversalTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (dst) - [e:follow*0..1] -> (src) WHERE id(src) IN [\"{{ vid }}\"] RETURN id(dst) AS dst_id")
+    @ValueSource(strings = "MATCH (dst) - [e:follow*0..1] -> (src) WHERE src.id IN [\"{{ vid }}\"] RETURN dst.id AS dst_id")
     public void should_traverse_use_out_vertex_id_as_default_output(String expected) {
         assertEquals(expected, traverse("{{ vid }}").inE("follow").render());
     }
@@ -36,34 +36,34 @@ public class CypherTraversalTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (src) - [e*0..1] -> (dst) WHERE id(src) IN [\"{{ vid }}\"] RETURN id(dst) AS dst_id")
+    @ValueSource(strings = "MATCH (src) - [e*0..1] -> (dst) WHERE src.id IN [\"{{ vid }}\"] RETURN dst.id AS dst_id")
     public void should_traverse_all_edge_type(String expected) {
         assertEquals(expected, traverse("{{ vid }}").outE().render());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (dst) - [e:impact*0..1] -> (src) WHERE id(src) IN [\"{{ vid }}\"] RETURN id(dst) AS dst_id")
+    @ValueSource(strings = "MATCH (dst) - [e:impact*0..1] -> (src) WHERE src.id IN [\"{{ vid }}\"] RETURN dst.id AS dst_id")
     public void should_traverse_detailed_relation_type(String expected) {
         assertEquals(expected, traverse("{{ vid }}").inE(Impact.class).render());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (dst) - [e:impact|follow*0..1] -> (src) WHERE id(src) IN [\"{{ vid }}\"] RETURN id(dst) AS dst_id")
+    @ValueSource(strings = "MATCH (dst) - [e:impact|follow*0..1] -> (src) WHERE src.id IN [\"{{ vid }}\"] RETURN dst.id AS dst_id")
     public void should_traverse_detailed_multi_relation_type(String expected) {
         assertEquals(expected, traverse("{{ vid }}").inE(Impact.class, Follow.class).render());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (dst) - [e:impact*0..1] -> (src) WHERE id(src) IN [\"{{ vid }}\"] WITH dst as src" +
-            " MATCH (src) - [e:follow*0..1] -> (dst) RETURN id(dst) AS dst_id")
+    @ValueSource(strings = "MATCH (dst) - [e:impact*0..1] -> (src) WHERE src.id IN [\"{{ vid }}\"] WITH dst as src" +
+            " MATCH (src) - [e:follow*0..1] -> (dst) RETURN dst.id AS dst_id")
     public void should_traverse_multi_step(String expected) {
         assertEquals(expected, traverse("{{ vid }}").inE(Impact.class).outE(Follow.class).render());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (dst) - [e:impact*0..1] -> (src) WHERE id(src) IN [\"{{ vid }}\"] WITH dst as src" +
-            " MATCH (src) - [e:follow*0..1] -> (dst_fork) WITH dst_fork as src,id(dst_fork) AS next_id" +
-            " MATCH (dst) - [e:follow*0..1] -> (src) RETURN next_id,id(dst) AS dst_id")
+    @ValueSource(strings = "MATCH (dst) - [e:impact*0..1] -> (src) WHERE src.id IN [\"{{ vid }}\"] WITH dst as src" +
+            " MATCH (src) - [e:follow*0..1] -> (dst_fork) WITH dst_fork as src,dst_fork.id AS next_id" +
+            " MATCH (dst) - [e:follow*0..1] -> (src) RETURN next_id,dst.id AS dst_id")
     public void should_traverse_multi_step_v2(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
                 .inE(Impact.class)
@@ -80,8 +80,8 @@ public class CypherTraversalTest extends CypherBaseTest {
 
     @ParameterizedTest
     @ValueSource(strings = "MATCH (p) - [e:follow*0..1] -> (src) " +
-            "WHERE p.age < 30 AND (p.name STARTS WITH \"bofa\" OR p.name STARTS WITH \"zhangsan\") OR p.age > 50 AND p.aaaa > 1000 AND id(src) IN [\"{{ vid }}\"] " +
-            "RETURN id(p) AS id,p.name AS name,id(p) AS dst_id")
+            "WHERE p.age < 30 AND (p.name STARTS WITH \"bofa\" OR p.name STARTS WITH \"zhangsan\") OR p.age > 50 AND p.aaaa > 1000 AND src.id IN [\"{{ vid }}\"] " +
+            "RETURN p.id AS id,p.name AS name,p.id AS dst_id")
     public void should_traverse_then_output_out_vertex_id(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
                 .inE(Follow.class)
@@ -99,10 +99,10 @@ public class CypherTraversalTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (p2) - [e:follow*0..1] -> (p) WHERE id(p) IN [\"{{ vid }}\"] " +
-            "WITH p2 as src,id(p) AS prop_id,id(p) AS real_vertex_id,id(p2) AS next_traversal_id " +
+    @ValueSource(strings = "MATCH (p2) - [e:follow*0..1] -> (p) WHERE p.id IN [\"{{ vid }}\"] " +
+            "WITH p2 as src,p.id AS prop_id,p.id AS real_vertex_id,p2.id AS next_traversal_id " +
             "MATCH (dst) - [e:follow*0..1] -> (src) " +
-            "RETURN prop_id,real_vertex_id,next_traversal_id,id(dst) AS dst_id")
+            "RETURN prop_id,real_vertex_id,next_traversal_id,dst.id AS dst_id")
     public void should_traverse_then_output_in_vertex_id(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
                 .inE(Follow.class)
@@ -114,7 +114,7 @@ public class CypherTraversalTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (dst) - [e:follow*0..1] -> (src) WHERE id(src) IN [\"{{ vid }}\"] RETURN e.type AS follow_type")
+    @ValueSource(strings = "MATCH (dst) - [e:follow*0..1] -> (src) WHERE src.id IN [\"{{ vid }}\"] RETURN e.type AS follow_type")
     public void should_traverse_then_output_follow_type(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
                 .inE(Follow.class)
@@ -124,8 +124,8 @@ public class CypherTraversalTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (p) - [e:follow*0..1] -> (src) WHERE id(p) == \"p001\" AND id(src) IN [\"{{ vid }}\"] " +
-            "RETURN id(p) AS id,p.name AS name,p.name AS dup_person_name,id(p) AS dup_person_id")
+    @ValueSource(strings = "MATCH (p) - [e:follow*0..1] -> (src) WHERE p.id = \"p001\" AND src.id IN [\"{{ vid }}\"] " +
+            "RETURN p.id AS id,p.name AS name,p.name AS dup_person_name,p.id AS dup_person_id")
     public void should_traverse_then_output_out_vertex_id_and_desc(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
                 .inE(Follow.class)
@@ -139,7 +139,7 @@ public class CypherTraversalTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (dst) - [e:follow*0..1] -> (src) WHERE id(src) IN [\"{{ vid }}\"] RETURN id(dst) AS dst_id")
+    @ValueSource(strings = "MATCH (dst) - [e:follow*0..1] -> (src) WHERE src.id IN [\"{{ vid }}\"] RETURN dst.id AS dst_id")
     public void should_append_dst_model_id_auto(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
                 .inE(Follow.class)
@@ -148,7 +148,7 @@ public class CypherTraversalTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (dst) - [e:follow*0..1] -> (src) WHERE id(src) IN [\"{{ vid }}\"] RETURN src.name AS p_name")
+    @ValueSource(strings = "MATCH (dst) - [e:follow*0..1] -> (src) WHERE src.id IN [\"{{ vid }}\"] RETURN src.name AS p_name")
     public void should_not_append_dst_model_id_auto(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
                 .inE(Follow.class)
@@ -158,7 +158,7 @@ public class CypherTraversalTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (dst) - [e:follow*0..1] -> (src) WHERE id(src) IN [\"{{ vid }}\"] RETURN id(dst) AS custom_dst_id")
+    @ValueSource(strings = "MATCH (dst) - [e:follow*0..1] -> (src) WHERE src.id IN [\"{{ vid }}\"] RETURN dst.id AS custom_dst_id")
     public void should_rebase_dst_model_id(String expected) {
         assertEquals(expected, traverse("{{ vid }}")
                 .inE(Follow.class)
@@ -168,9 +168,9 @@ public class CypherTraversalTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (v:person) WHERE v.name == \"bofa\" " +
+    @ValueSource(strings = "MATCH (v:person) WHERE v.name = \"bofa\" " +
             "WITH v as src " +
-            "MATCH (src) - [e:impact*0..1] -> (dst) RETURN id(dst) AS dst_id")
+            "MATCH (src) - [e:impact*0..1] -> (dst) RETURN dst.id AS dst_id")
     public void should_traverse_via_match(String expected) {
         assertEquals(expected, traverse(vertex(Person.class)
                 .eq(Person::getName, "bofa"))
@@ -180,8 +180,8 @@ public class CypherTraversalTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (src) - [e:impact*0..1] -> (p) WHERE id(src) IN [\"p001\",\"p002\"] " +
-            "RETURN id(p) AS p_id,p.name AS p_name,head(labels(p)) AS p_tag " +
+    @ValueSource(strings = "MATCH (src) - [e:impact*0..1] -> (p) WHERE src.id IN [\"p001\",\"p002\"] " +
+            "RETURN p.id AS p_id,p.name AS p_name,head(labels(p)) AS p_tag " +
             "ORDER BY p_tag ASC,p_name DESC")
     public void should_traverse_ordering(String expected) {
         assertEquals(expected, traverse("p001", "p002")
@@ -198,7 +198,7 @@ public class CypherTraversalTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (src) - [e:impact*0..1] -> (p) WHERE id(src) IN [\"p001\",\"p002\"] " +
+    @ValueSource(strings = "MATCH (src) - [e:impact*0..1] -> (p) WHERE src.id IN [\"p001\",\"p002\"] " +
             "RETURN p.name AS p_name,SUM(p.age) AS p_sum_page,COUNT(p.name) AS p_cnt_name")
     public void should_traverse_function_with_shadow_selection(String expected) {
         assertEquals(expected, traverse("p001", "p002")
@@ -213,7 +213,7 @@ public class CypherTraversalTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (src) - [e:impact*0..1] -> (p) WHERE id(src) IN [\"p001\",\"p002\"] " +
+    @ValueSource(strings = "MATCH (src) - [e:impact*0..1] -> (p) WHERE src.id IN [\"p001\",\"p002\"] " +
             "RETURN SUM(p.age) AS p_sum_page,COUNT(p.name) AS p_cnt_name")
     public void should_traverse_function_with_shadow_selection_2(String expected) {
         assertEquals(expected, traverse("p001", "p002")
@@ -227,9 +227,9 @@ public class CypherTraversalTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (src) - [e:impact*0..1] -> (p) WHERE id(src) IN [\"p001\",\"p002\"] " +
-            "WITH p as src,id(p) AS companion_id " +
-            "MATCH (src) - [e:impact*0..1] -> (p2) RETURN companion_id,id(p2) AS id")
+    @ValueSource(strings = "MATCH (src) - [e:impact*0..1] -> (p) WHERE src.id IN [\"p001\",\"p002\"] " +
+            "WITH p as src,p.id AS companion_id " +
+            "MATCH (src) - [e:impact*0..1] -> (p2) RETURN companion_id,p2.id AS id")
     public void should_traverse_with_companion(String expected) {
         assertEquals(expected, traverse("p001", "p002")
                 .outE(Impact.class)

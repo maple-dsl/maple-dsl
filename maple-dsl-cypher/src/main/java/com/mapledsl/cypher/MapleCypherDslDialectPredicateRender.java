@@ -23,7 +23,7 @@ public class MapleCypherDslDialectPredicateRender extends MapleDslDialectPredica
 
     @Override
     protected String vertex(@NotNull String ref, @Nullable String label, String column) {
-        if (Model.ID.equals(column))    return "id(" + ref + ")";
+        if (Model.ID.equals(column))    return ref + DOT + "id";
         if (Model.TAG.equals(column))   return "head(labels(" + ref + "))";
 
         return ref + DOT + column;
@@ -31,8 +31,8 @@ public class MapleCypherDslDialectPredicateRender extends MapleDslDialectPredica
 
     @Override
     protected String edge(@NotNull String ref, @Nullable String label, String column) {
-        if (Model.E.SRC.equals(column)) return "src(" + ref + ")";
-        if (Model.E.DST.equals(column)) return "dst(" + ref + ")";
+        if (Model.E.SRC.equals(column)) return "src" + DOT + "id";
+        if (Model.E.DST.equals(column)) return "dst" + DOT + "id";
         if (Model.TAG.equals(column))   return "type(" + ref + ")";
 
         return ref + DOT + column;
@@ -62,7 +62,7 @@ public class MapleCypherDslDialectPredicateRender extends MapleDslDialectPredica
 
             put(OP.ASSIGN, " = ");
 
-            put(OP.EQ, " == ");
+            put(OP.EQ, " = ");
             put(OP.NE, " != ");
             put(OP.LT, " < ");
             put(OP.LE, " <= ");

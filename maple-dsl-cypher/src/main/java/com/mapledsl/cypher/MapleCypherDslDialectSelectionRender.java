@@ -44,7 +44,7 @@ public class MapleCypherDslDialectSelectionRender extends MapleDslDialectSelecti
         final StringJoiner joiner = new StringJoiner(COMMA);
         for (int i = 0; i < columns.length; i++) {
             if (Model.ID.equals(columns[i])) {
-                joiner.add("id(" + refAlias + ")" + AS + alias[i]);
+                joiner.add(refAlias + DOT + "id" + AS + alias[i]);
                 continue;
             }
             if (Model.TAG.equals(columns[i])) {
@@ -64,15 +64,15 @@ public class MapleCypherDslDialectSelectionRender extends MapleDslDialectSelecti
         final StringJoiner joiner = new StringJoiner(COMMA);
         for (int i = 0; i < columns.length; i++) {
             if (Model.E.ID.equals(columns[i])) {
-                joiner.add("id(" + refAlias + ")" + AS + alias[i]);
+                joiner.add(refAlias + DOT + "id" + AS + alias[i]);
                 continue;
             }
             if (Model.E.SRC.equals(columns[i])) {
-                joiner.add("src(" + refAlias + ")" + AS + alias[i]);
+                joiner.add("src" + DOT + "id" + AS + alias[i]);
                 continue;
             }
             if (Model.E.DST.equals(columns[i])) {
-                joiner.add("dst(" + refAlias + ")" + AS + alias[i]);
+                joiner.add("dst" + DOT + "id" + AS + alias[i]);
                 continue;
             }
             if (Model.TAG.equals(columns[i])) {

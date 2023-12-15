@@ -18,13 +18,13 @@ public class CypherMatchTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH () - [e:impact] - () RETURN e")
+    @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) RETURN e")
     public void should_match_edge_return_itself_automatic(String expected) {
         assertEquals(expected, edge(Impact.class).render());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (v:person) WHERE v.name == \"bofa\" RETURN v")
+    @ValueSource(strings = "MATCH (v:person) WHERE v.name = \"bofa\" RETURN v")
     public void should_match_vertex_with_predicate(String expected) {
         assertEquals(expected, vertex(Person.class)
                 .eq(Person::getName, "bofa")
@@ -32,7 +32,7 @@ public class CypherMatchTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH () - [e:impact] - () WHERE e.type IN [\"Type1\",\"Type2\"] RETURN e")
+    @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) WHERE e.type IN [\"Type1\",\"Type2\"] RETURN e")
     public void should_match_edge_with_predicate(String expected) {
         assertEquals(expected, edge(Impact.class)
                 .in(Impact::getType, Arrays.asList("Type1", "Type2"))
@@ -40,7 +40,7 @@ public class CypherMatchTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (v:person) WHERE v.name == \"bofa\" RETURN v.name AS v")
+    @ValueSource(strings = "MATCH (v:person) WHERE v.name = \"bofa\" RETURN v.name AS v")
     public void should_match_vertex_with_selection_complicit_alias(String expected) {
         assertEquals(expected, vertex(Person.class)
                 .eq(Person::getName, "bofa")
@@ -49,7 +49,7 @@ public class CypherMatchTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH () - [e:impact] - () WHERE e.type IN [\"Type1\",\"Type2\"] RETURN e.type AS impact_type,src(e) AS src,dst(e) AS dst")
+    @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) WHERE e.type IN [\"Type1\",\"Type2\"] RETURN e.type AS impact_type,src.id AS src,dst.id AS dst")
     public void should_match_edge_with_selection_complicit_alias(String expected) {
         assertEquals(expected, edge(Impact.class)
                 .in(Impact::getType, Arrays.asList("Type1", "Type2"))
@@ -59,7 +59,7 @@ public class CypherMatchTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (v:person) WHERE v.name == \"bofa\" RETURN v.name AS v,v.age AS age ORDER BY v ASC,age DESC")
+    @ValueSource(strings = "MATCH (v:person) WHERE v.name = \"bofa\" RETURN v.name AS v,v.age AS age ORDER BY v ASC,age DESC")
     public void should_match_vertex_with_selection_ordering(String expected) {
         assertEquals(expected, vertex(Person.class)
                 .eq(Person::getName, "bofa")
@@ -69,7 +69,7 @@ public class CypherMatchTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH () - [e:impact] - () WHERE e.type IN [\"Type1\",\"Type2\"] RETURN e.type AS impact_type,src(e) AS src,dst(e) AS dst " +
+    @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) WHERE e.type IN [\"Type1\",\"Type2\"] RETURN e.type AS impact_type,src.id AS src,dst.id AS dst " +
             "ORDER BY impact_type ASC,src,dst DESC")
     public void should_match_edge_with_selection_ordering(String expected) {
         assertEquals(expected, edge(Impact.class)
@@ -89,7 +89,7 @@ public class CypherMatchTest extends CypherBaseTest {
 
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH () - [e:impact] - () RETURN COUNT(*) AS cnt")
+    @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) RETURN COUNT(*) AS cnt")
     public void should_match_edge_with_shadow_selection(String expected) {
         assertEquals(expected, edge(Impact.class)
                 .count("cnt")
@@ -105,7 +105,7 @@ public class CypherMatchTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH () - [e:impact] - () RETURN COUNT(e.type) AS type_cnt")
+    @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) RETURN COUNT(e.type) AS type_cnt")
     public void should_match_edge_with_shadow_selection_2(String expected) {
         assertEquals(expected, edge(Impact.class)
                 .count(Impact::getType, "type_cnt")
@@ -122,7 +122,7 @@ public class CypherMatchTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH () - [e:impact] - () RETURN COUNT(*) AS cnt,COUNT(e.type) AS type_cnt")
+    @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) RETURN COUNT(*) AS cnt,COUNT(e.type) AS type_cnt")
     public void should_match_edge_with_selection_count(String expected) {
         assertEquals(expected, edge(Impact.class)
                 .count("cnt")
@@ -140,7 +140,7 @@ public class CypherMatchTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH () - [e:impact] - () RETURN SUM(e.type) AS sum_type,SUM(e.type) AS sum_type2")
+    @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) RETURN SUM(e.type) AS sum_type,SUM(e.type) AS sum_type2")
     public void should_match_edge_with_selection_sum(String expected) {
         assertEquals(expected, edge(Impact.class)
                 .sum(Impact::getType, "sum_type")
@@ -158,7 +158,7 @@ public class CypherMatchTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH () - [e:impact] - () RETURN SUM(e.type) AS max_type,MAX(e.type) AS max_type2")
+    @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) RETURN SUM(e.type) AS max_type,MAX(e.type) AS max_type2")
     public void should_match_edge_with_selection_max(String expected) {
         assertEquals(expected, edge(Impact.class)
                 .sum(Impact::getType, "max_type")
@@ -176,7 +176,7 @@ public class CypherMatchTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH () - [e:impact] - () RETURN SUM(e.type) AS min_type,MIN(e.type) AS min_type2")
+    @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) RETURN SUM(e.type) AS min_type,MIN(e.type) AS min_type2")
     public void should_match_edge_with_selection_min(String expected) {
         assertEquals(expected, edge(Impact.class)
                 .sum(Impact::getType, "min_type")
@@ -194,7 +194,7 @@ public class CypherMatchTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH () - [e:impact] - () RETURN AVG(e.type) AS avg_type,AVG(e.type) AS avg_type2")
+    @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) RETURN AVG(e.type) AS avg_type,AVG(e.type) AS avg_type2")
     public void should_match_edge_with_selection_avg(String expected) {
         assertEquals(expected, edge(Impact.class)
                 .avg(Impact::getType, "avg_type")
@@ -203,7 +203,7 @@ public class CypherMatchTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (v:person) RETURN v OFFSET 5 LIMIT 10")
+    @ValueSource(strings = "MATCH (v:person) RETURN v SKIP 5 LIMIT 10")
     public void should_match_vertex_with_selection_limit(String expected) {
         assertEquals(expected, vertex(Person.class)
                 .limit(5, 10)
@@ -211,7 +211,7 @@ public class CypherMatchTest extends CypherBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH () - [e:impact] - () RETURN e OFFSET 5 LIMIT 10")
+    @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) RETURN e SKIP 5 LIMIT 10")
     public void should_match_edge_with_selection_limit(String expected) {
         assertEquals(expected, edge(Impact.class)
                 .limit(5, 10)
