@@ -51,6 +51,7 @@ class BeanPropertyAccessor {
 
     void override(KeyPolicyStrategy keyPolicyStrategy) {
         if (keyPolicyStrategy == KeyPolicyStrategies.MANUAL) return;
+        if (keyPolicyStrategy == KeyPolicyStrategies.INTERNAL) return;
         this.delegate = delegate.andThen(keyPolicyStrategy::generate);
     }
 

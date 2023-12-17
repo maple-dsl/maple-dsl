@@ -25,7 +25,7 @@ public class MapleDslMockModule extends MapleDslModule {
     }
 
     @Override
-    public @NotNull Properties dialectProperties() {
+    public @NotNull Properties dialectProperties(MapleDslConfiguration context) {
         final Properties dialectTemplateProperties = new Properties();
         try (InputStream is = MapleDslMockModule.class.getClassLoader().getResourceAsStream("META-INF/dialect-render.properties")) {
             dialectTemplateProperties.load(requireNonNull(is, "META-INF/dialect-render.properties not found."));

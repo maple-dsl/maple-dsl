@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.StringJoiner;
 
+import static com.mapledsl.cypher.module.MapleCypherDslModule.useInternalId;
+
 /**
  * This class extends MapleDslDialectSelectionRender and provides the specific rendering logic for the Maple Cypher DSL dialect.
  */
@@ -44,7 +46,7 @@ public class MapleCypherDslDialectSelectionRender extends MapleDslDialectSelecti
         final StringJoiner joiner = new StringJoiner(COMMA);
         for (int i = 0; i < columns.length; i++) {
             if (Model.ID.equals(columns[i])) {
-                joiner.add(refAlias + DOT + "id" + AS + alias[i]);
+                joiner.add((useInternalId(context) ? "id(" + refAlias + ")" : refAlias + DOT + "id") + AS + alias[i]);
                 continue;
             }
             if (Model.TAG.equals(columns[i])) {
@@ -64,15 +66,15 @@ public class MapleCypherDslDialectSelectionRender extends MapleDslDialectSelecti
         final StringJoiner joiner = new StringJoiner(COMMA);
         for (int i = 0; i < columns.length; i++) {
             if (Model.E.ID.equals(columns[i])) {
-                joiner.add(refAlias + DOT + "id" + AS + alias[i]);
+                joiner.add((useInternalId(context) ? "id(" + refAlias + ")" : refAlias + DOT + "id") + AS + alias[i]);
                 continue;
             }
             if (Model.E.SRC.equals(columns[i])) {
-                joiner.add("src" + DOT + "id" + AS + alias[i]);
+                joiner.add((useInternalId(context) ? "src(" + refAlias + ")" : "src" + DOT + "id") + AS + alias[i]);
                 continue;
             }
             if (Model.E.DST.equals(columns[i])) {
-                joiner.add("dst" + DOT + "id" + AS + alias[i]);
+                joiner.add((useInternalId(context) ? "dst(" + refAlias + ")" : "dst" + DOT + "id") + AS + alias[i]);
                 continue;
             }
             if (Model.TAG.equals(columns[i])) {

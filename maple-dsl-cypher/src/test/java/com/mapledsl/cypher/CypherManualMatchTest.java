@@ -9,18 +9,18 @@ import static com.mapledsl.core.G.edge;
 import static com.mapledsl.core.G.vertex;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CypherMatchTest extends CypherBaseTest {
+public class CypherManualMatchTest extends CypherManualBaseTest {
 
     @ParameterizedTest
     @ValueSource(strings = "MATCH (v:person) RETURN v")
     public void should_match_vertex_return_itself_automatic(String expected) {
-        assertEquals(expected, vertex(Person.class).render());
+        assertEquals(expected, vertex(Person.class).render(configuration));
     }
 
     @ParameterizedTest
     @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) RETURN e")
     public void should_match_edge_return_itself_automatic(String expected) {
-        assertEquals(expected, edge(Impact.class).render());
+        assertEquals(expected, edge(Impact.class).render(configuration));
     }
 
     @ParameterizedTest
@@ -28,7 +28,7 @@ public class CypherMatchTest extends CypherBaseTest {
     public void should_match_vertex_with_predicate(String expected) {
         assertEquals(expected, vertex(Person.class)
                 .eq(Person::getName, "bofa")
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -36,7 +36,7 @@ public class CypherMatchTest extends CypherBaseTest {
     public void should_match_edge_with_predicate(String expected) {
         assertEquals(expected, edge(Impact.class)
                 .in(Impact::getType, Arrays.asList("Type1", "Type2"))
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -45,17 +45,17 @@ public class CypherMatchTest extends CypherBaseTest {
         assertEquals(expected, vertex(Person.class)
                 .eq(Person::getName, "bofa")
                 .selectAs(Person::getName, "v")
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) WHERE e.type IN [\"Type1\",\"Type2\"] RETURN e.type AS impact_type,src(e) AS src,dst(e) AS dst")
+    @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) WHERE e.type IN [\"Type1\",\"Type2\"] RETURN e.type AS impact_type,src.id AS src,dst.id AS dst")
     public void should_match_edge_with_selection_complicit_alias(String expected) {
         assertEquals(expected, edge(Impact.class)
                 .in(Impact::getType, Arrays.asList("Type1", "Type2"))
                 .selectAs(Impact::getType, "impact_type")
                 .select(Impact::src, Impact::dst)
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -65,18 +65,18 @@ public class CypherMatchTest extends CypherBaseTest {
                 .eq(Person::getName, "bofa")
                 .selectAs(Person::getName, "v").ascending()
                 .select(Person::getAge).descending()
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) WHERE e.type IN [\"Type1\",\"Type2\"] RETURN e.type AS impact_type,src(e) AS src,dst(e) AS dst " +
+    @ValueSource(strings = "MATCH (src) - [e:impact] -> (dst) WHERE e.type IN [\"Type1\",\"Type2\"] RETURN e.type AS impact_type,src.id AS src,dst.id AS dst " +
             "ORDER BY impact_type ASC,src,dst DESC")
     public void should_match_edge_with_selection_ordering(String expected) {
         assertEquals(expected, edge(Impact.class)
                 .in(Impact::getType, Arrays.asList("Type1", "Type2"))
                 .selectAs(Impact::getType, "impact_type").ascending()
                 .select(Impact::src, Impact::dst).descending()
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -84,7 +84,7 @@ public class CypherMatchTest extends CypherBaseTest {
     public void should_match_vertex_with_shadow_selection(String expected) {
         assertEquals(expected, vertex(Person.class)
                 .count("cnt")
-                .render());
+                .render(configuration));
     }
 
 
@@ -93,7 +93,7 @@ public class CypherMatchTest extends CypherBaseTest {
     public void should_match_edge_with_shadow_selection(String expected) {
         assertEquals(expected, edge(Impact.class)
                 .count("cnt")
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -101,7 +101,7 @@ public class CypherMatchTest extends CypherBaseTest {
     public void should_match_vertex_with_shadow_selection_2(String expected) {
         assertEquals(expected, vertex(Person.class)
                 .count(Person::getName, "name_cnt")
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -109,7 +109,7 @@ public class CypherMatchTest extends CypherBaseTest {
     public void should_match_edge_with_shadow_selection_2(String expected) {
         assertEquals(expected, edge(Impact.class)
                 .count(Impact::getType, "type_cnt")
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -118,7 +118,7 @@ public class CypherMatchTest extends CypherBaseTest {
         assertEquals(expected, vertex(Person.class)
                 .count("cnt")
                 .count(Person::getName, "name_cnt")
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -127,7 +127,7 @@ public class CypherMatchTest extends CypherBaseTest {
         assertEquals(expected, edge(Impact.class)
                 .count("cnt")
                 .count(Impact::getType, "type_cnt")
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -136,7 +136,7 @@ public class CypherMatchTest extends CypherBaseTest {
         assertEquals(expected, vertex(Person.class)
                 .sum(Person::getAge, "sum_age")
                 .sum("age", "sum_age2")
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -145,7 +145,7 @@ public class CypherMatchTest extends CypherBaseTest {
         assertEquals(expected, edge(Impact.class)
                 .sum(Impact::getType, "sum_type")
                 .sum("type", "sum_type2")
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -154,7 +154,7 @@ public class CypherMatchTest extends CypherBaseTest {
         assertEquals(expected, vertex(Person.class)
                 .max(Person::getAge, "max_age")
                 .max("age", "max_age2")
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -163,7 +163,7 @@ public class CypherMatchTest extends CypherBaseTest {
         assertEquals(expected, edge(Impact.class)
                 .sum(Impact::getType, "max_type")
                 .max("type", "max_type2")
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -172,7 +172,7 @@ public class CypherMatchTest extends CypherBaseTest {
         assertEquals(expected, vertex(Person.class)
                 .min(Person::getAge, "min_age")
                 .min("age", "min_age2")
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -181,7 +181,7 @@ public class CypherMatchTest extends CypherBaseTest {
         assertEquals(expected, edge(Impact.class)
                 .sum(Impact::getType, "min_type")
                 .min("type", "min_type2")
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -190,7 +190,7 @@ public class CypherMatchTest extends CypherBaseTest {
         assertEquals(expected, vertex(Person.class)
                 .avg(Person::getAge, "avg_age")
                 .avg("age", "avg_age2")
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -199,7 +199,7 @@ public class CypherMatchTest extends CypherBaseTest {
         assertEquals(expected, edge(Impact.class)
                 .avg(Impact::getType, "avg_type")
                 .avg("type", "avg_type2")
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -207,7 +207,7 @@ public class CypherMatchTest extends CypherBaseTest {
     public void should_match_vertex_with_selection_limit(String expected) {
         assertEquals(expected, vertex(Person.class)
                 .limit(5, 10)
-                .render());
+                .render(configuration));
     }
 
     @ParameterizedTest
@@ -215,6 +215,6 @@ public class CypherMatchTest extends CypherBaseTest {
     public void should_match_edge_with_selection_limit(String expected) {
         assertEquals(expected, edge(Impact.class)
                 .limit(5, 10)
-                .render());
+                .render(configuration));
     }
 }

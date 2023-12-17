@@ -3,9 +3,7 @@ package com.mapledsl.core;
 import com.mapledsl.core.exception.MapleDslBindingException;
 import com.mapledsl.core.exception.MapleDslException;
 import com.mapledsl.core.exception.MapleDslUncheckedException;
-import com.mapledsl.core.extension.KeyPolicyStrategies;
 import com.mapledsl.core.extension.KeyPolicyStrategy;
-import com.mapledsl.core.extension.NamingStrategies;
 import com.mapledsl.core.extension.NamingStrategy;
 import com.mapledsl.core.extension.introspect.BeanDefinition;
 import com.mapledsl.core.extension.introspect.BeanPropertyCustomizer;
@@ -336,7 +334,7 @@ public final class MapleDslConfiguration {
         }
 
         if (resultHandler == null) {
-            LOG.warn("IN:{},OUT:{} does not found it companion result handler either", inbound, outboundClazz);
+            LOG.warn("IN:{},OUT:{} does not found it companion result handler.", inbound, outboundClazz);
             if (outboundClazz == Object.class) {
                 LOG.warn("IN:{} sink as OUT direct.", resultInboundType);
                 return ((OUT) inbound);
@@ -516,14 +514,14 @@ public final class MapleDslConfiguration {
          * @throws MapleDslBindingException If the module is not found.
          */
         public MapleDslConfiguration build() {
-            if (namingStrategy == null) namingStrategy = NamingStrategies.SNAKE_CASE;
-            if (keyPolicyStrategy == null) keyPolicyStrategy = KeyPolicyStrategies.MANUAL;
-
             this.module = StreamSupport.stream(ServiceLoader.load(MapleDslModule.class).spliterator(), false)
                     .filter(Objects::nonNull)
                     .filter(it -> Objects.isNull(moduleClazz) || it.getClass().equals(moduleClazz))
                     .findFirst()
                     .orElseThrow(() -> new MapleDslBindingException("Module not found."));
+
+            if (namingStrategy == null) namingStrategy = module.namingStrategy();
+            if (keyPolicyStrategy == null) keyPolicyStrategy = module.keyPolicyStrategy();
 
             final MapleDslConfiguration configuration = new MapleDslConfiguration(
                     module, regionConfig, namingStrategy, keyPolicyStrategy,

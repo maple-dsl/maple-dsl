@@ -10,6 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.EnumMap;
 import java.util.Map;
 
+import static com.mapledsl.cypher.module.MapleCypherDslModule.useInternalId;
+
 /**
  * The class {@code MapleCypherDslDialectPredicateRender} is a subclass of {@code MapleDslDialectPredicateRender}
  * that represents a predicate renderer for the Maple Cypher DSL dialect.
@@ -23,7 +25,7 @@ public class MapleCypherDslDialectPredicateRender extends MapleDslDialectPredica
 
     @Override
     protected String vertex(@NotNull String ref, @Nullable String label, String column) {
-        if (Model.ID.equals(column))    return ref + DOT + "id";
+        if (Model.ID.equals(column))    return useInternalId(context) ? "id(" + ref + ")" : ref + DOT + "id";
         if (Model.TAG.equals(column))   return "head(labels(" + ref + "))";
 
         return ref + DOT + column;
@@ -31,8 +33,9 @@ public class MapleCypherDslDialectPredicateRender extends MapleDslDialectPredica
 
     @Override
     protected String edge(@NotNull String ref, @Nullable String label, String column) {
-        if (Model.E.SRC.equals(column)) return "src" + DOT + "id";
-        if (Model.E.DST.equals(column)) return "dst" + DOT + "id";
+        if (Model.E.ID.equals(column))     return useInternalId(context) ? "id(" + ref + ")" : ref + DOT + "id";
+        if (Model.E.SRC.equals(column))    return useInternalId(context) ? "src(" + ref + ")" : "src" + DOT + "id";
+        if (Model.E.DST.equals(column))    return useInternalId(context) ? "dst(" + ref + ")" : "dst" + DOT + "id";
         if (Model.TAG.equals(column))   return "type(" + ref + ")";
 
         return ref + DOT + column;

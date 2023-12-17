@@ -1,5 +1,10 @@
 package com.mapledsl.core.module;
 
+import com.mapledsl.core.MapleDslConfiguration;
+import com.mapledsl.core.extension.KeyPolicyStrategies;
+import com.mapledsl.core.extension.KeyPolicyStrategy;
+import com.mapledsl.core.extension.NamingStrategies;
+import com.mapledsl.core.extension.NamingStrategy;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Properties;
@@ -31,7 +36,7 @@ public abstract class MapleDslModule {
      *
      * @return The dialect properties of the Maple DSL module as a non-null {@code Properties} object.
      */
-    public abstract @NotNull Properties dialectProperties();
+    public abstract @NotNull Properties dialectProperties(MapleDslConfiguration context);
 
     /**
      * Returns a predicate that checks if the given version string is equal to the version of the Maple DSL module.
@@ -51,6 +56,14 @@ public abstract class MapleDslModule {
      */
     public final Predicate<String> dialectPredicate() {
         return dialect()::equalsIgnoreCase;
+    }
+
+    public NamingStrategy namingStrategy() {
+        return NamingStrategies.SNAKE_CASE;
+    }
+
+    public KeyPolicyStrategy keyPolicyStrategy() {
+        return KeyPolicyStrategies.MANUAL;
     }
 
     @Override

@@ -9,6 +9,16 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public enum KeyPolicyStrategies implements KeyPolicyStrategy {
     /**
+     * Internally this is just a placeholder class and is handled as a special case.
+     * The id is assigned after creation of the node in the database.
+     */
+    INTERNAL {
+        @Override
+        public Object generate(Object source) {
+            return null;
+        }
+    },
+    /**
      * input value by developer in stern.
      */
     MANUAL {

@@ -107,7 +107,7 @@ final class MapleDslTemplateRegistry {
         genericObjectPoolConfig.setMaxIdle(maxIdle);
         genericObjectPoolConfig.setMinIdle(minIdle);
 
-        this.templateProperties = context.module().dialectProperties();
+        this.templateProperties = context.module().dialectProperties(context);
         this.templateGroup = new GenericObjectPool<>(templateGroupPooledObjectFactory, genericObjectPoolConfig);
 
         this.modelAdaptor = new MapleDslModelAdaptor(context);
