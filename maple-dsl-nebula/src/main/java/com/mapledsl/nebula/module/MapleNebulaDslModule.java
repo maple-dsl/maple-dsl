@@ -15,7 +15,7 @@ import static java.util.Objects.requireNonNull;
  * Represents a Maple DSL module for the Nebula dialect.
  */
 public class MapleNebulaDslModule extends MapleDslModule {
-    public static final String VERSION = "nebula:0.1.0-release";
+    public static final String VERSION = "nebula:1.0.2-release";
     public static final String DIALECT = "nebula";
 
     @Override

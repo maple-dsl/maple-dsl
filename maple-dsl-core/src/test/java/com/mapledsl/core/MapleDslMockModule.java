@@ -11,7 +11,7 @@ import java.util.Properties;
 import static java.util.Objects.requireNonNull;
 
 public class MapleDslMockModule extends MapleDslModule {
-    public static final String VERSION = "mock:0.1.0";
+    public static final String VERSION = "mock:1.0.2";
     public static final String DIALECT = "mock";
 
     @Override
