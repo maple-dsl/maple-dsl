@@ -16,6 +16,7 @@
     <modules>
         <module>maple-dsl-core</module>
         <module>maple-dsl-nebula</module>
+        <module>maple-dsl-neo4j</module>
         <module>maple-dsl-cypher</module>
     </modules>
 
@@ -23,6 +24,7 @@
         <mapledsl-core.version>1.0.2</mapledsl-core.version>
         <mapledsl-nebula.version>1.0.2</mapledsl-nebula.version>
         <mapledsl-cypher.version>1.0.2</mapledsl-cypher.version>
+        <mapledsl-neo4j.version>1.0.0</mapledsl-neo4j.version>
         <apiguardian.version>1.1.2</apiguardian.version>
         <codec.version>1.15</codec.version>
         <st4.version>4.3.3</st4.version>
@@ -66,6 +68,11 @@
                 <groupId>io.github.maple-dsl</groupId>
                 <artifactId>maple-dsl-nebula</artifactId>
                 <version>${mapledsl-nebula.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.maple-dsl</groupId>
+                <artifactId>maple-dsl-neo4j</artifactId>
+                <version>${mapledsl-neo4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apiguardian</groupId>
