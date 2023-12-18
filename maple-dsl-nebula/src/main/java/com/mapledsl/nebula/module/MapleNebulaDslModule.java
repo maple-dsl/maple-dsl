@@ -2,6 +2,7 @@ package com.mapledsl.nebula.module;
 
 import com.mapledsl.core.MapleDslConfiguration;
 import com.mapledsl.core.exception.MapleDslBindingException;
+import com.mapledsl.core.extension.KeyPolicyStrategies;
 import com.mapledsl.core.module.MapleDslModule;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,6 +31,7 @@ public class MapleNebulaDslModule extends MapleDslModule {
 
     @Override
     public @NotNull Properties dialectProperties(MapleDslConfiguration context) {
+        if (context.keyPolicyStrategy() == KeyPolicyStrategies.INTERNAL) throw new MapleDslBindingException("Nebula keyPolicyStrategy does not allowed `INTERNAL`.");
         final Properties dialectTemplateProperties = new Properties();
         try (InputStream is = MapleNebulaDslModule.class.getClassLoader().getResourceAsStream("META-INF/nebula-dialect-render.properties")) {
             dialectTemplateProperties.load(requireNonNull(is, "META-INF/nebula-dialect-render.properties not found."));
