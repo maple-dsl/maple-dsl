@@ -27,12 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
 
     @Test
-    public void test() {
-        final boolean execute = sessionTemplate.execute("UNWIND range(1, $n) AS i RETURN i");
-        System.out.println(execute);
-    }
-
-    @Test
     public void should_fetch_vertex_return_itself_automatic() {
         final Model.V<String> vertex = sessionTemplate.selectVertex(vertex(Person.class, "p001"));
         assertNotNull(vertex);
