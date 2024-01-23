@@ -18,7 +18,6 @@
         <module>maple-dsl-nebula</module>
         <module>maple-dsl-neo4j</module>
         <module>maple-dsl-cypher</module>
-        <module>maple-dsl-redisgraph</module>
     </modules>
 
     <properties>
