@@ -65,20 +65,20 @@ public class Neo4jSessionBaseTest {
     @Data
     @EqualsAndHashCode(callSuper = true)
     @Label("impact")
-    public static class Impact extends Model.E<String> {
+    public static class Impact extends Model.E<String, String> {
         private String type;
     }
 
     @Data
     @EqualsAndHashCode(callSuper = true)
     @Label("impact")
-    public static class ImpactHash extends Model.E<Long> {
+    public static class ImpactHash extends Model.E<Long, Long> {
         private String type;
     }
 
     @Data
     @EqualsAndHashCode(callSuper = true)
     @Label("follow")
-    public static class Follow extends Model.E<String> {
+    public static class Follow extends Model.E<String, String> {
     }
 }

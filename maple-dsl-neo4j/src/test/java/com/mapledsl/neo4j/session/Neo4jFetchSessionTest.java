@@ -8,7 +8,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.LongStream;
 
 import static com.mapledsl.core.G.edge;
 import static com.mapledsl.core.G.vertex;
@@ -87,50 +86,16 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
     @ParameterizedTest
     @ValueSource(strings = "FETCH PROP ON person 1,2,3 YIELD vertex AS v")
     public void should_fetch_vertices_numeric_id_return_itself_automatic(String expected) {
-        final Model.V<Long> vertex = hashSessionTemplate.selectVertex(vertex(PersonHash.class, 1, 2));
+        final Model.V<Long> vertex = hashSessionTemplate.selectVertex(vertex(PersonHash.class, 1L, 2L));
         assertNotNull(vertex);
         assertEquals(1, vertex.id());
         assertEquals("person", vertex.label());
         assertEquals("bofa", vertex.get("name"));
-
-        final List<Model.V<Long>> vertices = hashSessionTemplate.selectVertexList(vertex(PersonHash.class, LongStream.of(1, 2)));
-        assertNotNull(vertices);
-        assertEquals(2, vertices.size());
-
-        assertNotNull(vertices.get(0));
-        assertEquals(1, vertices.get(0).id());
-        assertEquals("person", vertices.get(0).label());
-        assertEquals("bofa", vertices.get(0).get("name"));
-
-        assertNotNull(vertices.get(1));
-        assertEquals(2, vertices.get(1).id());
-        assertEquals("person", vertices.get(1).label());
-        assertEquals("zhangsan", vertices.get(1).get("name"));
-
-        final PersonHash person = hashSessionTemplate.selectOne(vertex("person", LongStream.builder().add(1).add(2).build()), PersonHash.class);
-        assertNotNull(person);
-        assertEquals(1, person.id());
-        assertEquals("person", person.label());
-        assertEquals("bofa", person.getName());
-
-        final List<PersonHash> personList = hashSessionTemplate.selectList(vertex("person", LongStream.rangeClosed(1, 2)), PersonHash.class);
-        assertNotNull(personList);
-        assertEquals(2, personList.size());
-
-        assertNotNull(personList.get(0));
-        assertEquals(1, personList.get(0).id());
-        assertEquals("person", personList.get(0).label());
-        assertEquals("bofa", personList.get(0).getName());
-
-        assertNotNull(personList.get(1));
-        assertEquals(2, personList.get(1).id());
-        assertEquals("person", personList.get(1).label());
-        assertEquals("zhangsan", personList.get(1).getName());
     }
 
     @Test
     public void should_fetch_edge_return_itself_automatic() {
-        final Model.E<String> edge = sessionTemplate.selectEdge(edge("impact", new Impact().setId("e001").setSrc("p001").setDst("p002")));
+        final Model.E<String, String> edge = sessionTemplate.selectEdge(edge("impact", "e001"));
         assertNotNull(edge);
         assertEquals("e001", edge.id());
         assertEquals("p001", edge.src());
@@ -138,7 +103,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals("impact", edge.label());
         assertEquals("type1", edge.get("type"));
 
-        final Impact impact = sessionTemplate.selectOne(edge("impact", new Impact().setId("e001").setSrc("p001").setDst("p002")), Impact.class);
+        final Impact impact = sessionTemplate.selectOne(edge("impact", "e001"), Impact.class);
         assertNotNull(impact);
         assertEquals("e001", edge.id());
         assertEquals("p001", impact.src());
@@ -149,9 +114,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
 
     @Test
     public void should_fetch_edges_string_vid_return_itself_automatic() {
-        final Model.E<String> edge = sessionTemplate.selectEdge(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002")));
+        final Model.E<String, String> edge = sessionTemplate.selectEdge(edge(Impact.class, "e001","e002"));
 
         assertNotNull(edge);
         assertEquals("e001", edge.id());
@@ -160,10 +123,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals("impact", edge.label());
         assertEquals("type1", edge.get("type"));
 
-        final Impact impact = sessionTemplate.selectOne(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002")), Impact.class);
-
+        final Impact impact = sessionTemplate.selectOne(edge(Impact.class, "e001", "e002"), Impact.class);
         assertNotNull(impact);
         assertEquals("e001", edge.id());
         assertEquals("p001", impact.src());
@@ -171,9 +131,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals("impact", impact.label());
         assertEquals("type1", impact.getType());
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002")));
+        final List<Model.E<String, String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class, "e001", "e002"));
 
         assertNotNull(edgeList);
         assertEquals(2, edgeList.size());
@@ -190,9 +148,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals("impact", edgeList.get(1).label());
         assertEquals("type2", edgeList.get(1).get("type"));
 
-        final List<Impact> impactList = sessionTemplate.selectList(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002")), Impact.class);
+        final List<Impact> impactList = sessionTemplate.selectList(edge(Impact.class, "e001", "e002"), Impact.class);
 
         assertNotNull(impactList);
         assertEquals(2, impactList.size());
@@ -212,9 +168,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
 
     @Test
     public void should_fetch_edges_numeric_vid_return_itself_automatic() {
-        final Model.E<Long> edge = hashSessionTemplate.selectEdge(edge(ImpactHash.class,
-                new ImpactHash().setId(1L).setSrc(1L).setDst(2L),
-                new ImpactHash().setId(2L).setSrc(1L).setDst(2L)));
+        final Model.E<Long, Long> edge = hashSessionTemplate.selectEdge(edge(ImpactHash.class, 1L, 2L));
 
         assertNotNull(edge);
         assertEquals(1, edge.id());
@@ -223,10 +177,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals("impact", edge.label());
         assertEquals("type1", edge.get("type"));
 
-        final ImpactHash impact = hashSessionTemplate.selectOne(edge(ImpactHash.class, ImmutableList.of(
-                new ImpactHash().setId(1L).setSrc(1L).setDst(2L),
-                new ImpactHash().setId(1L).setSrc(1L).setDst(2L)
-        )), ImpactHash.class);
+        final ImpactHash impact = hashSessionTemplate.selectOne(edge(ImpactHash.class, ImmutableList.of(1L, 2L)), ImpactHash.class);
 
         assertNotNull(impact);
         assertEquals(1, impact.id());
@@ -235,9 +186,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals("impact", impact.label());
         assertEquals("type1", impact.getType());
 
-        final List<Model.E<Long>> edgeList = hashSessionTemplate.selectEdgeList(edge("impact",
-                new ImpactHash().setId(1L).setSrc(1L).setDst(2L),
-                new ImpactHash().setId(2L).setSrc(1L).setDst(2L)));
+        final List<Model.E<Long, Long>> edgeList = hashSessionTemplate.selectEdgeList(edge("impact", 1L, 2L));
 
         assertNotNull(edgeList);
         assertEquals(2, edgeList.size());
@@ -254,9 +203,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals("impact", edgeList.get(1).label());
         assertEquals("type2", edgeList.get(1).get("type"));
 
-        final List<ImpactHash> impactList = hashSessionTemplate.selectList(edge("impact",
-                new ImpactHash().setId(1L).setSrc(1L).setDst(2L),
-                new ImpactHash().setId(2L).setSrc(1L).setDst(2L)), ImpactHash.class);
+        final List<ImpactHash> impactList = hashSessionTemplate.selectList(edge("impact", 1L, 2L), ImpactHash.class);
 
         assertNotNull(impactList);
         assertEquals(2, impactList.size());
@@ -314,17 +261,13 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
 
     @Test
     public void should_fetch_edge_with_selection_complicit_alias() {
-        final String impactDstVertexId = sessionTemplate.selectOne(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final String impactDstVertexId = sessionTemplate.selectOne(edge(Impact.class, "e001", "e002")
                 .selectAs(Impact::dst, "impact_dst_vid"), String.class);
 
         assertNotNull(impactDstVertexId);
         assertEquals("p002", impactDstVertexId);
 
-        final List<String> impactDstVertexIdList = sessionTemplate.selectList(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final List<String> impactDstVertexIdList = sessionTemplate.selectList(edge(Impact.class, "e001", "e002")
                 .selectAs(Impact::dst, "impact_dst_vid"), String.class);
 
         assertNotNull(impactDstVertexIdList);
@@ -332,25 +275,19 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals("p002", impactDstVertexIdList.get(0));
         assertEquals("p002", impactDstVertexIdList.get(1));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final Model.E<String, String> edge = sessionTemplate.selectEdge(edge(Impact.class, "e001", "e002")
                 .selectAs(Impact::dst, "impact_dst_vid"));
 
         assertNotNull(edge);
         assertEquals("p002", edge.get("impact_dst_vid"));
 
-        final Impact impact = sessionTemplate.selectOne(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final Impact impact = sessionTemplate.selectOne(edge(Impact.class, "e001", "e002")
                 .select(Impact::dst), Impact.class);
 
         assertNotNull(impact);
         assertEquals("p002", impact.dst());
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final List<Model.E<String, String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class, "e001", "e002")
                 .select(Impact::dst));
 
         assertNotNull(edgeList);
@@ -410,9 +347,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
     }
 
     public void should_fetch_edge_with_selection_ordering() {
-        final Map<String, Object> result = sessionTemplate.selectMap(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final Map<String, Object> result = sessionTemplate.selectMap(edge(Impact.class, "e001", "e002")
                 .selectAs(Impact::dst, "impact_dst_vid").ascending()
                 .select(Impact::id).descending());
 
@@ -420,9 +355,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals("p002", result.get("impact_dst_vid"));
         assertEquals(1L, result.get("rank"));
 
-        final List<Map<String, Object>> resultMapList = sessionTemplate.selectMaps(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final List<Map<String, Object>> resultMapList = sessionTemplate.selectMaps(edge(Impact.class, "e001", "e002")
                 .selectAs(Impact::dst, "impact_dst_vid").ascending()
                 .select(Impact::id).descending());
 
@@ -432,9 +365,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals("p002", resultMapList.get(1).get("impact_dst_vid"));
         assertEquals(0L, resultMapList.get(1).get("rank"));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final Model.E<String, String> edge = sessionTemplate.selectEdge(edge(Impact.class, "e001", "e002")
                 .selectAs(Impact::dst, "impact_dst_vid").ascending()
                 .select(Impact::id).descending());
 
@@ -442,9 +373,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals("p002", edge.get("impact_dst_vid"));
         assertEquals(1L, edge.<Long>get("rank"));
 
-        final Impact impact = sessionTemplate.selectOne(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e001").setSrc("p001").setDst("p002"))
+        final Impact impact = sessionTemplate.selectOne(edge(Impact.class, "e001", "e002")
                 .selectAs(Impact::dst, "impact_dst_vid").ascending()
                 .select(Impact::id).descending(), Impact.class);
 
@@ -494,12 +423,12 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals(1, vertexList.size());
         assertEquals(2L, vertexList.get(0).<Long>get("cnt"));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(vertex(Person.class, "p001", "p002").count("cnt").render());
+        final Model.E<String, String> edge = sessionTemplate.selectEdge(vertex(Person.class, "p001", "p002").count("cnt").render());
 
         assertNotNull(edge);
         assertEquals(2L, edge.<Long>get("cnt"));
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class, "p001", "p002").count("cnt").render());
+        final List<Model.E<String, String>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class, "p001", "p002").count("cnt").render());
 
         assertNotNull(edgeList);
         assertEquals(1, edgeList.size());
@@ -508,60 +437,46 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
 
     @Test
     public void should_fetch_edge_with_shadow_selection() {
-        final Long cnt = sessionTemplate.selectOne(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final Long cnt = sessionTemplate.selectOne(edge(Impact.class, "e001", "e002")
                 .count("cnt"), Long.class);
 
         assertNotNull(cnt);
         assertEquals(2, cnt);
 
-        final List<Long> resultList = sessionTemplate.selectList(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final List<Long> resultList = sessionTemplate.selectList(edge(Impact.class, "e001", "e002")
                 .count("cnt"), Long.class);
 
         assertNotNull(resultList);
         assertEquals(1, resultList.size());
         assertEquals(2L, resultList.get(0));
 
-        final Map<String, Object> result = sessionTemplate.selectMap(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final Map<String, Object> result = sessionTemplate.selectMap(edge(Impact.class, "e001", "e002")
                 .count("cnt"));
 
         assertNotNull(result);
         assertEquals(2L, result.get("cnt"));
 
-        final Map<String, Object> resultMap = sessionTemplate.selectMap(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final Map<String, Object> resultMap = sessionTemplate.selectMap(edge(Impact.class, "e001", "e002")
                 .count("cnt"));
 
         assertNotNull(resultMap);
         assertEquals(2L, resultMap.get("cnt"));
 
-        final List<Map<String, Object>> resultMapList = sessionTemplate.selectMaps(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final List<Map<String, Object>> resultMapList = sessionTemplate.selectMaps(edge(Impact.class, "e001", "e002")
                 .count("cnt"));
 
         assertNotNull(resultMapList);
         assertEquals(1, resultMapList.size());
         assertEquals(2L, resultMapList.get(0).get("cnt"));
 
-        final Model.V<String> vertex = sessionTemplate.selectVertex(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final Model.V<String> vertex = sessionTemplate.selectVertex(edge(Impact.class, "e001", "e002")
                 .count("cnt")
                 .render());
 
         assertNotNull(vertex);
         assertEquals(2L, vertex.<Long>get("cnt"));
 
-        final List<Model.V<String>> vertexList = sessionTemplate.selectVertexList(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final List<Model.V<String>> vertexList = sessionTemplate.selectVertexList(edge(Impact.class, "e001", "e002")
                 .count("cnt")
                 .render());
 
@@ -569,17 +484,13 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals(1, vertexList.size());
         assertEquals(2L, vertexList.get(0).<Long>get("cnt"));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final Model.E<String, String> edge = sessionTemplate.selectEdge(edge(Impact.class, "e001", "e002")
                 .count("cnt"));
 
         assertNotNull(edge);
         assertEquals(2L, edge.<Long>get("cnt"));
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"))
+        final List<Model.E<String, String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class, "e001", "e002")
                 .count("cnt"));
 
         assertNotNull(edgeList);
@@ -628,14 +539,14 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals(1, vertexList.size());
         assertEquals(2L, vertexList.get(0).<Long>get("name_cnt"));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(vertex(Person.class, "p001", "p002")
+        final Model.E<String, String> edge = sessionTemplate.selectEdge(vertex(Person.class, "p001", "p002")
                 .count(Person::getName, "name_cnt")
                 .render());
 
         assertNotNull(edge);
         assertEquals(2L, edge.<Long>get("name_cnt"));
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class, "p001", "p002")
+        final List<Model.E<String, String>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class, "p001", "p002")
                 .count(Person::getName, "name_cnt")
                 .render());
 
@@ -646,67 +557,46 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
 
     @Test
     public void should_fetch_edge_with_shadow_selection_2() {
-        final Long cnt = sessionTemplate.selectOne(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final Long cnt = sessionTemplate.selectOne(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt"), Long.class);
 
         assertNotNull(cnt);
         assertEquals(2, cnt);
 
-        final List<Long> resultList = sessionTemplate.selectList(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final List<Long> resultList = sessionTemplate.selectList(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt"), Long.class);
 
         assertNotNull(resultList);
         assertEquals(1, resultList.size());
         assertEquals(2L, resultList.get(0));
 
-        final Map<String, Object> result = sessionTemplate.selectMap(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final Map<String, Object> result = sessionTemplate.selectMap(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt"));
 
         assertNotNull(result);
         assertEquals(2L, result.get("rank_cnt"));
 
-        final Map<String, Object> resultMap = sessionTemplate.selectMap(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final Map<String, Object> resultMap = sessionTemplate.selectMap(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt"));
 
         assertNotNull(resultMap);
         assertEquals(2L, resultMap.get("rank_cnt"));
 
-        final List<Map<String, Object>> resultMapList = sessionTemplate.selectMaps(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final List<Map<String, Object>> resultMapList = sessionTemplate.selectMaps(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt"));
 
         assertNotNull(resultMapList);
         assertEquals(1, resultMapList.size());
         assertEquals(2L, resultMapList.get(0).get("rank_cnt"));
 
-        final Model.V<String> vertex = sessionTemplate.selectVertex(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final Model.V<String> vertex = sessionTemplate.selectVertex(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt")
                 .render());
 
         assertNotNull(vertex);
         assertEquals(2L, vertex.<Long>get("rank_cnt"));
 
-        final List<Model.V<String>> vertexList = sessionTemplate.selectVertexList(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final List<Model.V<String>> vertexList = sessionTemplate.selectVertexList(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt")
                 .render());
 
@@ -714,19 +604,13 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals(1, vertexList.size());
         assertEquals(2L, vertexList.get(0).<Long>get("rank_cnt"));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final Model.E<String, String> edge = sessionTemplate.selectEdge(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt"));
 
         assertNotNull(edge);
         assertEquals(2L, edge.<Long>get("rank_cnt"));
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final List<Model.E<String, String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt"));
 
         assertNotNull(edgeList);
@@ -786,7 +670,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals(2L, vertexList.get(0).<Long>get("name_cnt"));
         assertEquals(2L, vertexList.get(0).<Long>get("cnt"));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(vertex(Person.class, "p001", "p002")
+        final Model.E<String, String> edge = sessionTemplate.selectEdge(vertex(Person.class, "p001", "p002")
                 .count("cnt")
                 .count(Person::getName, "name_cnt")
                 .render());
@@ -795,7 +679,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals(2L, edge.<Long>get("name_cnt"));
         assertEquals(2L, edge.<Long>get("cnt"));
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class, "p001", "p002")
+        final List<Model.E<String, String>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class, "p001", "p002")
                 .count("cnt")
                 .count(Person::getName, "name_cnt")
                 .render());
@@ -808,67 +692,46 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
 
     @Test
     public void should_fetch_edge_with_selection_count() {
-        final Long cnt = sessionTemplate.selectOne(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final Long cnt = sessionTemplate.selectOne(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt"), Long.class);
 
         assertNotNull(cnt);
         assertEquals(2, cnt);
 
-        final List<Long> resultList = sessionTemplate.selectList(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final List<Long> resultList = sessionTemplate.selectList(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt"), Long.class);
 
         assertNotNull(resultList);
         assertEquals(1, resultList.size());
         assertEquals(2L, resultList.get(0));
 
-        final Map<String, Object> result = sessionTemplate.selectMap(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final Map<String, Object> result = sessionTemplate.selectMap(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt"));
 
         assertNotNull(result);
         assertEquals(2L, result.get("rank_cnt"));
 
-        final Map<String, Object> resultMap = sessionTemplate.selectMap(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final Map<String, Object> resultMap = sessionTemplate.selectMap(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt"));
 
         assertNotNull(resultMap);
         assertEquals(2L, resultMap.get("rank_cnt"));
 
-        final List<Map<String, Object>> resultMapList = sessionTemplate.selectMaps(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final List<Map<String, Object>> resultMapList = sessionTemplate.selectMaps(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt"));
 
         assertNotNull(resultMapList);
         assertEquals(1, resultMapList.size());
         assertEquals(2L, resultMapList.get(0).get("rank_cnt"));
 
-        final Model.V<String> vertex = sessionTemplate.selectVertex(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final Model.V<String> vertex = sessionTemplate.selectVertex(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt")
                 .render());
 
         assertNotNull(vertex);
         assertEquals(2L, vertex.<Long>get("rank_cnt"));
 
-        final List<Model.V<String>> vertexList = sessionTemplate.selectVertexList(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final List<Model.V<String>> vertexList = sessionTemplate.selectVertexList(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt")
                 .render());
 
@@ -876,19 +739,13 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals(1, vertexList.size());
         assertEquals(2L, vertexList.get(0).<Long>get("rank_cnt"));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final Model.E<String, String> edge = sessionTemplate.selectEdge(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt"));
 
         assertNotNull(edge);
         assertEquals(2L, edge.<Long>get("rank_cnt"));
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final List<Model.E<String, String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class, "e001", "e002")
                 .count(Impact::id, "rank_cnt"));
 
         assertNotNull(edgeList);
@@ -948,7 +805,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals(26+30, vertexList.get(0).<Long>get("sum_age"));
         assertEquals(26+30, vertexList.get(0).<Long>get("sum_age2"));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(vertex(Person.class, "p001", "p002")
+        final Model.E<String, String> edge = sessionTemplate.selectEdge(vertex(Person.class, "p001", "p002")
                 .sum(Person::getAge, "sum_age")
                 .sum("age", "sum_age2")
                 .render());
@@ -957,7 +814,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
         assertEquals(26+30L, edge.<Long>get("sum_age"));
         assertEquals(26+30L, edge.<Long>get("sum_age2"));
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class, "p001", "p002")
+        final List<Model.E<String, String>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class, "p001", "p002")
                 .sum(Person::getAge, "sum_age")
                 .sum("age", "sum_age2")
                 .render());
@@ -981,10 +838,7 @@ public class Neo4jFetchSessionTest extends Neo4jSessionBaseTest {
 
     @Test
     public void should_match_edge_with_selection_limit() {
-        final List<Impact> impactList = sessionTemplate.selectList(edge(Impact.class,
-                new Impact().setId("e001").setSrc("p001").setDst("p002"),
-                new Impact().setId("e002").setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final List<Impact> impactList = sessionTemplate.selectList(edge(Impact.class, "e001", "e002")
                 .select(Impact::getType)
                 .limit(1, 2), Impact.class);
 
