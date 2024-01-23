@@ -61,7 +61,7 @@ public class MapleDslSessionTemplate implements MapleDslSession, MapleDslSession
      * @return the selected edge as a Model.E object, or null if no edge is found
      */
     @Override
-    public <ID> Model.@Nullable E<ID> selectEdge(@NotNull String stmt) {
+    public <ID, R> Model.@Nullable E<ID, R> selectEdge(@NotNull String stmt) {
         return sessionProxy.selectEdge(stmt);
     }
 
@@ -72,7 +72,7 @@ public class MapleDslSessionTemplate implements MapleDslSession, MapleDslSession
      * @return the selected edges as a list of Model.E objects, or an empty list if no edges are found
      */
     @Override
-    public <ID> @NotNull List<Model.E<ID>> selectEdgeList(@NotNull String stmt) {
+    public <ID, R> @NotNull List<Model.E<ID, R>> selectEdgeList(@NotNull String stmt) {
         return sessionProxy.selectEdgeList(stmt);
     }
 

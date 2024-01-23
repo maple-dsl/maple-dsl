@@ -189,10 +189,10 @@ public final class MapleDslConfiguration {
     }
 
     @SuppressWarnings("unchecked")
-    public @NotNull <ID> BeanDefinition<Model.E<ID>> edgeDefinition() {
+    public @NotNull <ID, R> BeanDefinition<Model.E<ID, R>> edgeDefinition() {
         try {
             final BeanDefinition<?> edgeDefinition = mapperRegistry.getBeanDefinition(Model.E.class);
-            return (BeanDefinition<Model.E<ID>>) edgeDefinition;
+            return (BeanDefinition<Model.E<ID, R>>) edgeDefinition;
         } catch (MapleDslUncheckedException e) {
             throw e;
         } catch (Exception e) {

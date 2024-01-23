@@ -37,20 +37,20 @@ public class FetchWrapper<M extends Model<?>> implements Wrapper<M>, Query<M> {
     final SortWrapper<M> selection;
     final BiFunction<MapleDslConfiguration, Object[], String> renderFunc;
 
-    protected <R> FetchWrapper(@NotNull String reference, @NotNull String label, R vertices, BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Consumer<MapleDslDialectBase<M>> renderModelDecorator) {
+    protected <R> FetchWrapper(@NotNull String reference, @NotNull String label, String fromFragment, BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Consumer<MapleDslDialectBase<M>> renderModelDecorator) {
         this.selection = new SortWrapper<>(renderModelDecorator, this);
         this.renderFunc = renderFunc;
         this.arguments[REF_INDEX] = reference;
         this.arguments[LABEL_INDEX] = label;
-        this.arguments[FROM_INDEX] = vertices;
+        this.arguments[FROM_INDEX] = fromFragment;
     }
 
-    protected <R> FetchWrapper(@NotNull String reference, @NotNull Class<M> labelClazz, R vertices, BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Consumer<MapleDslDialectBase<M>> renderModelDecorator) {
+    protected <R> FetchWrapper(@NotNull String reference, @NotNull Class<M> labelClazz, String fromFragment, BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Consumer<MapleDslDialectBase<M>> renderModelDecorator) {
         this.selection = new SortWrapper<>(renderModelDecorator, this);
         this.renderFunc = renderFunc;
         this.arguments[REF_INDEX] = reference;
         this.arguments[LABEL_INDEX] = labelClazz;
-        this.arguments[FROM_INDEX] = vertices;
+        this.arguments[FROM_INDEX] = fromFragment;
     }
 
     @Override

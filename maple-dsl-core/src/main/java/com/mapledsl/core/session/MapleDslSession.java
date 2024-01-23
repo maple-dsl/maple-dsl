@@ -51,8 +51,8 @@ public interface MapleDslSession extends Closeable {
      * @param <ID> the type of the identifier for the edge
      * @return the selected edge of type Model.E<ID>
      */
-    @Nullable <ID> Model.E<ID> selectEdge(@NotNull String stmt);
-    default @Nullable <ID> Model.E<ID> selectEdge(@NotNull Wrapper<? extends Model.E<?>> stmtWrapper) {
+    @Nullable <ID, R> Model.E<ID, R> selectEdge(@NotNull String stmt);
+    default @Nullable <ID, R> Model.E<ID, R> selectEdge(@NotNull Wrapper<? extends Model.E<?,?>> stmtWrapper) {
         return selectEdge(requireNonNull(stmtWrapper).render(configuration()));
     }
 
@@ -63,8 +63,8 @@ public interface MapleDslSession extends Closeable {
      * @param <ID> the type of the identifier for the edges
      * @return a list of selected edges of type `Model.E<ID>`
      */
-    @NotNull <ID> List<Model.E<ID>> selectEdgeList(@NotNull String stmt);
-    default @NotNull <ID> List<Model.E<ID>> selectEdgeList(@NotNull Wrapper<? extends Model.E<?>> stmtWrapper) {
+    @NotNull <ID, R> List<Model.E<ID, R>> selectEdgeList(@NotNull String stmt);
+    default @NotNull <ID, R> List<Model.E<ID, R>> selectEdgeList(@NotNull Wrapper<? extends Model.E<?,?>> stmtWrapper) {
         return selectEdgeList(requireNonNull(stmtWrapper).render(configuration()));
     }
 

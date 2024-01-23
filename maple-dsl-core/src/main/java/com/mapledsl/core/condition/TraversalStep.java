@@ -37,9 +37,9 @@ public interface TraversalStep extends Traversal {
      * @param alias edge alias
      * @return the current ref of Traversal.
      */
-    <E extends Model.E<?>> TraversalStep edge(String alias, Consumer<Step<E>> step);
-    <E extends Model.E<?>> TraversalStep edge(String alias, Class<E> label, Consumer<Step<E>> step);
-    <E extends Model.E<?>> TraversalStep edge(String alias, String label, Consumer<Step<E>> step);
+    <E extends Model.E<?,?>> TraversalStep edge(String alias, Consumer<Step<E>> step);
+    <E extends Model.E<?,?>> TraversalStep edge(String alias, Class<E> label, Consumer<Step<E>> step);
+    <E extends Model.E<?,?>> TraversalStep edge(String alias, String label, Consumer<Step<E>> step);
 
     TraversalStep limit(int limit);
     TraversalStep limit(int skip, int limit);

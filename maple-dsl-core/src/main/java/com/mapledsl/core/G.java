@@ -4,6 +4,7 @@ import com.mapledsl.core.condition.wrapper.FetchWrapper;
 import com.mapledsl.core.condition.wrapper.MatchWrapper;
 import com.mapledsl.core.condition.wrapper.TraversalStepWrapper;
 import com.mapledsl.core.condition.wrapper.TraversalWrapper;
+import com.mapledsl.core.model.ID;
 import com.mapledsl.core.model.Model;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -13,8 +14,6 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
-import java.util.stream.Stream;
 
 import static com.mapledsl.core.MapleDslDialectRender.*;
 import static com.mapledsl.core.MapleDslDialectRenderHelper.BLANK;
@@ -28,9 +27,12 @@ public final class G {
      * @param vertexIds the ids of the vertices to traverse
      * @return a TraversalWrapper object representing the traversal through the vertex ids
      */
+    @SafeVarargs
     @Contract("_ -> new")
-    public static @NotNull TraversalWrapper traverse(String... vertexIds) {
-        return traverse(Arrays.stream(vertexIds));
+    public static <ID> @NotNull TraversalWrapper traverse(ID... vertexIds) {
+        return new TraversalWrapperFacade(Arrays.stream(vertexIds)
+                .map(MapleDslDialectRenderHelper::identify)
+                .collect(Collectors.joining(COMMA)));
     }
 
     /**
@@ -40,33 +42,9 @@ public final class G {
      * @return a TraversalWrapper object representing the traversal through the vertex ids
      */
     @Contract("_ -> new")
-    public static @NotNull TraversalWrapper traverse(Number... vertexIds) {
-        return traverse(Arrays.stream(vertexIds).mapToLong(Number::longValue));
-    }
-
-    /**
-     * Traverses through the given vertex ids in the provided stream and returns a TraversalWrapper object.
-     *
-     * @param vertexIdStream the stream of vertex ids to traverse
-     * @return a TraversalWrapper object representing the traversal through the vertex ids
-     */
-    @Contract("_ -> new")
-    public static @NotNull TraversalWrapper traverse(Stream<String> vertexIdStream) {
-        return new TraversalWrapperFacade(vertexIdStream
-                .map(MapleDslDialectRenderHelper::quote)
-                .collect(Collectors.joining(COMMA)));
-    }
-
-    /**
-     * Traverses through the given vertex ids in the provided stream and returns a TraversalWrapper object.
-     *
-     * @param vertexIdStream the stream of vertex ids to traverse
-     * @return a TraversalWrapper object representing the traversal through the vertex ids
-     */
-    @Contract("_ -> new")
-    public static @NotNull TraversalWrapper traverse(LongStream vertexIdStream) {
-        return new TraversalWrapperFacade(vertexIdStream
-                .mapToObj(MapleDslDialectRenderHelper::numeric)
+    public static <ID> @NotNull TraversalWrapper traverse(Collection<ID> vertexIds) {
+        return new TraversalWrapperFacade(vertexIds.stream()
+                .map(MapleDslDialectRenderHelper::identify)
                 .collect(Collectors.joining(COMMA)));
     }
 
@@ -112,7 +90,7 @@ public final class G {
      * @return a MatchWrapper object representing the edge match
      */
     @Contract("_ -> new")
-    public static <E extends Model.E<?>> @NotNull MatchWrapper<E> edge(Class<E> tag) {
+    public static <E extends Model.E<?,?>> @NotNull MatchWrapper<E> edge(Class<E> tag) {
         return new MatchEdgeWrapper<>(matchE, tag);
     }
 
@@ -124,76 +102,44 @@ public final class G {
      * @return a MatchWrapper object representing the edge match
      */
     @Contract("_ -> new")
-    public static <E extends Model.E<?>> @NotNull MatchWrapper<E> edge(String tag) {
+    public static <E extends Model.E<?,?>> @NotNull MatchWrapper<E> edge(String tag) {
         return new MatchEdgeWrapper<>(matchE, tag);
-    }
-
-    /**
-     * Creates a FetchWrapper object to fetch vertices with the given tag and vertex IDs.
-     *
-     * @param tag       the tag representing the vertex entity
-     * @param vertexIds the IDs of the vertices to fetch
-     * @return a FetchWrapper object representing the fetching condition for the specified vertex IDs and tag
-     */
-    @Contract(value = "_, _ -> new", pure = true)
-    public static <V extends Model.V<?>> @NotNull FetchWrapper<V> vertex(String tag, String... vertexIds) {
-        return vertex(tag, Arrays.stream(vertexIds));
-    }
-
-    /**
-     * Creates a FetchWrapper object to fetch vertices with the given tag and vertex IDs.
-     *
-     * @param tag the tag representing the vertex entity
-     * @param vertexIds the IDs of the vertices to fetch
-     * @return a FetchWrapper object representing the fetching condition for the specified vertex IDs and tag
-     */
-    @Contract(value = "_, _ -> new", pure = true)
-    public static @NotNull FetchWrapper<Model.V<?>> vertex(String tag, Number... vertexIds) {
-        return vertex(tag, Arrays.stream(vertexIds).mapToLong(Number::longValue));
-    }
-
-    /**
-     * Creates a FetchWrapper instance for querying vertex data.
-     *
-     * @param tag             the tag associated with the vertex
-     * @param vertexIdStream  the stream of vertex IDs
-     * @return a FetchWrapper instance that wraps the vertex query
-     */
-    @Contract(value = "_, _ -> new", pure = true)
-    public static @NotNull FetchWrapper<Model.V<?>> vertex(String tag, LongStream vertexIdStream) {
-        return new FetchVertexWrapper<>(fetchV, tag, vertexIdStream
-                .mapToObj(MapleDslDialectRenderHelper::numeric)
-                .collect(Collectors.joining(COMMA))
-        );
     }
 
     /**
      * Returns a FetchWrapper object for the given vertex.
      *
      * @param tag              the tag associated with the vertex
-     * @param vertexIdStream   a stream of vertex IDs
-     * @return a FetchWrapper object for the given vertex
+     * @param vertexIds        the array of vertex IDs.
+     * @return a FetchWrapper  object for the given vertex
      * @throws NullPointerException if either tag or vertexIdStream is null
      */
     @Contract(value = "_, _ -> new", pure = true)
-    public static <V extends Model.V<?>> @NotNull FetchWrapper<V> vertex(String tag, Stream<String> vertexIdStream) {
-        return new FetchVertexWrapper<>(fetchV, tag, vertexIdStream
+    public static @NotNull FetchWrapper<Model.V<String>> vertex(String tag, String... vertexIds) {
+        return new FetchVertexWrapper<>(fetchV, tag, Arrays.stream(vertexIds)
                 .map(MapleDslDialectRenderHelper::quote)
-                .collect(Collectors.joining(COMMA))
-        );
+                .collect(Collectors.joining(COMMA)));
     }
 
-    /**
-     * Creates a FetchWrapper object representing a vertex in a graph database.
-     *
-     * @param tag        the tag representing the vertex class type.
-     * @param vertexIds  the array of vertex IDs.
-     * @param <V>        the type of vertex class.
-     * @return a FetchWrapper object representing the vertex.
-     */
     @Contract(value = "_, _ -> new", pure = true)
-    public static <V extends Model.V<?>> @NotNull FetchWrapper<V> vertex(Class<V> tag, String... vertexIds) {
-        return vertex(tag, Arrays.stream(vertexIds));
+    public static @NotNull FetchWrapper<Model.V<Number>> vertex(String tag, Number... vertexIds) {
+        return new FetchVertexWrapper<>(fetchV, tag, Arrays.stream(vertexIds)
+                .map(MapleDslDialectRenderHelper::numeric)
+                .collect(Collectors.joining(COMMA)));
+    }
+
+    @Contract(value = "_, _ -> new", pure = true)
+    public static @NotNull FetchWrapper<Model.V<String>> vertex(String tag, ID... vertexIds) {
+        return new FetchVertexWrapper<>(fetchV, tag, Arrays.stream(vertexIds)
+                .map(MapleDslDialectRenderHelper::identify)
+                .collect(Collectors.joining(COMMA)));
+    }
+
+    @Contract(value = "_, _ -> new", pure = true)
+    public static <ID> @NotNull FetchWrapper<Model.V<ID>> vertex(String tag, Collection<ID> vertexIds) {
+        return new FetchVertexWrapper<>(fetchV, tag, vertexIds.stream()
+                .map(MapleDslDialectRenderHelper::identify)
+                .collect(Collectors.joining(COMMA)));
     }
 
     /**
@@ -204,54 +150,36 @@ public final class G {
      * @param <V>        the type of vertex class.
      * @return a FetchWrapper object representing the vertex.
      */
+    @SafeVarargs
     @Contract("_, _ -> new")
-    public static <V extends Model.V<?>> @NotNull FetchWrapper<V> vertex(Class<V> tag, Number... vertexIds) {
-        return vertex(tag, Arrays.stream(vertexIds).mapToLong(Number::longValue));
+    public static <ID, V extends Model.V<ID>> @NotNull FetchWrapper<V> vertex(Class<V> tag, ID... vertexIds) {
+        return new FetchVertexWrapper<>(fetchV, tag, Arrays.stream(vertexIds)
+                .map(MapleDslDialectRenderHelper::identify)
+                .collect(Collectors.joining(COMMA)));
     }
 
-    /**
-     * Fetches vertices of the specified class with the given vertex IDs.
-     *
-     * @param tag The class of vertices to fetch.
-     * @param vertexIdStream A stream of vertex IDs to fetch.
-     * @return A FetchWrapper instance representing the fetched vertices.
-     */
     @Contract("_, _ -> new")
-    public static <V extends Model.V<?>> @NotNull FetchWrapper<V> vertex(Class<V> tag, LongStream vertexIdStream) {
-        return new FetchVertexWrapper<>(fetchV, tag, vertexIdStream
-                .mapToObj(MapleDslDialectRenderHelper::numeric)
-                .collect(Collectors.joining(COMMA))
-        );
-    }
-
-    /**
-     * Creates a new instance of {@link FetchWrapper} with the given class tag and vertex ID stream.
-     *
-     * @param tag The class tag for the vertex type.
-     * @param vertexIdStream The stream of vertex IDs.
-     * @param <V> The type of the vertex.
-     * @return A new instance of {@link FetchWrapper} for the given vertex type.
-     * @throws NullPointerException if any of the arguments are null.
-     */
-    @Contract("_, _ -> new")
-    public static <V extends Model.V<?>> @NotNull FetchWrapper<V> vertex(Class<V> tag, Stream<String> vertexIdStream) {
-        return new FetchVertexWrapper<>(fetchV, tag, vertexIdStream
-                .map(MapleDslDialectRenderHelper::quote)
-                .collect(Collectors.joining(COMMA))
-        );
+    public static <ID, V extends Model.V<ID>> @NotNull FetchWrapper<V> vertex(Class<V> tag, Collection<ID> vertexIds) {
+        return new FetchVertexWrapper<>(fetchV, tag, vertexIds.stream()
+                .map(MapleDslDialectRenderHelper::identify)
+                .collect(Collectors.joining(COMMA)));
     }
 
     /**
      * Creates an instance of FetchWrapper for fetching edges.
      *
      * @param tag   the class representing the edge
-     * @param edges the array of edges
+     * @param edgeIds the array of edges
      * @param <E>   the type of the edge
      * @return a new instance of FetchWrapper for fetching edges
      */
+    @SafeVarargs
     @Contract("_, _ -> new")
-    public static <E extends Model.E<?>> @NotNull FetchWrapper<E> edge(Class<E> tag, Model.E<?>... edges) {
-        return new FetchEdgeWrapper<>(fetchE, tag, edges);
+    public static <ID, E extends Model.E<ID,?>> @NotNull FetchWrapper<E> edge(Class<E> tag, ID... edgeIds) {
+        return new FetchEdgeWrapper<>(fetchE, tag, Arrays.stream(edgeIds)
+                .map(MapleDslDialectRenderHelper::identify)
+                .collect(Collectors.joining(COMMA))
+        );
     }
 
     /**
@@ -259,38 +187,55 @@ public final class G {
      * This method returns a new instance of {@link FetchEdgeWrapper}.
      *
      * @param tag The {@link Class} object representing the {@link Model.E} class.
-     * @param edges The collection of {@link Model.E} edges.
+     * @param edgeIds The collection of {@link Model.E} edges.
      * @return A new instance of {@link FetchWrapper} wrapping the given {@link Model.E} edges.
      * @throws IllegalArgumentException if tag is null.
      */
     @Contract("_, _ -> new")
-    public static <E extends Model.E<?>> @NotNull FetchWrapper<E> edge(Class<E> tag, Collection<Model.E<?>> edges) {
-        return new FetchEdgeWrapper<>(fetchE, tag, edges);
+    public static <ID, E extends Model.E<ID,?>> @NotNull FetchWrapper<E> edge(Class<E> tag, Collection<ID> edgeIds) {
+        return new FetchEdgeWrapper<>(fetchE, tag, edgeIds.stream()
+                .map(MapleDslDialectRenderHelper::identify)
+                .collect(Collectors.joining(COMMA))
+        );
     }
 
     /**
      * This method is used to create an instance of FetchWrapper with FetchEdgeWrapper implementation.
      *
      * @param tag   the tag to be passed to FetchEdgeWrapper constructor
-     * @param edges the edges to be passed to FetchEdgeWrapper constructor
-     * @param <E>   the type of Model.E
+     * @param edgeIds the edges to be passed to FetchEdgeWrapper constructor
      * @return an instance of FetchWrapper with FetchEdgeWrapper implementation
      */
     @Contract("_, _ -> new")
-    public static <E extends Model.E<?>> @NotNull FetchWrapper<E> edge(String tag, Model.E<?>... edges) {
-        return new FetchEdgeWrapper<>(fetchE, tag, edges);
+    public static @NotNull FetchWrapper<Model.E<String,?>> edge(String tag, String... edgeIds) {
+        return new FetchEdgeWrapper<>(fetchE, tag, Arrays.stream(edgeIds)
+                .map(MapleDslDialectRenderHelper::quote)
+                .collect(Collectors.joining(COMMA))
+        );
     }
 
-    /**
-     * Creates a new FetchWrapper instance with the given tag and collection of edges.
-     *
-     * @param tag   the tag for the FetchWrapper instance
-     * @param edges the collection of edges to be included in the FetchWrapper instance
-     * @return a new FetchWrapper instance
-     */
     @Contract("_, _ -> new")
-    public static <E extends Model.E<?>> @NotNull FetchWrapper<E> edge(String tag, Collection<Model.E<?>> edges) {
-        return new FetchEdgeWrapper<>(fetchE, tag, edges);
+    public static @NotNull FetchWrapper<Model.E<Number,?>> edge(String tag, Number... edgeIds) {
+        return new FetchEdgeWrapper<>(fetchE, tag, Arrays.stream(edgeIds)
+                .map(MapleDslDialectRenderHelper::numeric)
+                .collect(Collectors.joining(COMMA))
+        );
+    }
+
+    @Contract("_, _ -> new")
+    public static @NotNull FetchWrapper<Model.E<String,?>> edge(String tag, ID... edgeIds) {
+        return new FetchEdgeWrapper<>(fetchE, tag, Arrays.stream(edgeIds)
+                .map(MapleDslDialectRenderHelper::identify)
+                .collect(Collectors.joining(COMMA))
+        );
+    }
+
+    @Contract("_, _ -> new")
+    public static @NotNull <ID> FetchWrapper<Model.E<ID,?>> edge(String tag, Collection<ID> edgeIds) {
+        return new FetchEdgeWrapper<>(fetchE, tag, edgeIds.stream()
+                .map(MapleDslDialectRenderHelper::identify)
+                .collect(Collectors.joining(COMMA))
+        );
     }
 
     /**
@@ -302,13 +247,12 @@ public final class G {
         /**
          * Fetches vertices in a graph.
          *
-         * @param <R> The type of the vertices in the graph.
          * @param renderFunc The function that defines how to render the vertex.
          * @param label The label of the vertex.
-         * @param vertices The vertices to fetch.
+         * @param verticesFragment The vertices fragment of fetch statement.
          */
-        <R> FetchVertexWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, String label, R vertices) {
-            super(DEFAULT_VERTEX_ALIAS, label, vertices, renderFunc, it -> it
+        FetchVertexWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, String label, String verticesFragment) {
+            super(DEFAULT_VERTEX_ALIAS, label, verticesFragment, renderFunc, it -> it
                     .setV(true)
                     .setInstantiatedLabel(label)
                     .setInstantiatedAlias(DEFAULT_VERTEX_ALIAS))
@@ -317,11 +261,9 @@ public final class G {
 
         /**
          * FetchVertexWrapper is a generic class that represents a wrapper for fetching vertices in a graph.
-         *
-         * @param <R> The type of the vertices in the graph.
          */
-         <R> FetchVertexWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Class<V> labelClazz, R vertices) {
-            super(DEFAULT_VERTEX_ALIAS, labelClazz, vertices, renderFunc, it -> it
+         FetchVertexWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Class<V> labelClazz, String verticesFragment) {
+            super(DEFAULT_VERTEX_ALIAS, labelClazz, verticesFragment, renderFunc, it -> it
                     .setV(true)
                     .setInstantiatedLabelClazz(labelClazz)
                     .setInstantiatedAlias(DEFAULT_VERTEX_ALIAS)
@@ -335,17 +277,17 @@ public final class G {
      *
      * @param <E> The type of the model.
      */
-    static final class FetchEdgeWrapper<E extends Model.E<?>> extends FetchWrapper<E> {
+    static final class FetchEdgeWrapper<E extends Model.E<?,?>> extends FetchWrapper<E> {
         /**
          * FetchEdgeWrapper represents a wrapper for fetching edges in a graph database.
          *
          * @param <R> The type of the edges.
          * @param renderFunc The function used to render the fetch query.
          * @param label The label of the edges.
-         * @param edges The edges to fetch.
+         * @param edgeFragment The edges fetch fragment.
          */
-        <R> FetchEdgeWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, String label, R edges) {
-            super(DEFAULT_EDGE_ALIAS, label, edges, renderFunc, it -> it
+        <R> FetchEdgeWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, String label, String edgeFragment) {
+            super(DEFAULT_EDGE_ALIAS, label, edgeFragment, renderFunc, it -> it
                     .setE(true)
                     .setInstantiatedLabel(label)
                     .setInstantiatedAlias(DEFAULT_EDGE_ALIAS)
@@ -356,9 +298,12 @@ public final class G {
          * FetchEdgeWrapper is a class that represents a wrapper for fetching edges in a graph database.
          *
          * @param <R> The type of the edges.
+         * @param renderFunc the function used to render the fetch query
+         * @param labelClazz the label clazz of the edges.
+         * @param edgeFragment The edge fetch fragment.
          */
-        <R> FetchEdgeWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Class<E> labelClazz, R edges) {
-            super(DEFAULT_EDGE_ALIAS, labelClazz, edges, renderFunc, it -> it
+        <R> FetchEdgeWrapper(BiFunction<MapleDslConfiguration, Object[], String> renderFunc, Class<E> labelClazz, String edgeFragment) {
+            super(DEFAULT_EDGE_ALIAS, labelClazz, edgeFragment, renderFunc, it -> it
                     .setE(true)
                     .setInstantiatedLabelClazz(labelClazz)
                     .setInstantiatedAlias(DEFAULT_EDGE_ALIAS)
@@ -428,7 +373,7 @@ public final class G {
      *
      * @param <E> the type of the edge model
      */
-    static final class MatchEdgeWrapper<E extends Model.E<?>> extends MatchWrapper<E> {
+    static final class MatchEdgeWrapper<E extends Model.E<?,?>> extends MatchWrapper<E> {
         /**
          * Constructs a new MatchEdgeWrapper object.
          *

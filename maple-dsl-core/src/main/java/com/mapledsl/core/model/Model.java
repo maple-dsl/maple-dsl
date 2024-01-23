@@ -49,31 +49,31 @@ public interface Model<ID> extends Serializable {
     /**
      * Represents a path in a graph, consisting of a sequence of vertices and edges.
      *
-     * @param <ID> the type of the vertex and edge IDs
+     * @param <R> the type of the vertex and edge IDs
      */
     @ApiStatus.NonExtendable
-    final class Path<ID> implements Serializable {
-        LinkedList<V<ID>> vertices;
-        LinkedList<E<ID>> edges;
+    final class Path<R> implements Serializable {
+        LinkedList<V<R>> vertices;
+        LinkedList<E<?,R>> edges;
 
-        public Path(LinkedList<V<ID>> vertices, LinkedList<E<ID>> edges) {
+        public Path(LinkedList<V<R>> vertices, LinkedList<E<?,R>> edges) {
             this.vertices = vertices;
             this.edges = edges;
         }
 
-        public V<ID> first() {
+        public V<R> first() {
             return vertices == null ? null : vertices.getFirst();
         }
 
-        public V<ID> last() {
+        public V<R> last() {
             return vertices == null ? null : vertices.getLast();
         }
 
-        public LinkedList<V<ID>> vertices() {
+        public LinkedList<V<R>> vertices() {
             return vertices;
         }
 
-        public LinkedList<E<ID>> edges() {
+        public LinkedList<E<?,R>> edges() {
             return edges;
         }
     }
@@ -136,18 +136,18 @@ public interface Model<ID> extends Serializable {
      *
      * @param <ID> The type of the identifier for the model.
      */
-    class E<ID> implements Model<ID> {
+    class E<ID, R> implements Model<ID> {
         protected @Property(value = ID, defined = false)    ID id;
-        protected @Property(value = SRC, defined = false)   ID src;
-        protected @Property(value = DST, defined = false)   ID dst;
+        protected @Property(value = SRC, defined = false)   R src;
+        protected @Property(value = DST, defined = false)   R dst;
         protected @Property(value = TAG, defined = false)   String label;
         protected @PropertyIgnore                           Map<String, Object> props;
 
-        public @PropertyGetter(SRC) ID src() {
+        public @PropertyGetter(SRC) R src() {
             return src;
         }
 
-        public @PropertyGetter(DST) ID dst() {
+        public @PropertyGetter(DST) R dst() {
             return dst;
         }
 
@@ -165,22 +165,22 @@ public interface Model<ID> extends Serializable {
             return props;
         }
 
-        public @PropertySetter(TAG) E<ID> setLabel(String label) {
+        public @PropertySetter(TAG) E<ID,R> setLabel(String label) {
             this.label = label;
             return this;
         }
 
-        public @PropertySetter(ID) E<ID> setId(ID id) {
+        public @PropertySetter(ID) E<ID,R> setId(ID id) {
             this.id = id;
             return this;
         }
 
-        public @PropertySetter(SRC) E<ID> setSrc(ID src) {
+        public @PropertySetter(SRC) E<ID,R> setSrc(R src) {
             this.src = src;
             return this;
         }
 
-        public @PropertySetter(DST) E<ID> setDst(ID dst) {
+        public @PropertySetter(DST) E<ID,R> setDst(R dst) {
             this.dst = dst;
             return this;
         }

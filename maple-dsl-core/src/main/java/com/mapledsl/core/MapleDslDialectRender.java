@@ -29,7 +29,17 @@ enum MapleDslDialectRender implements BiFunction<MapleDslConfiguration, Object[]
     fetchE {
         @Override
         ST fill(ST fmt, Object[] args) {
-            return fetchV.fill(fmt, args);
+            fmt.add("ref", args[0]);
+            fmt.add("tag", args[1]);
+            fmt.add("from", args[2]);
+            fmt.add("selection", args[3]);
+            fmt.add("shadow_selection", args[4]);
+            fmt.add("function", args[5]);
+            fmt.add("order_asc", args[6]);
+            fmt.add("order_desc", args[7]);
+            fmt.add("offset", args[8]);
+            fmt.add("limit", args[9]);
+            return fmt;
         }
     },
     matchV {

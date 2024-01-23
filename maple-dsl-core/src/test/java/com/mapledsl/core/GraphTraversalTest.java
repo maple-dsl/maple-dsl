@@ -160,10 +160,10 @@ public class GraphTraversalTest {
     }
 
     @Label("impact")
-    static class Impact extends Model.E<String> {
+    static class Impact extends Model.E<String, String> {
     }
 
     @Label("follow")
-    static class Follow extends Model.E<String> {
+    static class Follow extends Model.E<String, String> {
     }
 }

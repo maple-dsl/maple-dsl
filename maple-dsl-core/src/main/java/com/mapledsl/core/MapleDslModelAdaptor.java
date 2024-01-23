@@ -6,6 +6,9 @@ import org.stringtemplate.v4.ModelAdaptor;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.misc.STNoSuchPropertyException;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
+
 /**
  * The MapleDslModelAdaptor class is responsible for adapting model objects to the Maple DSL.
  * <p></p>
@@ -26,8 +29,20 @@ class MapleDslModelAdaptor implements ModelAdaptor<Object>, MapleDslDialectRende
     @Override
     public Object getProperty(Interpreter interp, ST self, Object value, Object property, String propertyName) throws STNoSuchPropertyException {
         if (value == null) return NULL;
+        if (Collection.class.isAssignableFrom(value.getClass())) {
+            final Collection<?> valueCollection = (Collection<?>) value;
+            if (valueCollection.isEmpty()) return NULL;
+            value = valueCollection.toArray();
+        }
+
+        if (value.getClass().isArray()) {
+            final int length = Array.getLength(value);
+            if (length == 0) return NULL;
+            value = Array.get(value, 0);
+        }
 
         final BeanDefinition<Object> definition = (BeanDefinition<Object>) context.beanDefinitionUnchecked(value.getClass());
-        return definition.getter(value, propertyName);
+        final String propertyValue = definition.getter(value, propertyName);
+        return propertyValue == null ? NULL : propertyValue;
     }
 }
