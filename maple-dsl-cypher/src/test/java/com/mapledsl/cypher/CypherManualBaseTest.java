@@ -22,7 +22,7 @@ public class CypherManualBaseTest {
     }
 
     @Label("impact")
-    public static class Impact extends Model.E<String> {
+    public static class Impact extends Model.E<String, String> {
         private String type;
 
         public String getType() {
@@ -31,7 +31,7 @@ public class CypherManualBaseTest {
     }
 
     @Label("impact_fork")
-    public static class ImpactNum extends Model.E<Long> {
+    public static class ImpactNum extends Model.E<Long, Long> {
         private String type;
 
         public String getType() {
@@ -40,7 +40,7 @@ public class CypherManualBaseTest {
     }
 
     @Label("follow")
-    public static class Follow extends Model.E<String> {
+    public static class Follow extends Model.E<String, String> {
     }
 
     static MapleDslConfiguration configuration = new MapleDslConfiguration.Builder()

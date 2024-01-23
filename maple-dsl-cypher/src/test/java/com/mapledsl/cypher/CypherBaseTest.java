@@ -20,7 +20,7 @@ public class CypherBaseTest {
     }
 
     @Label("impact")
-    public static class Impact extends Model.E<Long> {
+    public static class Impact extends Model.E<Long, Long> {
         private String type;
 
         public String getType() {
@@ -29,7 +29,7 @@ public class CypherBaseTest {
     }
 
     @Label("follow")
-    public static class Follow extends Model.E<Long> {
+    public static class Follow extends Model.E<Long, Long> {
     }
 
 }
