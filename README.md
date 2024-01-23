@@ -43,12 +43,12 @@ Inclusion of the Nebula-DSL in a Maven project
 #### Set up domain entities(vertex&edge)
 ```java
 @Label("actor")
-class Actor extends Model.V {
+class Actor extends Model.V<String> {
   private String name;
 }
 
 @Label("movie")
-class Movie extends Model.V {
+class Movie extends Model.V<String> {
   @Property("movie_name")
   private String name;
   @Property("movie_released")
@@ -56,7 +56,7 @@ class Movie extends Model.V {
 }
 
 @Label("acted_in")
-class ActedIn extends Model.E {
+class ActedIn extends Model.E<String,String> {
 
 }
 ```
