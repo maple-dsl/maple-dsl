@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <groupId>io.github.maple-dsl</groupId>
     <artifactId>maple-dsl</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <name>mapledsl</name>
 
     <description>The best graph language DSL</description>
@@ -18,12 +18,13 @@
         <module>maple-dsl-nebula</module>
         <module>maple-dsl-neo4j</module>
         <module>maple-dsl-cypher</module>
+        <module>maple-dsl-redisgraph</module>
     </modules>
 
     <properties>
-        <mapledsl-core.version>1.0.2</mapledsl-core.version>
-        <mapledsl-nebula.version>1.0.2</mapledsl-nebula.version>
-        <mapledsl-cypher.version>1.0.2</mapledsl-cypher.version>
+        <mapledsl-core.version>1.0.3</mapledsl-core.version>
+        <mapledsl-nebula.version>1.0.3</mapledsl-nebula.version>
+        <mapledsl-cypher.version>1.0.3</mapledsl-cypher.version>
         <mapledsl-neo4j.version>1.0.0</mapledsl-neo4j.version>
         <apiguardian.version>1.1.2</apiguardian.version>
         <codec.version>1.15</codec.version>

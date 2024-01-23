@@ -5,11 +5,11 @@
     <parent>
         <groupId>io.github.maple-dsl</groupId>
         <artifactId>maple-dsl</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3</version>
     </parent>
 
     <artifactId>maple-dsl-core</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <modelVersion>4.0.0</modelVersion>
 
     <dependencies>

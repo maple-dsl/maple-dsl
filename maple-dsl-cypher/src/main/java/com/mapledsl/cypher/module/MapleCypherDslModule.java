@@ -16,7 +16,7 @@ import java.util.Properties;
  * It provides methods to get the version, dialect, and dialect properties specific to the Maple Cypher DSL module.
  */
 public class MapleCypherDslModule extends MapleDslModule {
-    public static final String VERSION = "cypher:1.0.2-release";
+    public static final String VERSION = "cypher:1.0.3-release";
     public static final String DIALECT = "cypher";
 
     @Override
