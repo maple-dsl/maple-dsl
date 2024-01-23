@@ -15,21 +15,22 @@ public interface NebulaModel {
      *
      * @param <ID> The type of the identifier for the model.
      */
-    interface E<ID, EDGE extends Model.E<ID>> extends Model<ID> {
-        /**
-         * Retrieves an instance of the EDGE class.
-         *
-         * @return An instance of the EDGE class.
-         */
-        EDGE instance();
+    class E<R> extends Model.E<NebulaEdgeID<R>, R> {
+        protected long rank;
+
+        @Override
+        public synchronized NebulaEdgeID<R> id() {
+            if (id == null) id = new NebulaEdgeID<>(src, dst, rank);
+            return id;
+        }
 
         /**
          * Retrieves the rank of the model. If the rank property is not set, it returns 0L as the default value.
          *
          * @return The rank of the model, or 0L if the rank property is not set.
          */
-        default @PropertyGetter(RANK) long rank() {
-            return getOrDefault(RANK, 0L);
+        public @PropertyGetter(RANK) long rank() {
+            return rank;
         }
 
         /**
@@ -38,11 +39,11 @@ public interface NebulaModel {
          * @param rank The rank to be set.
          * @return An instance of the EDGE class with the rank property set to the provided value.
          */
-        default @PropertySetter(RANK) EDGE setRank(long rank) {
-            put(RANK, rank);
-            return instance();
+        public @PropertySetter(RANK) NebulaModel.E<R> setRank(long rank) {
+            this.rank = rank;
+            return this;
         }
 
-        String RANK = "rank";
+        public static final String RANK = "rank";
     }
 }

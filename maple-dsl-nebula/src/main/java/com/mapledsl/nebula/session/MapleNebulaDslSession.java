@@ -78,17 +78,17 @@ public final class MapleNebulaDslSession implements MapleDslSession {
     }
 
     @Override
-    public <ID> Model.@Nullable E<ID> selectEdge(@NotNull String stmt) {
+    public <ID, R> Model.@Nullable E<ID,R> selectEdge(@NotNull String stmt) {
         return singleResult(stmt, ((values, columns) -> {
-            final BeanDefinition<Model.E<ID>> eBeanDefinition = context.edgeDefinition();
+            final BeanDefinition<Model.E<ID,R>> eBeanDefinition = context.edgeDefinition();
             return createModelResult(eBeanDefinition, this::isEdgeValue, values, columns);
         }));
     }
 
     @Override
-    public <ID> @NotNull List<Model.E<ID>> selectEdgeList(@NotNull String stmt) {
+    public <ID,R> @NotNull List<Model.E<ID,R>> selectEdgeList(@NotNull String stmt) {
         return collectResult(stmt, (values, columns) -> {
-            final BeanDefinition<Model.E<ID>> eBeanDefinition = context.edgeDefinition();
+            final BeanDefinition<Model.E<ID,R>> eBeanDefinition = context.edgeDefinition();
             return createModelResult(eBeanDefinition, this::isEdgeValue, values, columns);
         });
     }

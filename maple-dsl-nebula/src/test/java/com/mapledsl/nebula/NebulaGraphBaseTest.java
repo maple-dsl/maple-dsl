@@ -27,34 +27,20 @@ public class NebulaGraphBaseTest {
     @Data
     @EqualsAndHashCode(callSuper = true)
     @Label("impact")
-    public static class Impact extends Model.E<String> implements NebulaModel.E<String, Impact> {
+    public static class Impact extends NebulaModel.E<String> {
         private String type;
-
-        @Override
-        public Impact instance() {
-            return this;
-        }
     }
 
     @Data
     @EqualsAndHashCode(callSuper = true)
     @Label("impact")
-    public static class ImpactHash extends Model.E<Long> implements NebulaModel.E<Long, ImpactHash> {
+    public static class ImpactHash extends NebulaModel.E<Long> {
         private String type;
-
-        @Override
-        public ImpactHash instance() {
-            return this;
-        }
     }
 
     @Data
     @EqualsAndHashCode(callSuper = true)
     @Label("follow")
-    public static class Follow extends Model.E<String> implements NebulaModel.E<String, Follow> {
-        @Override
-        public Follow instance() {
-            return this;
-        }
+    public static class Follow extends NebulaModel.E<String> {
     }
 }

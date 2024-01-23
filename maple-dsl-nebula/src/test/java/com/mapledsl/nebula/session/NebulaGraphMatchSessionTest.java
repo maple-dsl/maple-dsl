@@ -60,7 +60,7 @@ public class NebulaGraphMatchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("p002", impactList.get(1).dst());
         assertEquals(1L, impactList.get(1).rank());
 
-        final List<Model.E<Object>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class));
+        final List<Model.E<Object, Object>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class));
         assertNotNull(edgeList);
         assertEquals(2, edgeList.size());
         assertEquals("p001", edgeList.get(0).src());
@@ -89,11 +89,11 @@ public class NebulaGraphMatchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("p001", vertexList.get(0).id());
         assertEquals("bofa", vertexList.get(0).get("name"));
 
-        final Model.E<Object> edge = sessionTemplate.selectEdge(vertex(Person.class).eq(Person::getName, "bofa").render());
+        final Model.E<Object, Object> edge = sessionTemplate.selectEdge(vertex(Person.class).eq(Person::getName, "bofa").render());
         assertNotNull(edge);
         assertEquals("bofa", edge.<Map<String, Object>>get("v").get("name"));
 
-        final List<Model.E<Object>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class).eq(Person::getName, "bofa").render());
+        final List<Model.E<Object, Object>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class).eq(Person::getName, "bofa").render());
         assertNotNull(edgeList);
         assertEquals(1, edgeList.size());
         assertEquals("bofa", edgeList.get(0).<Map<String, Object>>get("v").get("name"));
@@ -116,14 +116,14 @@ public class NebulaGraphMatchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("p001", impactList.get(0).src());
         assertEquals("type1", impactList.get(0).getType());
 
-        final Model.E<Object> edge = sessionTemplate.selectEdge(edge(Impact.class)
+        final Model.E<Object, Object> edge = sessionTemplate.selectEdge(edge(Impact.class)
                 .in(Impact::getType, Arrays.asList("type1", "type2")));
 
         assertNotNull(edge);
         assertEquals("p001", edge.src());
         assertEquals("type1", edge.get("type"));
 
-        final List<Model.E<Object>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class)
+        final List<Model.E<Object, Object>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class)
                 .in(Impact::getType, Arrays.asList("type1", "type2")));
 
         assertNotNull(edgeList);
@@ -144,7 +144,7 @@ public class NebulaGraphMatchSessionTest extends NebulaGraphSessionBaseTest {
 
     @Test
     public void should_match_edge_with_selection_complicit_alias() {
-        final Model.E<Object> edge = sessionTemplate.selectEdge(edge(Impact.class)
+        final Model.E<Object, Object> edge = sessionTemplate.selectEdge(edge(Impact.class)
                 .in(Impact::getType, Arrays.asList("type1", "type2"))
                 .selectAs(Impact::getType, "impact_type")
                 .select(Impact::src, Impact::dst, Impact::rank));
@@ -155,7 +155,7 @@ public class NebulaGraphMatchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("p002", edge.dst());
         assertEquals(0L, edge.<Long>get("rank"));
 
-        final List<Model.E<Object>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class)
+        final List<Model.E<Object, Object>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class)
                 .in(Impact::getType, Arrays.asList("type1", "type2"))
                 .selectAs(Impact::getType, "impact_type")
                 .select(Impact::src, Impact::dst, Impact::rank));
@@ -193,7 +193,7 @@ public class NebulaGraphMatchSessionTest extends NebulaGraphSessionBaseTest {
             "YIELD impact.type AS impact_type,src(edge) AS src,dst(edge) AS dst,rank(edge) AS rank " +
             "| ORDER BY $-.impact_type ASC,$-.src,$-.dst,$-.rank DESC")
     public void should_match_edge_with_selection_ordering(String expected) {
-        final Model.E<Object> edge = sessionTemplate.selectEdge(edge(Impact.class)
+        final Model.E<Object, Object> edge = sessionTemplate.selectEdge(edge(Impact.class)
                 .in(Impact::getType, Arrays.asList("type1", "type2"))
                 .selectAs(Impact::getType, "impact_type")
                 .select(Impact::src, Impact::dst, Impact::rank).descending());
@@ -204,7 +204,7 @@ public class NebulaGraphMatchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("p002", edge.dst());
         assertEquals(1L, edge.<Long>get("rank"));
 
-        final List<Model.E<Object>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class)
+        final List<Model.E<Object, Object>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class)
                 .in(Impact::getType, Arrays.asList("type1", "type2"))
                 .selectAs(Impact::getType, "impact_type")
                 .select(Impact::src, Impact::dst, Impact::rank).descending());
@@ -380,7 +380,7 @@ public class NebulaGraphMatchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("p002", impact.dst());
         assertEquals("type2", impact.getType());
 
-        final Model.E<Object> edge = sessionTemplate.selectEdge(edge(Impact.class)
+        final Model.E<Object, Object> edge = sessionTemplate.selectEdge(edge(Impact.class)
                 .limit(1, 2));
 
         assertNotNull(edge);
@@ -396,7 +396,7 @@ public class NebulaGraphMatchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("p002", impactList.get(0).dst());
         assertEquals("type2", impactList.get(0).getType());
 
-        final List<Model.E<Object>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class)
+        final List<Model.E<Object, Object>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class)
                 .limit(1, 2));
 
         assertNotNull(edgeList);

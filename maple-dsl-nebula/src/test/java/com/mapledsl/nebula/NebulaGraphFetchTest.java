@@ -1,12 +1,11 @@
 package com.mapledsl.nebula;
 
 import com.google.common.collect.ImmutableList;
+import com.mapledsl.nebula.model.NebulaEdgeID;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
-import java.util.stream.LongStream;
-import java.util.stream.Stream;
 
 import static com.mapledsl.core.G.edge;
 import static com.mapledsl.core.G.vertex;
@@ -26,82 +25,78 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
     public void should_fetch_vertices_text_id_return_itself_automatic(String expected) {
         assertEquals(expected, vertex(Person.class, "p001", "p002").render());
         assertEquals(expected, vertex("person", "p001", "p002").render());
-        assertEquals(expected, vertex("person", Stream.of("p001", "p002")).render());
-        assertEquals(expected, vertex("person", Stream.<String>builder().add("p001").add("p002").build()).render());
-        assertEquals(expected, vertex("person", ImmutableList.of("p001", "p002").stream()).render());
+        assertEquals(expected, vertex("person", ImmutableList.of("p001", "p002")).render());
     }
 
     @ParameterizedTest
     @ValueSource(strings = "FETCH PROP ON person 1,2,3 YIELD vertex AS v")
     public void should_fetch_vertices_numeric_id_return_itself_automatic(String expected) {
-        assertEquals(expected, vertex(Person.class, 1, 2, 3).render());
+        assertEquals(expected, vertex(PersonHash.class, 1L, 2L, 3L).render());
         assertEquals(expected, vertex("person", 1, 2, 3).render());
-        assertEquals(expected, vertex("person", LongStream.of(1, 2, 3)).render());
-        assertEquals(expected, vertex("person", LongStream.builder().add(1).add(2).add(3).build()).render());
-        assertEquals(expected, vertex("person", LongStream.rangeClosed(1, 3)).render());
-        assertEquals(expected, vertex("person", ImmutableList.of(1L, 2L, 3L).stream().mapToLong(Long::intValue)).render());
-        assertEquals(expected, vertex("person", ImmutableList.of(1, 2, 3).stream().mapToLong(Integer::intValue)).render());
+        assertEquals(expected, vertex("person", ImmutableList.of(1L, 2L, 3L)).render());
+        assertEquals(expected, vertex("person", ImmutableList.of(1, 2, 3)).render());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "FETCH PROP ON impact \"p001\" -> \"p002\"@0 YIELD edge AS e")
+    @ValueSource(strings = "FETCH PROP ON impact \"p001\"->\"p002\"@0 YIELD edge AS e")
     public void should_fetch_edge_return_itself_automatic(String expected) {
-        assertEquals(expected, edge(Impact.class, new Impact().setSrc("p001").setDst("p002")).render());
-        assertEquals(expected, edge("impact", new Impact().setSrc("p001").setDst("p002")).render());
+        assertEquals(expected, edge(Impact.class, new NebulaEdgeID<>("p001", "p002")).render());
+        assertEquals(expected, edge("impact", new NebulaEdgeID<>("p001", "p002")).render());
     }
 
+    // fetchE => go from src over edge_type where id($$) == 'p002' yield edge as e
     @ParameterizedTest
-    @ValueSource(strings = "FETCH PROP ON impact \"p001\" -> \"p002\"@0,\"p001\" -> \"p002\"@1,\"p001\" -> \"p003\"@0 YIELD edge AS e")
+    @ValueSource(strings = "FETCH PROP ON impact \"p001\"->\"p002\"@0,\"p001\"->\"p002\"@1,\"p001\"->\"p003\"@0 YIELD edge AS e")
     public void should_fetch_edges_string_vid_return_itself_automatic(String expected) {
         assertEquals(expected, edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002", 0L),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .render());
         assertEquals(expected, edge("impact",
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002", 0L),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .render());
         assertEquals(expected, edge("impact",
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002", 0L),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .render());
         assertEquals(expected, edge("impact", Arrays.asList(
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003")))
+                new NebulaEdgeID<>("p001", "p002", 0L),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003")))
                 .render());
         assertEquals(expected, edge("impact", ImmutableList.of(
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003")))
+                new NebulaEdgeID<>("p001", "p002", 0L),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003")))
                 .render());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "FETCH PROP ON impact 1 -> 2@0,1 -> 2@1,1 -> 3@0 YIELD edge AS e")
+    @ValueSource(strings = "FETCH PROP ON impact 1->2@0,1->2@1,1->3@0 YIELD edge AS e")
     public void should_fetch_edges_numeric_vid_return_itself_automatic(String expected) {
         assertEquals(expected, edge(ImpactHash.class,
-                new ImpactHash().setRank(0L).setSrc(1L).setDst(2L),
-                new ImpactHash().setRank(1L).setSrc(1L).setDst(2L),
-                new ImpactHash().setSrc(1L).setDst(3L))
+                new NebulaEdgeID<>(1L, 2L, 0L),
+                new NebulaEdgeID<>(1L, 2L, 1L),
+                new NebulaEdgeID<>(1L, 3L, 0L))
                 .render());
         assertEquals(expected, edge("impact",
-                new ImpactHash().setRank(0L).setSrc(1L).setDst(2L),
-                new ImpactHash().setRank(1L).setSrc(1L).setDst(2L),
-                new ImpactHash().setSrc(1L).setDst(3L))
+                new NebulaEdgeID<>(1L, 2L, 0L),
+                new NebulaEdgeID<>(1L, 2L, 1L),
+                new NebulaEdgeID<>(1L, 3L, 0L))
                 .render());
         assertEquals(expected, edge("impact", Arrays.asList(
-                new ImpactHash().setRank(0L).setSrc(1L).setDst(2L),
-                new ImpactHash().setRank(1L).setSrc(1L).setDst(2L),
-                new ImpactHash().setSrc(1L).setDst(3L)))
+                new NebulaEdgeID<>(1L, 2L, 0L),
+                new NebulaEdgeID<>(1L, 2L, 1L),
+                new NebulaEdgeID<>(1L, 3L, 0L)))
                 .render());
         assertEquals(expected, edge("impact", ImmutableList.of(
-                new ImpactHash().setRank(0L).setSrc(1L).setDst(2L),
-                new ImpactHash().setRank(1L).setSrc(1L).setDst(2L),
-                new ImpactHash().setSrc(1L).setDst(3L)))
+                new NebulaEdgeID<>(1L, 2L, 0L),
+                new NebulaEdgeID<>(1L, 2L, 1L),
+                new NebulaEdgeID<>(1L, 3L, 0L)))
                 .render());
     }
 
@@ -114,12 +109,12 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "FETCH PROP ON impact \"p001\" -> \"p002\"@0,\"p001\" -> \"p002\"@1,\"p001\" -> \"p003\"@0 YIELD dst(edge) AS impact_dst_vid")
+    @ValueSource(strings = "FETCH PROP ON impact \"p001\"->\"p002\"@0,\"p001\"->\"p002\"@1,\"p001\"->\"p003\"@0 YIELD dst(edge) AS impact_dst_vid")
     public void should_fetch_edge_with_selection_complicit_alias(String expected) {
         assertEquals(expected, edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002", 0L),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .selectAs(Impact::dst, "impact_dst_vid")
                 .render());
     }
@@ -134,14 +129,14 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "FETCH PROP ON impact \"p001\" -> \"p002\"@0,\"p001\" -> \"p002\"@1,\"p001\" -> \"p003\"@0 " +
+    @ValueSource(strings = "FETCH PROP ON impact \"p001\"->\"p002\"@0,\"p001\"->\"p002\"@1,\"p001\"->\"p003\"@0 " +
             "YIELD dst(edge) AS impact_dst_vid,rank(edge) AS rank " +
             "| ORDER BY $-.impact_dst_vid ASC,$-.rank DESC")
     public void should_fetch_edge_with_selection_ordering(String expected) {
         assertEquals(expected, edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002", 0L),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .selectAs(Impact::dst, "impact_dst_vid").ascending()
                 .select(Impact::rank).descending()
                 .render());
@@ -156,12 +151,12 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "FETCH PROP ON impact \"p001\" -> \"p002\"@0,\"p001\" -> \"p002\"@1,\"p001\" -> \"p003\"@0 YIELD edge AS e | YIELD COUNT(*) AS cnt")
+    @ValueSource(strings = "FETCH PROP ON impact \"p001\"->\"p002\"@0,\"p001\"->\"p002\"@1,\"p001\"->\"p003\"@0 YIELD edge AS e | YIELD COUNT(*) AS cnt")
     public void should_fetch_edge_with_shadow_selection(String expected) {
         assertEquals(expected, edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002", 0L),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count("cnt")
                 .render());
     }
@@ -175,13 +170,13 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "FETCH PROP ON impact \"p001\" -> \"p002\"@0,\"p001\" -> \"p002\"@1,\"p001\" -> \"p003\"@0 YIELD rank(edge) AS rank " +
+    @ValueSource(strings = "FETCH PROP ON impact \"p001\"->\"p002\"@0,\"p001\"->\"p002\"@1,\"p001\"->\"p003\"@0 YIELD rank(edge) AS rank " +
             "| YIELD COUNT($-.rank) AS rank_cnt")
     public void should_fetch_edge_with_shadow_selection_2(String expected) {
         assertEquals(expected, edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002", 0L),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt")
                 .render());
     }
@@ -196,13 +191,13 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "FETCH PROP ON impact \"p001\" -> \"p002\"@0,\"p001\" -> \"p002\"@1,\"p001\" -> \"p003\"@0 YIELD rank(edge) AS rank " +
+    @ValueSource(strings = "FETCH PROP ON impact \"p001\"->\"p002\"@0,\"p001\"->\"p002\"@1,\"p001\"->\"p003\"@0 YIELD rank(edge) AS rank " +
             "| YIELD COUNT(*) AS cnt,COUNT($-.rank) AS rank_cnt")
     public void should_fetch_edge_with_selection_count(String expected) {
         assertEquals(expected, edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002", 0L),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count("cnt")
                 .count(Impact::rank, "rank_cnt")
                 .render());
@@ -218,13 +213,13 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "FETCH PROP ON impact \"p001\" -> \"p002\"@0,\"p001\" -> \"p002\"@1,\"p001\" -> \"p003\"@0 YIELD rank(edge) AS rank " +
+    @ValueSource(strings = "FETCH PROP ON impact \"p001\"->\"p002\"@0,\"p001\"->\"p002\"@1,\"p001\"->\"p003\"@0 YIELD rank(edge) AS rank " +
             "| YIELD SUM($-.rank) AS sum_rank,SUM($-.rank) AS sum_rank2")
     public void should_fetch_edge_with_selection_sum(String expected) {
         assertEquals(expected, edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002", 0L),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .sum(Impact::rank, "sum_rank")
                 .sum("rank", "sum_rank2")
                 .render());
@@ -240,13 +235,13 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "FETCH PROP ON impact \"p001\" -> \"p002\"@0,\"p001\" -> \"p002\"@1,\"p001\" -> \"p003\"@0 YIELD rank(edge) AS rank " +
+    @ValueSource(strings = "FETCH PROP ON impact \"p001\"->\"p002\"@0,\"p001\"->\"p002\"@1,\"p001\"->\"p003\"@0 YIELD rank(edge) AS rank " +
             "| YIELD MAX($-.rank) AS max_rank,MAX($-.rank) AS max_rank2")
     public void should_fetch_edge_with_selection_max(String expected) {
         assertEquals(expected, edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002", 0L),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .max(Impact::rank, "max_rank")
                 .max("rank", "max_rank2")
                 .render());
@@ -262,13 +257,13 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "FETCH PROP ON impact \"p001\" -> \"p002\"@0,\"p001\" -> \"p002\"@1,\"p001\" -> \"p003\"@0 YIELD rank(edge) AS rank " +
+    @ValueSource(strings = "FETCH PROP ON impact \"p001\"->\"p002\"@0,\"p001\"->\"p002\"@1,\"p001\"->\"p003\"@0 YIELD rank(edge) AS rank " +
             "| YIELD MIN($-.rank) AS min_rank,MIN($-.rank) AS min_rank2")
     public void should_fetch_edge_with_selection_min(String expected) {
         assertEquals(expected, edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002", 0L),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .min(Impact::rank, "min_rank")
                 .min("rank", "min_rank2")
                 .render());
@@ -284,13 +279,13 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "FETCH PROP ON impact \"p001\" -> \"p002\"@0,\"p001\" -> \"p002\"@1,\"p001\" -> \"p003\"@0 YIELD rank(edge) AS rank " +
+    @ValueSource(strings = "FETCH PROP ON impact \"p001\"->\"p002\"@0,\"p001\"->\"p002\"@1,\"p001\"->\"p003\"@0 YIELD rank(edge) AS rank " +
             "| YIELD AVG($-.rank) AS avg_rank,AVG($-.rank) AS avg_rank2")
     public void should_fetch_edge_with_selection_avg(String expected) {
         assertEquals(expected, edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002", 0L),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .avg(Impact::rank, "avg_rank")
                 .avg("rank", "avg_rank2")
                 .render());
@@ -306,13 +301,13 @@ public class NebulaGraphFetchTest extends NebulaGraphBaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = "FETCH PROP ON impact \"p001\" -> \"p002\"@0,\"p001\" -> \"p002\"@1,\"p001\" -> \"p003\"@0 YIELD impact.type AS type " +
+    @ValueSource(strings = "FETCH PROP ON impact \"p001\"->\"p002\"@0,\"p001\"->\"p002\"@1,\"p001\"->\"p003\"@0 YIELD impact.type AS type " +
             "| OFFSET 1 LIMIT 2")
     public void should_match_edge_with_selection_limit(String expected) {
         assertEquals(expected, edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002", 0L),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .select(Impact::getType)
                 .limit(1, 2)
                 .render());

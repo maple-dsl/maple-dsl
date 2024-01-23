@@ -2,13 +2,13 @@ package com.mapledsl.nebula.session;
 
 import com.google.common.collect.ImmutableList;
 import com.mapledsl.core.model.Model;
+import com.mapledsl.nebula.model.NebulaEdgeID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.LongStream;
 
 import static com.mapledsl.core.G.edge;
 import static com.mapledsl.core.G.vertex;
@@ -86,13 +86,13 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
     @ParameterizedTest
     @ValueSource(strings = "FETCH PROP ON person 1,2,3 YIELD vertex AS v")
     public void should_fetch_vertices_numeric_id_return_itself_automatic(String expected) {
-        final Model.V<Long> vertex = hashSessionTemplate.selectVertex(vertex(PersonHash.class, 1, 2));
+        final Model.V<Long> vertex = hashSessionTemplate.selectVertex(vertex(PersonHash.class, 1L, 2L));
         assertNotNull(vertex);
         assertEquals(1, vertex.id());
         assertEquals("person", vertex.label());
         assertEquals("bofa", vertex.get("name"));
 
-        final List<Model.V<Long>> vertices = hashSessionTemplate.selectVertexList(vertex(PersonHash.class, LongStream.of(1, 2)));
+        final List<Model.V<Long>> vertices = hashSessionTemplate.selectVertexList(vertex(PersonHash.class, ImmutableList.of(1L, 2L)));
         assertNotNull(vertices);
         assertEquals(2, vertices.size());
 
@@ -106,13 +106,13 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("person", vertices.get(1).label());
         assertEquals("zhangsan", vertices.get(1).get("name"));
 
-        final PersonHash person = hashSessionTemplate.selectOne(vertex("person", LongStream.builder().add(1).add(2).build()), PersonHash.class);
+        final PersonHash person = hashSessionTemplate.selectOne(vertex("person", 1L, 2L), PersonHash.class);
         assertNotNull(person);
         assertEquals(1, person.id());
         assertEquals("person", person.label());
         assertEquals("bofa", person.getName());
 
-        final List<PersonHash> personList = hashSessionTemplate.selectList(vertex("person", LongStream.rangeClosed(1, 2)), PersonHash.class);
+        final List<PersonHash> personList = hashSessionTemplate.selectList(vertex("person", ImmutableList.of(1L, 2L)), PersonHash.class);
         assertNotNull(personList);
         assertEquals(2, personList.size());
 
@@ -129,7 +129,7 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
 
     @Test
     public void should_fetch_edge_return_itself_automatic() {
-        final Model.E<String> edge = sessionTemplate.selectEdge(edge("impact", new Impact().setSrc("p001").setDst("p002")));
+        final Model.E<NebulaEdgeID<String>, String> edge = sessionTemplate.selectEdge(edge("impact", new NebulaEdgeID<>("p001", "p002")));
         assertNotNull(edge);
         assertNull(edge.id());
         assertEquals("p001", edge.src());
@@ -137,7 +137,7 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("impact", edge.label());
         assertEquals("type1", edge.get("type"));
 
-        final Impact impact = sessionTemplate.selectOne(edge("impact", new Impact().setSrc("p001").setDst("p002")), Impact.class);
+        final Impact impact = sessionTemplate.selectOne(edge("impact", new NebulaEdgeID<>("p001", "p002")), Impact.class);
         assertNotNull(impact);
         assertNull(impact.id());
         assertEquals("p001", impact.src());
@@ -148,9 +148,10 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
 
     @Test
     public void should_fetch_edges_string_vid_return_itself_automatic() {
-        final Model.E<String> edge = sessionTemplate.selectEdge(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002")));
+        final Model.E<NebulaEdgeID<String>, String> edge = sessionTemplate.selectEdge(edge(Impact.class,
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
+        );
 
         assertNotNull(edge);
         assertNull(edge.id());
@@ -161,8 +162,10 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("type1", edge.get("type"));
 
         final Impact impact = sessionTemplate.selectOne(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002")), Impact.class);
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L)),
+                Impact.class
+        );
 
         assertNotNull(impact);
         assertNull(impact.id());
@@ -172,9 +175,10 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("impact", impact.label());
         assertEquals("type1", impact.getType());
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002")));
+        final List<Model.E<NebulaEdgeID<String>, String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class,
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
+        );
 
         assertNotNull(edgeList);
         assertEquals(2, edgeList.size());
@@ -194,8 +198,10 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("type2", edgeList.get(1).get("type"));
 
         final List<Impact> impactList = sessionTemplate.selectList(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002")), Impact.class);
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L)),
+                Impact.class
+        );
 
         assertNotNull(impactList);
         assertEquals(2, impactList.size());
@@ -217,9 +223,10 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
 
     @Test
     public void should_fetch_edges_numeric_vid_return_itself_automatic() {
-        final Model.E<Long> edge = hashSessionTemplate.selectEdge(edge(ImpactHash.class,
-                new ImpactHash().setRank(0L).setSrc(1L).setDst(2L),
-                new ImpactHash().setRank(1L).setSrc(1L).setDst(2L)));
+        final Model.E<NebulaEdgeID<Long>, Long> edge = hashSessionTemplate.selectEdge(edge(ImpactHash.class,
+                new NebulaEdgeID<>(0L, 1L, 0L),
+                new NebulaEdgeID<>(0L, 1L, 1L)
+        ));
 
         assertNotNull(edge);
         assertNull(edge.id());
@@ -230,8 +237,8 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("type1", edge.get("type"));
 
         final ImpactHash impact = hashSessionTemplate.selectOne(edge(ImpactHash.class, ImmutableList.of(
-                new ImpactHash().setRank(0L).setSrc(1L).setDst(2L),
-                new ImpactHash().setRank(1L).setSrc(1L).setDst(2L)
+                new NebulaEdgeID<>(0L, 1L, 0L),
+                new NebulaEdgeID<>(0L, 1L, 1L)
         )), ImpactHash.class);
 
         assertNotNull(impact);
@@ -242,9 +249,10 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("impact", impact.label());
         assertEquals("type1", impact.getType());
 
-        final List<Model.E<Long>> edgeList = hashSessionTemplate.selectEdgeList(edge("impact",
-                new ImpactHash().setRank(0L).setSrc(1L).setDst(2L),
-                new ImpactHash().setRank(1L).setSrc(1L).setDst(2L)));
+        final List<Model.E<NebulaEdgeID<Long>, Long>> edgeList = hashSessionTemplate.selectEdgeList(edge("impact",
+                new NebulaEdgeID<>(0L, 1L, 0L),
+                new NebulaEdgeID<>(0L, 1L, 1L))
+        );
 
         assertNotNull(edgeList);
         assertEquals(2, edgeList.size());
@@ -264,8 +272,10 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("type2", edgeList.get(1).get("type"));
 
         final List<ImpactHash> impactList = hashSessionTemplate.selectList(edge("impact",
-                new ImpactHash().setRank(0L).setSrc(1L).setDst(2L),
-                new ImpactHash().setRank(1L).setSrc(1L).setDst(2L)), ImpactHash.class);
+                new NebulaEdgeID<>(0L, 1L, 0L),
+                new NebulaEdgeID<>(0L, 1L, 1L)),
+                ImpactHash.class
+        );
 
         assertNotNull(impactList);
         assertEquals(2, impactList.size());
@@ -326,16 +336,16 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
     @Test
     public void should_fetch_edge_with_selection_complicit_alias() {
         final String impactDstVertexId = sessionTemplate.selectOne(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .selectAs(Impact::dst, "impact_dst_vid"), String.class);
 
         assertNotNull(impactDstVertexId);
         assertEquals("p002", impactDstVertexId);
 
         final List<String> impactDstVertexIdList = sessionTemplate.selectList(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .selectAs(Impact::dst, "impact_dst_vid"), String.class);
 
         assertNotNull(impactDstVertexIdList);
@@ -343,25 +353,25 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("p002", impactDstVertexIdList.get(0));
         assertEquals("p002", impactDstVertexIdList.get(1));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+        final Model.E<NebulaEdgeID<String>, String> edge = sessionTemplate.selectEdge(edge(Impact.class,
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .selectAs(Impact::dst, "impact_dst_vid"));
 
         assertNotNull(edge);
         assertEquals("p002", edge.get("impact_dst_vid"));
 
         final Impact impact = sessionTemplate.selectOne(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .select(Impact::dst), Impact.class);
 
         assertNotNull(impact);
         assertEquals("p002", impact.dst());
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+        final List<Model.E<NebulaEdgeID<String>, String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class,
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .select(Impact::dst));
 
         assertNotNull(edgeList);
@@ -422,8 +432,8 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
 
     public void should_fetch_edge_with_selection_ordering() {
         final Map<String, Object> result = sessionTemplate.selectMap(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .selectAs(Impact::dst, "impact_dst_vid").ascending()
                 .select(Impact::rank).descending());
 
@@ -432,8 +442,8 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(1L, result.get("rank"));
 
         final List<Map<String, Object>> resultMapList = sessionTemplate.selectMaps(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .selectAs(Impact::dst, "impact_dst_vid").ascending()
                 .select(Impact::rank).descending());
 
@@ -443,9 +453,9 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals("p002", resultMapList.get(1).get("impact_dst_vid"));
         assertEquals(0L, resultMapList.get(1).get("rank"));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+        final Model.E<NebulaEdgeID<String>, String> edge = sessionTemplate.selectEdge(edge(Impact.class,
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .selectAs(Impact::dst, "impact_dst_vid").ascending()
                 .select(Impact::rank).descending());
 
@@ -454,8 +464,8 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(1L, edge.<Long>get("rank"));
 
         final Impact impact = sessionTemplate.selectOne(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .selectAs(Impact::dst, "impact_dst_vid").ascending()
                 .select(Impact::rank).descending(), Impact.class);
 
@@ -505,12 +515,12 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(1, vertexList.size());
         assertEquals(2L, vertexList.get(0).<Long>get("cnt"));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(vertex(Person.class, "p001", "p002").count("cnt").render());
+        final Model.E<NebulaEdgeID<String>, String> edge = sessionTemplate.selectEdge(vertex(Person.class, "p001", "p002").count("cnt").render());
 
         assertNotNull(edge);
         assertEquals(2L, edge.<Long>get("cnt"));
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class, "p001", "p002").count("cnt").render());
+        final List<Model.E<NebulaEdgeID<String>, String>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class, "p001", "p002").count("cnt").render());
 
         assertNotNull(edgeList);
         assertEquals(1, edgeList.size());
@@ -520,16 +530,16 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
     @Test
     public void should_fetch_edge_with_shadow_selection() {
         final Long cnt = sessionTemplate.selectOne(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .count("cnt"), Long.class);
 
         assertNotNull(cnt);
         assertEquals(2, cnt);
 
         final List<Long> resultList = sessionTemplate.selectList(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .count("cnt"), Long.class);
 
         assertNotNull(resultList);
@@ -537,24 +547,24 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(2L, resultList.get(0));
 
         final Map<String, Object> result = sessionTemplate.selectMap(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .count("cnt"));
 
         assertNotNull(result);
         assertEquals(2L, result.get("cnt"));
 
         final Map<String, Object> resultMap = sessionTemplate.selectMap(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .count("cnt"));
 
         assertNotNull(resultMap);
         assertEquals(2L, resultMap.get("cnt"));
 
         final List<Map<String, Object>> resultMapList = sessionTemplate.selectMaps(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .count("cnt"));
 
         assertNotNull(resultMapList);
@@ -562,8 +572,8 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(2L, resultMapList.get(0).get("cnt"));
 
         final Model.V<String> vertex = sessionTemplate.selectVertex(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .count("cnt")
                 .render());
 
@@ -571,8 +581,8 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(2L, vertex.<Long>get("cnt"));
 
         final List<Model.V<String>> vertexList = sessionTemplate.selectVertexList(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .count("cnt")
                 .render());
 
@@ -580,17 +590,17 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(1, vertexList.size());
         assertEquals(2L, vertexList.get(0).<Long>get("cnt"));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+        final Model.E<NebulaEdgeID<String>, String> edge = sessionTemplate.selectEdge(edge(Impact.class,
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .count("cnt"));
 
         assertNotNull(edge);
         assertEquals(2L, edge.<Long>get("cnt"));
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"))
+        final List<Model.E<NebulaEdgeID<String>, String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class,
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L))
                 .count("cnt"));
 
         assertNotNull(edgeList);
@@ -639,14 +649,14 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(1, vertexList.size());
         assertEquals(2L, vertexList.get(0).<Long>get("name_cnt"));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(vertex(Person.class, "p001", "p002")
+        final Model.E<NebulaEdgeID<String>, String> edge = sessionTemplate.selectEdge(vertex(Person.class, "p001", "p002")
                 .count(Person::getName, "name_cnt")
                 .render());
 
         assertNotNull(edge);
         assertEquals(2L, edge.<Long>get("name_cnt"));
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class, "p001", "p002")
+        final List<Model.E<NebulaEdgeID<String>, String>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class, "p001", "p002")
                 .count(Person::getName, "name_cnt")
                 .render());
 
@@ -658,18 +668,18 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
     @Test
     public void should_fetch_edge_with_shadow_selection_2() {
         final Long cnt = sessionTemplate.selectOne(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt"), Long.class);
 
         assertNotNull(cnt);
         assertEquals(2, cnt);
 
         final List<Long> resultList = sessionTemplate.selectList(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt"), Long.class);
 
         assertNotNull(resultList);
@@ -677,27 +687,27 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(2L, resultList.get(0));
 
         final Map<String, Object> result = sessionTemplate.selectMap(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt"));
 
         assertNotNull(result);
         assertEquals(2L, result.get("rank_cnt"));
 
         final Map<String, Object> resultMap = sessionTemplate.selectMap(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt"));
 
         assertNotNull(resultMap);
         assertEquals(2L, resultMap.get("rank_cnt"));
 
         final List<Map<String, Object>> resultMapList = sessionTemplate.selectMaps(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt"));
 
         assertNotNull(resultMapList);
@@ -705,9 +715,9 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(2L, resultMapList.get(0).get("rank_cnt"));
 
         final Model.V<String> vertex = sessionTemplate.selectVertex(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt")
                 .render());
 
@@ -715,9 +725,9 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(2L, vertex.<Long>get("rank_cnt"));
 
         final List<Model.V<String>> vertexList = sessionTemplate.selectVertexList(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt")
                 .render());
 
@@ -725,19 +735,19 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(1, vertexList.size());
         assertEquals(2L, vertexList.get(0).<Long>get("rank_cnt"));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final Model.E<NebulaEdgeID<String>, String> edge = sessionTemplate.selectEdge(edge(Impact.class,
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt"));
 
         assertNotNull(edge);
         assertEquals(2L, edge.<Long>get("rank_cnt"));
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final List<Model.E<NebulaEdgeID<String>, String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class,
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt"));
 
         assertNotNull(edgeList);
@@ -797,7 +807,7 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(2L, vertexList.get(0).<Long>get("name_cnt"));
         assertEquals(2L, vertexList.get(0).<Long>get("cnt"));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(vertex(Person.class, "p001", "p002")
+        final Model.E<NebulaEdgeID<String>, String> edge = sessionTemplate.selectEdge(vertex(Person.class, "p001", "p002")
                 .count("cnt")
                 .count(Person::getName, "name_cnt")
                 .render());
@@ -806,7 +816,7 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(2L, edge.<Long>get("name_cnt"));
         assertEquals(2L, edge.<Long>get("cnt"));
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class, "p001", "p002")
+        final List<Model.E<NebulaEdgeID<String>, String>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class, "p001", "p002")
                 .count("cnt")
                 .count(Person::getName, "name_cnt")
                 .render());
@@ -820,18 +830,18 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
     @Test
     public void should_fetch_edge_with_selection_count() {
         final Long cnt = sessionTemplate.selectOne(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt"), Long.class);
 
         assertNotNull(cnt);
         assertEquals(2, cnt);
 
         final List<Long> resultList = sessionTemplate.selectList(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt"), Long.class);
 
         assertNotNull(resultList);
@@ -839,27 +849,27 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(2L, resultList.get(0));
 
         final Map<String, Object> result = sessionTemplate.selectMap(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt"));
 
         assertNotNull(result);
         assertEquals(2L, result.get("rank_cnt"));
 
         final Map<String, Object> resultMap = sessionTemplate.selectMap(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt"));
 
         assertNotNull(resultMap);
         assertEquals(2L, resultMap.get("rank_cnt"));
 
         final List<Map<String, Object>> resultMapList = sessionTemplate.selectMaps(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt"));
 
         assertNotNull(resultMapList);
@@ -867,9 +877,9 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(2L, resultMapList.get(0).get("rank_cnt"));
 
         final Model.V<String> vertex = sessionTemplate.selectVertex(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt")
                 .render());
 
@@ -877,9 +887,9 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(2L, vertex.<Long>get("rank_cnt"));
 
         final List<Model.V<String>> vertexList = sessionTemplate.selectVertexList(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt")
                 .render());
 
@@ -887,19 +897,19 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(1, vertexList.size());
         assertEquals(2L, vertexList.get(0).<Long>get("rank_cnt"));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final Model.E<NebulaEdgeID<String>, String> edge = sessionTemplate.selectEdge(edge(Impact.class,
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt"));
 
         assertNotNull(edge);
         assertEquals(2L, edge.<Long>get("rank_cnt"));
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+        final List<Model.E<NebulaEdgeID<String>, String>> edgeList = sessionTemplate.selectEdgeList(edge(Impact.class,
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .count(Impact::rank, "rank_cnt"));
 
         assertNotNull(edgeList);
@@ -959,7 +969,7 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(26+30, vertexList.get(0).<Long>get("sum_age"));
         assertEquals(26+30, vertexList.get(0).<Long>get("sum_age2"));
 
-        final Model.E<String> edge = sessionTemplate.selectEdge(vertex(Person.class, "p001", "p002")
+        final Model.E<NebulaEdgeID<String>, String> edge = sessionTemplate.selectEdge(vertex(Person.class, "p001", "p002")
                 .sum(Person::getAge, "sum_age")
                 .sum("age", "sum_age2")
                 .render());
@@ -968,7 +978,7 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
         assertEquals(26+30L, edge.<Long>get("sum_age"));
         assertEquals(26+30L, edge.<Long>get("sum_age2"));
 
-        final List<Model.E<String>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class, "p001", "p002")
+        final List<Model.E<NebulaEdgeID<String>, String>> edgeList = sessionTemplate.selectEdgeList(vertex(Person.class, "p001", "p002")
                 .sum(Person::getAge, "sum_age")
                 .sum("age", "sum_age2")
                 .render());
@@ -993,9 +1003,9 @@ public class NebulaGraphFetchSessionTest extends NebulaGraphSessionBaseTest {
     @Test
     public void should_match_edge_with_selection_limit() {
         final List<Impact> impactList = sessionTemplate.selectList(edge(Impact.class,
-                new Impact().setRank(0L).setSrc("p001").setDst("p002"),
-                new Impact().setRank(1L).setSrc("p001").setDst("p002"),
-                new Impact().setSrc("p001").setDst("p003"))
+                new NebulaEdgeID<>("p001", "p002"),
+                new NebulaEdgeID<>("p001", "p002", 1L),
+                new NebulaEdgeID<>("p001", "p003"))
                 .select(Impact::getType)
                 .limit(1, 2), Impact.class);
 
