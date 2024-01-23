@@ -13,7 +13,7 @@ public interface NebulaModel {
     /**
      * This interface represents a generic model with properties and getters and setters for those properties.
      *
-     * @param <ID> The type of the identifier for the model.
+     * @param <R> The type of the identifier for the model.
      */
     class E<R> extends Model.E<NebulaEdgeID<R>, R> {
         protected long rank;

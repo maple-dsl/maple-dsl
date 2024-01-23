@@ -149,6 +149,7 @@ public final class MapleDslConfiguration {
     /**
      * Retrieves the label for the specified model class.
      *
+     * @param <M> the model class type
      * @param modelClazz The model class.
      * @return The label.
      * @throws IllegalArgumentException if the modelClazz is null.

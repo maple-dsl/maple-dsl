@@ -346,7 +346,7 @@ public class Neo4jMatchSessionTest extends Neo4jSessionBaseTest {
         assertEquals("p002", impact.dst());
         assertEquals("type2", impact.getType());
 
-        final Model.E<Object> edge = sessionTemplate.selectEdge(edge(Impact.class)
+        final Model.E<Object, Object> edge = sessionTemplate.selectEdge(edge(Impact.class)
                 .limit(1, 2));
 
         assertNotNull(edge);

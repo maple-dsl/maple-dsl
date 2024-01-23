@@ -25,7 +25,7 @@ public interface MapleDslSession extends Closeable {
      *
      * @param stmt the SQL statement used to select the vertex
      * @param <ID> the type of the identifier for the vertex
-     * @return the selected vertex of type `Model.V<ID>`
+     * @return the selected vertex of type `Model.V`
      */
     @Nullable <ID> Model.V<ID> selectVertex(@NotNull String stmt);
     default @Nullable <ID> Model.V<ID> selectVertex(@NotNull Wrapper<? extends Model.V<?>> stmtWrapper) {
@@ -37,7 +37,7 @@ public interface MapleDslSession extends Closeable {
      *
      * @param stmt the SQL statement used to select the vertices
      * @param <ID> the type of the identifier for the vertices
-     * @return a list of selected vertices of type `Model.V<ID>`
+     * @return a list of selected vertices of type `Model.V`
      */
     @NotNull <ID> List<Model.V<ID>> selectVertexList(@NotNull String stmt);
     default @NotNull <ID> List<Model.V<ID>> selectVertexList(@NotNull Wrapper<? extends Model.V<?>> stmtWrapper) {
@@ -49,7 +49,8 @@ public interface MapleDslSession extends Closeable {
      *
      * @param stmt the SQL statement used to select the edge
      * @param <ID> the type of the identifier for the edge
-     * @return the selected edge of type Model.E<ID>
+     * @param <R> the type of the edge endpoint(src,dst) value
+     * @return the selected edge of type Model.E
      */
     @Nullable <ID, R> Model.E<ID, R> selectEdge(@NotNull String stmt);
     default @Nullable <ID, R> Model.E<ID, R> selectEdge(@NotNull Wrapper<? extends Model.E<?,?>> stmtWrapper) {
@@ -61,7 +62,8 @@ public interface MapleDslSession extends Closeable {
      *
      * @param stmt the SQL statement used to select the edges
      * @param <ID> the type of the identifier for the edges
-     * @return a list of selected edges of type `Model.E<ID>`
+     * @param <R> the type of the edge endpoint(src,dst) value
+     * @return a list of selected edges of type `Model.E`
      */
     @NotNull <ID, R> List<Model.E<ID, R>> selectEdgeList(@NotNull String stmt);
     default @NotNull <ID, R> List<Model.E<ID, R>> selectEdgeList(@NotNull Wrapper<? extends Model.E<?,?>> stmtWrapper) {

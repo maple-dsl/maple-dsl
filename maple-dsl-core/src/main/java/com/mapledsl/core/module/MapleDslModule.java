@@ -34,6 +34,7 @@ public abstract class MapleDslModule {
      * This method should be implemented in subclasses of {@code MapleDslModule}.
      * It returns a {@code Properties} object that contains the dialect-specific properties.
      *
+     * @param context mapledsl configuration
      * @return The dialect properties of the Maple DSL module as a non-null {@code Properties} object.
      */
     public abstract @NotNull Properties dialectProperties(MapleDslConfiguration context);

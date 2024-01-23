@@ -24,6 +24,7 @@ public final class G {
     /**
      * Traverses through the given vertex ids and returns a TraversalWrapper object.
      *
+     * @param <ID> vertex id type
      * @param vertexIds the ids of the vertices to traverse
      * @return a TraversalWrapper object representing the traversal through the vertex ids
      */
@@ -38,6 +39,7 @@ public final class G {
     /**
      * Traverses through the given vertex ids and returns a TraversalWrapper object.
      *
+     * @param <ID> vertex id type
      * @param vertexIds the ids of the vertices to traverse
      * @return a TraversalWrapper object representing the traversal through the vertex ids
      */
@@ -145,6 +147,7 @@ public final class G {
     /**
      * Creates a FetchWrapper object representing a vertex in a graph database.
      *
+     * @param <ID>       the vertex id type
      * @param tag        the tag representing the vertex class type.
      * @param vertexIds  the array of vertex IDs.
      * @param <V>        the type of vertex class.
@@ -168,6 +171,7 @@ public final class G {
     /**
      * Creates an instance of FetchWrapper for fetching edges.
      *
+     * @param <ID>  the edge id type
      * @param tag   the class representing the edge
      * @param edgeIds the array of edges
      * @param <E>   the type of the edge
@@ -186,6 +190,8 @@ public final class G {
      * Creates a new {@link FetchWrapper} for the given {@link Model.E} class and collection of edges.
      * This method returns a new instance of {@link FetchEdgeWrapper}.
      *
+     * @param <E> the edge class type
+     * @param <ID> the edge endpoint(src,dst) type
      * @param tag The {@link Class} object representing the {@link Model.E} class.
      * @param edgeIds The collection of {@link Model.E} edges.
      * @return A new instance of {@link FetchWrapper} wrapping the given {@link Model.E} edges.
