@@ -29,7 +29,7 @@ public final class MapleNeo4jDslSession implements MapleDslSession {
     private final Session session;
     /**
      * Represents the context of a Maple DSL session.
-     *
+     * </p>
      * The MapleDslConfiguration context is used by the MapleNeo4jDslSession class
      * to configure and manage the DSL session.
      */
@@ -64,17 +64,17 @@ public final class MapleNeo4jDslSession implements MapleDslSession {
     }
 
     @Override
-    public @Nullable <ID> Model.E<ID> selectEdge(@NotNull String stmt) {
+    public @Nullable <ID, R> Model.E<ID, R> selectEdge(@NotNull String stmt) {
         return singleResult(stmt, (values, columns) -> {
-            final BeanDefinition<Model.E<ID>> eBeanDefinition = context.edgeDefinition();
+            final BeanDefinition<Model.E<ID, R>> eBeanDefinition = context.edgeDefinition();
             return createModelResult(eBeanDefinition, this::isEdgeValue, values, columns);
         });
     }
 
     @Override
-    public @NotNull <ID> List<Model.E<ID>> selectEdgeList(@NotNull String stmt) {
+    public @NotNull <ID, R> List<Model.E<ID, R>> selectEdgeList(@NotNull String stmt) {
         return collectResult(stmt, (values, columns) -> {
-            final BeanDefinition<Model.E<ID>> eBeanDefinition = context.edgeDefinition();
+            final BeanDefinition<Model.E<ID, R>> eBeanDefinition = context.edgeDefinition();
             return createModelResult(eBeanDefinition, this::isEdgeValue, values, columns);
         });
     }
